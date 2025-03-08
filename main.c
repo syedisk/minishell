@@ -6,17 +6,11 @@
 /*   By: sbin-ham <sbin-ham@student.42singapor      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/05 17:58:16 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/08 15:42:14 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+#include "minishell.h"
 
 int	main(void)
 {
@@ -28,7 +22,7 @@ int	main(void)
 		input = readline("minishell$ ");
 		if (!input)
 			break;
-		if (strcmp(input, "exit") == 0)
+		if (ft_strncmp(input, "exit", 4) == 0 && input[4] == '\0')
 		{
 			free(input);
 			break;
