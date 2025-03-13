@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 19:03:24 by sbin-ham          #+#    #+#             */
-/*   Updated: 2024/06/11 17:51:01 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:33:22 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static char	**alloc_fill(char const *s, char c)
 		{
 			result[i++] = get_substring(s, c, &len);
 			if (!result[i - 1])
-			{	
+			{
 				free_split_result(result, i - 1);
 				return (NULL);
 			}
