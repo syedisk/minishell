@@ -1,25 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   token.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/18 13:24:16 by sbin-ham         ###   ########.fr       */
+/*   Created: 2025/03/18 12:43:42 by sbin-ham          #+#    #+#             */
+/*   Updated: 2025/03/18 17:34:13 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#ifndef TOKEN_H
+# define TOKEN_H
 
-# include "libft.h"
-# include "token.h"
-# include <stdio.h>					// for printf
-# include <stdlib.h>				// for malloc, free, exit
-# include <unistd.h>				// for fork, execve, pipe
-# include <sys/wait.h>				// for wait
-# include <readline/readline.h>
-# include <readline/history.h>
+typedef enum e_token_type
+{
+	WORD,
+	PIPE,
+	REDIR_IN,
+	REDIR_OUT,
+	APPEND,
+	HEREDOC
+}	t_token_type;
+
+typedef struct s_token
+{
+	char			*value;
+	t_token_type	type;
+	struct s_token	*next;
+}					t_token;
+
+t_token	*tokenise(const char *input);
 
 #endif
