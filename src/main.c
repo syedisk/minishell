@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/19 13:18:54 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/19 13:35:59 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,10 @@ int	main(void)
 {
 	char	*input;
 	t_token *tokens;
-	char	**args;
-	pid_t	pid;
-	int		i;
+	t_token	*tmp;
+	// char	**args;
+	// pid_t	pid;
+	// int		i;
 
 	while (1)
 	{
@@ -74,28 +75,35 @@ int	main(void)
 			break ;
 		}
 		tokens = tokenise(input);
-		args = token_to_args(tokens);
-		if (args && args[0])
+		//test tokenise
+		tmp = tokens;
+		while (tmp)
 		{
-			pid = fork();
-			if (pid == 0)
-			{
-				execve(args[0], args, NULL); // to add envp?
-				perror("execve");
-				exit(1);
-			}
-			else
-				wait(NULL);
+			printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
+			tmp = tmp->next;
 		}
+		// args = token_to_args(tokens);
+		// if (args && args[0])
+		// {
+		// 	pid = fork();
+		// 	if (pid == 0)
+		// 	{
+		// 		execve(args[0], args, NULL); // to add envp?
+		// 		perror("execve");
+		// 		exit(1);
+		// 	}
+		// 	else
+		// 		wait(NULL);
+		// }
 		free(input);
 		free_tokens(tokens);
-		i = 0;
-		while (args && args[i])
-		{
-			free(args[i]);
-			i++;
-		}
-		free(args);
+		// i = 0;
+		// while (args && args[i])
+		// {
+		// 	free(args[i]);
+		// 	i++;
+		// }
+		// free(args);
 	}
 	return (0);
 }
