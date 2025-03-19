@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/18 17:11:16 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/19 08:53:00 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,20 @@ int	ft_isspace(char c)
 	return (0);
 }
 
-char	*ft_strndup(const char *s, int n)
+char	*ft_strndup(const char *s, size_t n)
 {
 	char	*dup;
-	int		i;
+	size_t	len;
+	size_t	i;
 
+	len = 0;
 	i = 0;
-	dup = malloc(n + 1);
+	while (s[len] && len < n)
+		len++;
+	dup = malloc(len + 1);
 	if (!dup)
 		return (NULL);
-	while (i < n && s[i])
+	while (i < len)
 	{
 		dup[i] = s[i];
 		i++;
