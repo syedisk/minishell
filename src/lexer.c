@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/19 08:53:00 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/19 09:17:56 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int	is_operator_char(char c)
 
 t_token_type	get_operator_type(const char *s, int *len)
 {
-	if (s[0] == '|' && (*len == 1))
+	if (s[0] == '|' && (*len = 1))
 		return (PIPE);
 	if (s[0] == '<' && s[1] == '<' && (*len = 2))
 		return (HEREDOC);
