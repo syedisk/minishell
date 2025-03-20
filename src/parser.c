@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/20 14:15:22 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:25:28 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,57 @@ t_command	*parse_tokens(t_token *tokens)
 			new_cmd->next = NULL;
 
 			if (!cmd_head)
-				cmd_head
+				cmd_head = new_cmd;
+			else
+				current_cmd->next = new_cmd;
+			current_cmd = new_cmd;
+			if (curr->type == PIPE)
+				curr = curr->next;
 		}
+
+		int argc = 0;
+		t_token *temp = curr;
+		while (temp && temp->type != PIPE)
+		{
+			if (temp->type == WORD)
+				argc++;
+			else if (temp->type == REDIR_IN || temp->type == REDIR_OUT || temp->type == APPEND)
+				temp = temp->next;
+			temp = temp->next;
+		}
+		current_cmd->argv = malloc(sizeof(char *) * (argc + 1));
+		argc = 0;
+		while (curr && curr->type != PIPE)
+		{
+			if (curr->type == WORD)
+				current_cmd->argv[argc++] = strdup(curr->value);
+			else if (curr->type == REDIR_IN)
+			{
+				curr = curr->next;
+				if (curr)
+					current_cmd->infile = strdup(curr->value);
+			}
+			else if (curr->type ==  REDIR_OUT)
+			{
+				curr = curr->next;
+				if (curr)
+				{
+					current_cmd->outfile = strdup(curr->value);
+					current_cmd->append_out = 0;
+				}
+			}
+			else if (curr->type == APPEND)
+			{
+				curr = curr->next;
+				if (curr)
+				{
+					current_cmd->outfile = strdup(curr->value);
+					current_cmd->append_out = 1;
+				}
+			}
+			curr = curr->next;
+		}
+		current_cmd->argv[argc] = NULL;
 	}
+	return cmd_head;
 }
