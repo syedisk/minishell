@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/19 13:47:06 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/20 14:02:55 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "libft.h"
 # include "lexer.h"
+# include "parser.h"
 # include <stdio.h>					// for printf
 # include <stdlib.h>				// for malloc, free, exit
 # include <unistd.h>				// for fork, execve, pipe
