@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/20 16:25:28 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/29 16:32:30 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,4 +87,31 @@ t_command	*parse_tokens(t_token *tokens)
 		current_cmd->argv[argc] = NULL;
 	}
 	return cmd_head;
+}
+
+void	free_commands(t_command *cmds)
+{
+	int	i;
+	t_command *tmp;
+
+	while (cmds)
+	{
+		tmp = cmds->next;
+		if (cmds->argv)
+		{
+			i = 0;
+			while (cmds->argv[i])
+			{
+				free(cmds->argv[i]);
+				i++;
+			}
+			free(cmds->argv);
+		}
+		if (cmds->infile)
+			free(cmds->infile);
+		if (cmds->outfile)
+			free(cmds->outfile);
+		free(cmds);
+		cmds = tmp;
+	}
 }

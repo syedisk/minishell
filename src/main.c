@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/19 13:35:59 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/29 16:32:06 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,24 +40,12 @@ char **tokens_to_args(t_token *tokens)
 	return (args);
 }
 
-void free_tokens(t_token *tokens)
-{
-	t_token *tmp;
-
-	while (tokens)
-	{
-		tmp = tokens->next;
-		free(tokens->value);
-		free(tokens);
-		tokens = tmp;
-	}
-}
-
 int	main(void)
 {
-	char	*input;
-	t_token *tokens;
-	t_token	*tmp;
+	char		*input;
+	t_token 	*tokens;
+	t_token		*tmp;
+	t_command	*commands;
 	// char	**args;
 	// pid_t	pid;
 	// int		i;
@@ -75,13 +63,31 @@ int	main(void)
 			break ;
 		}
 		tokens = tokenise(input);
-		//test tokenise
+		//test tokenise by printing tokens (for debugging)
 		tmp = tokens;
 		while (tmp)
 		{
 			printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
 			tmp = tmp->next;
 		}
+		// parse tokens into commands
+		commands = parse_tokens(tokens);
+
+		//print command structure test (for debugging)
+		t_command *cmd = commands;
+		int i;
+		while (cmd)
+		{
+			printf("COMMAND:\n");
+			for(i = 0; cmd->argv && cmd->argv[i]; i++)
+				printf("  Arg[%d]: %s\n", i, cmd->argv[i]);
+			if (cmd->infile)
+				printf("  Infile: %s\n", cmd->infile);
+			if (cmd->outfile)
+				printf("  Outfile: %s (append: %d)\n", cmd->outfile, cmd->append_out);
+			cmd = cmd->next;
+		}
+
 		// args = token_to_args(tokens);
 		// if (args && args[0])
 		// {
@@ -97,6 +103,7 @@ int	main(void)
 		// }
 		free(input);
 		free_tokens(tokens);
+		free_commands(commands);
 		// i = 0;
 		// while (args && args[i])
 		// {

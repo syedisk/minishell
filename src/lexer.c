@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/20 10:10:52 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/29 15:55:21 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,19 @@ void	add_token(t_token **head, t_token *new)
 	while (cur->next)
 		cur = cur->next;
 	cur->next = new;
+}
+
+void free_tokens(t_token *tokens)
+{
+	t_token *tmp;
+	
+	while (tokens)
+	{
+		tmp = tokens->next;
+		free(tokens->value);
+		free(tokens);
+		tokens = tmp;
+	}
 }
 
 int	is_operator_char(char c)

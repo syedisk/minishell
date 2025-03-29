@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 12:43:42 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/19 13:43:06 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/03/29 16:32:03 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,6 @@ typedef struct s_token
 }					t_token;
 
 t_token	*tokenise(const char *input);
+void	free_tokens(t_token *tokens);
 
 #endif

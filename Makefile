@@ -8,7 +8,7 @@ INCLUDE		= -I./include -I$(LIBFT_DIR)
 LIBS		= -lreadline \
 			  -L$(LIBFT_DIR) -lft \
 
-SRC			= src/main.c src/lexer.c
+SRC			= src/main.c src/lexer.c src/parser.c
 
 OBJ			= $(SRC:.c=.o)
 
