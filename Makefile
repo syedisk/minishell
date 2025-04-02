@@ -1,5 +1,5 @@
 NAME		= minishell
-CFLAGS		= -Wall -Wextra -Werror -g
+CFLAGS		= -Wall -Wextra -g
 
 LIBFT_DIR	= ./lib/libft
 
