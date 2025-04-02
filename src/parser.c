@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/01 16:46:12 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/02 20:40:25 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,19 +62,19 @@ t_command	*parse_tokens(t_token *tokens)
 		while (curr && curr->type != PIPE)
 		{
 			if (curr->type == WORD)
-				current_cmd->argv[argc++] = strdup(curr->value);
+				current_cmd->argv[argc++] = ft_strdup(curr->value);
 			else if (curr->type == REDIR_IN)
 			{
 				curr = curr->next;
 				if (curr)
-					current_cmd->infile = strdup(curr->value);
+					current_cmd->infile = ft_strdup(curr->value);
 			}
 			else if (curr->type ==  REDIR_OUT)
 			{
 				curr = curr->next;
 				if (curr)
 				{
-					current_cmd->outfile = strdup(curr->value);
+					current_cmd->outfile = ft_strdup(curr->value);
 					current_cmd->append_out = 0;
 				}
 			}
@@ -83,7 +83,7 @@ t_command	*parse_tokens(t_token *tokens)
 				curr = curr->next;
 				if (curr)
 				{
-					current_cmd->outfile = strdup(curr->value);
+					current_cmd->outfile = ft_strdup(curr->value);
 					current_cmd->append_out = 1;
 				}
 			}

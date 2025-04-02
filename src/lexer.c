@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/29 15:55:21 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/02 20:29:43 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,7 @@ t_token	*tokenise(const char *input)
 	i = 0;
 	while (input[i])
 	{
-		if (isspace(input[i]))
+		if (ft_isspace(input[i]))
 		{
 			i++;
 			continue ;
