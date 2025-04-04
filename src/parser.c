@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/02 20:40:25 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:29:37 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,28 @@
 
 char *expand_variables(char *str, char **envp)
 {
-	
+	if (!str || str[0] != '$')
+		return (ft_strdup(str));
+	char *varname = str + 1;
+	int i = 0;
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], varname, ft_strlen(varname)) == 0
+				&& envp[i][ft_strlen(varname)] == '=')
+		{
+			return ft_strdup(envp[i] + strlen(varname) + 1);
+		}
+		i++;
+	}
+	return (ft_strdup("")); //not found, empty string
 }
 
-t_command	*parse_tokens(t_token *tokens)
+char *remove_quotes(const char *str)
+{
+
+}
+
+t_command	*parse_tokens(t_token *tokens, char **envp)
 {
 	t_command	*cmd_head;
 	t_command	*current_cmd;
@@ -62,7 +80,12 @@ t_command	*parse_tokens(t_token *tokens)
 		while (curr && curr->type != PIPE)
 		{
 			if (curr->type == WORD)
-				current_cmd->argv[argc++] = ft_strdup(curr->value);
+			{
+				char *expanded = expand_variables(curr->value, envp);
+				char *cleaned = remove_quotes(expanded);
+				current_cmd->argv[argc++] = cleaned;
+				free(expanded);
+			}	
 			else if (curr->type == REDIR_IN)
 			{
 				curr = curr->next;
