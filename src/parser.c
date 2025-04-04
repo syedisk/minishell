@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/04 16:29:37 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:39:15 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,33 @@ char *expand_variables(char *str, char **envp)
 
 char *remove_quotes(const char *str)
 {
+	char *result;
+	int	i = 0;
+	int j = 0;
+	char quote;
+	size_t	len;
 
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	result = malloc(len + 1); //max size: original length
+	if (!result)
+		return (NULL);
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '"')
+		{
+			quote = str[i++];
+			while (str[i] && str[i] != quote)
+				result[j++] = str[i++];
+			if (str[i] == quote)
+				i++; //skip closing quote
+		}
+		else
+			result[j++] = str[i++];
+	}
+	result[j] = '\0';
+	return (result);
 }
 
 t_command	*parse_tokens(t_token *tokens, char **envp)
