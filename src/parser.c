@@ -6,42 +6,47 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/04 16:39:15 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:47:22 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char *expand_variables(char *str, char **envp)
+char	*expand_variables(char *str, char **envp)
 {
+	char	*varname;
+	int		i;
+
 	if (!str || str[0] != '$')
 		return (ft_strdup(str));
-	char *varname = str + 1;
-	int i = 0;
+	varname = str + 1;
+	i = 0;
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], varname, ft_strlen(varname)) == 0
-				&& envp[i][ft_strlen(varname)] == '=')
+			&& envp[i][ft_strlen(varname)] == '=')
 		{
-			return ft_strdup(envp[i] + strlen(varname) + 1);
+			return (ft_strdup(envp[i] + strlen(varname) + 1));
 		}
 		i++;
 	}
-	return (ft_strdup("")); //not found, empty string
+	return (ft_strdup("")); // not found, empty string
 }
 
-char *remove_quotes(const char *str)
+char	*remove_quotes(const char *str)
 {
-	char *result;
-	int	i = 0;
-	int j = 0;
-	char quote;
+	char	*result;
+	int		i;
+	int		j;
+	char	quote;
 	size_t	len;
 
+	i = 0;
+	j = 0;
 	if (!str)
 		return (NULL);
 	len = ft_strlen(str);
-	result = malloc(len + 1); //max size: original length
+	result = malloc(len + 1); // max size: original length
 	if (!result)
 		return (NULL);
 	while (str[i])
@@ -52,7 +57,7 @@ char *remove_quotes(const char *str)
 			while (str[i] && str[i] != quote)
 				result[j++] = str[i++];
 			if (str[i] == quote)
-				i++; //skip closing quote
+				i++; // skip closing quote
 		}
 		else
 			result[j++] = str[i++];
@@ -67,6 +72,10 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 	t_command	*current_cmd;
 	t_token		*curr;
 	t_command	*new_cmd;
+	int			argc;
+	t_token		*temp;
+	char		*expanded;
+	char		*cleaned;
 
 	cmd_head = NULL;
 	current_cmd = NULL;
@@ -81,7 +90,6 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 			new_cmd->outfile = NULL;
 			new_cmd->append_out = 0;
 			new_cmd->next = NULL;
-
 			if (!cmd_head)
 				cmd_head = new_cmd;
 			else
@@ -90,14 +98,14 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 			if (curr->type == PIPE)
 				curr = curr->next;
 		}
-
-		int argc = 0;
-		t_token *temp = curr;
+		argc = 0;
+		temp = curr;
 		while (temp && temp->type != PIPE)
 		{
 			if (temp->type == WORD)
 				argc++;
-			else if (temp->type == REDIR_IN || temp->type == REDIR_OUT || temp->type == APPEND)
+			else if (temp->type == REDIR_IN || temp->type == REDIR_OUT
+				|| temp->type == APPEND)
 				temp = temp->next;
 			temp = temp->next;
 		}
@@ -107,18 +115,18 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 		{
 			if (curr->type == WORD)
 			{
-				char *expanded = expand_variables(curr->value, envp);
-				char *cleaned = remove_quotes(expanded);
+				expanded = expand_variables(curr->value, envp);
+				cleaned = remove_quotes(expanded);
 				current_cmd->argv[argc++] = cleaned;
 				free(expanded);
-			}	
+			}
 			else if (curr->type == REDIR_IN)
 			{
 				curr = curr->next;
 				if (curr)
 					current_cmd->infile = ft_strdup(curr->value);
 			}
-			else if (curr->type ==  REDIR_OUT)
+			else if (curr->type == REDIR_OUT)
 			{
 				curr = curr->next;
 				if (curr)
@@ -140,13 +148,13 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 		}
 		current_cmd->argv[argc] = NULL;
 	}
-	return cmd_head;
+	return (cmd_head);
 }
 
 void	free_commands(t_command *cmds)
 {
-	int	i;
-	t_command *tmp;
+	int			i;
+	t_command	*tmp;
 
 	while (cmds)
 	{
