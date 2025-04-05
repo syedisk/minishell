@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/29 16:32:06 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/05 15:26:42 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ char **tokens_to_args(t_token *tokens)
 	return (args);
 }
 
-int	main(void)
+int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
 	t_token 	*tokens;
@@ -50,6 +50,11 @@ int	main(void)
 	// pid_t	pid;
 	// int		i;
 
+	// - [ ] to remove
+	(void)argc;
+	(void)argv;
+	(void)envp;
+	
 	while (1)
 	{
 		input = readline("minishell$ ");
@@ -71,7 +76,7 @@ int	main(void)
 			tmp = tmp->next;
 		}
 		// parse tokens into commands
-		commands = parse_tokens(tokens);
+		commands = parse_tokens(tokens, envp);
 
 		//print command structure test (for debugging)
 		t_command *cmd = commands;

@@ -6,65 +6,13 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/04 16:47:22 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/05 17:57:01 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-char	*expand_variables(char *str, char **envp)
-{
-	char	*varname;
-	int		i;
-
-	if (!str || str[0] != '$')
-		return (ft_strdup(str));
-	varname = str + 1;
-	i = 0;
-	while (envp[i])
-	{
-		if (ft_strncmp(envp[i], varname, ft_strlen(varname)) == 0
-			&& envp[i][ft_strlen(varname)] == '=')
-		{
-			return (ft_strdup(envp[i] + strlen(varname) + 1));
-		}
-		i++;
-	}
-	return (ft_strdup("")); // not found, empty string
-}
-
-char	*remove_quotes(const char *str)
-{
-	char	*result;
-	int		i;
-	int		j;
-	char	quote;
-	size_t	len;
-
-	i = 0;
-	j = 0;
-	if (!str)
-		return (NULL);
-	len = ft_strlen(str);
-	result = malloc(len + 1); // max size: original length
-	if (!result)
-		return (NULL);
-	while (str[i])
-	{
-		if (str[i] == '\'' || str[i] == '"')
-		{
-			quote = str[i++];
-			while (str[i] && str[i] != quote)
-				result[j++] = str[i++];
-			if (str[i] == quote)
-				i++; // skip closing quote
-		}
-		else
-			result[j++] = str[i++];
-	}
-	result[j] = '\0';
-	return (result);
-}
+#include "expander.h"
+#include "utils.h"
 
 t_command	*parse_tokens(t_token *tokens, char **envp)
 {
@@ -142,6 +90,20 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 				{
 					current_cmd->outfile = ft_strdup(curr->value);
 					current_cmd->append_out = 1;
+				}
+			}
+			else if (curr->type == HEREDOC)
+			{
+				curr = curr->next;
+				if (curr)
+				{
+					int expand = 1;
+					if (curr->value[0] == '\'' || curr->value[0] == '"')
+						expand = 0;
+					char *delim = remove_quotes(curr->value);
+					create_heredoc_file(delim, expand, envp);
+					free(delim);
+					current_cmd->infile = ft_strdup("/tmp/.heredoc_tmp");
 				}
 			}
 			curr = curr->next;
