@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 17:33:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/05 17:46:42 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/05 18:02:51 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,5 +76,6 @@ void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 char	*get_next_line(int fd);
 int		ft_strcmp(const char *s1, const char *s2);
+char	*ft_strndup(const char *s, size_t n);
 
 #endif
