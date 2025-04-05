@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/05 17:56:17 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/05 18:15:16 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,15 @@ int create_heredoc_file(char *delimiter, int expand, char **envp)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strcm)
+		if (!line || ft_strcmp(line, delimiter) == 0)
+		{
+			free(line);
+			break ;
+		}
+		if (expand)
+		{
+			char *expanded = expand_variables(line, envp);
+
+		}
 	}
 }
