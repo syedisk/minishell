@@ -3,6 +3,7 @@
         "minishell.h": "c",
         "readline.h": "c",
         "history.h": "c",
-        "unistd.h": "c"
+        "unistd.h": "c",
+        "fcntl.h": "c"
     }
 }
