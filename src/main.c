@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/06 13:18:15 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/06 13:24:27 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ int	main(int argc, char **argv, char **envp)
 				}
 				printf("\n--- End of heredoc ---\n\n");
 				close(fd);
+				unlink(commands->infile);
 			}
 		}
 
