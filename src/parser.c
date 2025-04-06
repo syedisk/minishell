@@ -6,12 +6,13 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/05 17:57:01 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/06 12:18:39 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "expander.h"
+#include "heredoc.h"
 #include "utils.h"
 
 t_command	*parse_tokens(t_token *tokens, char **envp)

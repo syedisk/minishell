@@ -6,12 +6,12 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/05 15:26:42 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/06 13:18:15 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
+#include <fcntl.h>
 
 char **tokens_to_args(t_token *tokens)
 {
@@ -77,6 +77,28 @@ int	main(int argc, char **argv, char **envp)
 		}
 		// parse tokens into commands
 		commands = parse_tokens(tokens, envp);
+
+		// testing heredoc
+		if (commands && commands->infile)
+		{
+			int fd = open(commands->infile, O_RDONLY);
+			if (fd < 0)
+				perror("open heredoc temp file");
+			else
+			{
+				char buf[1024];
+				int bytes;
+
+				printf("\nHeredoc contents from %s:\n", commands->infile);
+				while ((bytes = read(fd, buf, sizeof(buf) - 1)) > 0)
+				{
+					buf[bytes] = '\0';
+					printf("%s", buf);
+				}
+				printf("\n--- End of heredoc ---\n\n");
+				close(fd);
+			}
+		}
 
 		//print command structure test (for debugging)
 		t_command *cmd = commands;

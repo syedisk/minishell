@@ -6,13 +6,14 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/06 11:26:44 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/06 13:04:48 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "heredoc.h"
 #include "expander.h"
 #include "utils.h"
+#include "libft.h"
 #include <fcntl.h>
 #include <readline/readline.h> 
 #include <unistd.h> 
