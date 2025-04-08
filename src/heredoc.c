@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/08 19:20:12 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/08 20:18:29 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,20 +36,16 @@ char *generate_heredoc_filename(int id)
 int create_heredoc_file(const char *filepath, char *delimiter, int expand, char **envp)
 {
 	char	*line;
-	char	*clean_delim;
 	char	*expanded;
 	int		fd;
 
 	fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 		return (-1);
-	clean_delim = remove_quotes(delimiter);
-	if (!clean_delim)
-		return (-1);
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strcmp(line, clean_delim) == 0)
+		if (!line || ft_strcmp(line, delimiter) == 0)
 		{
 			free(line);
 			break ;
@@ -64,7 +60,6 @@ int create_heredoc_file(const char *filepath, char *delimiter, int expand, char 
 			safe_write_line(fd, line);
 		free(line);
 	}
-	free(clean_delim);
 	close(fd);
 	return (0);
 }
