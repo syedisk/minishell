@@ -5,6 +5,7 @@
         "history.h": "c",
         "unistd.h": "c",
         "fcntl.h": "c",
-        "libft.h": "c"
+        "libft.h": "c",
+        "heredoc.h": "c"
     }
 }

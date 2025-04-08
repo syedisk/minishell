@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/06 13:04:48 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/08 19:20:12 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,27 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int create_heredoc_file(char *delimiter, int expand, char **envp)
+char *generate_heredoc_filename(int id)
+{
+	char *num;
+	char *filename;
+
+	num = ft_itoa(id);
+	if (!num)
+		return (NULL);
+	filename = ft_strjoin("/tmp/.heredoc_", num);
+	free(num);
+	return (filename);
+}
+
+int create_heredoc_file(const char *filepath, char *delimiter, int expand, char **envp)
 {
 	char	*line;
 	char	*clean_delim;
 	char	*expanded;
 	int		fd;
 
-	fd = open("/tmp/.heredoc_tmp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 		return (-1);
 	clean_delim = remove_quotes(delimiter);
@@ -55,3 +68,4 @@ int create_heredoc_file(char *delimiter, int expand, char **envp)
 	close(fd);
 	return (0);
 }
+

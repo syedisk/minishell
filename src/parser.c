@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/06 12:18:39 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/08 19:20:11 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 	t_token		*temp;
 	char		*expanded;
 	char		*cleaned;
+	int	heredoc_id = 0;
 
 	cmd_head = NULL;
 	current_cmd = NULL;
@@ -102,9 +103,12 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 					if (curr->value[0] == '\'' || curr->value[0] == '"')
 						expand = 0;
 					char *delim = remove_quotes(curr->value);
-					create_heredoc_file(delim, expand, envp);
+					char *heredoc_path = generate_heredoc_filename(heredoc_id++);
+					if (!heredoc_path)
+						return (NULL); // handle error
+					create_heredoc_file(heredoc_path, delim, expand, envp);
 					free(delim);
-					current_cmd->infile = ft_strdup("/tmp/.heredoc_tmp");
+					current_cmd->infile = heredoc_path;
 				}
 			}
 			curr = curr->next;

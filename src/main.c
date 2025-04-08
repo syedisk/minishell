@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/06 13:24:27 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/08 19:58:01 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,26 +79,30 @@ int	main(int argc, char **argv, char **envp)
 		commands = parse_tokens(tokens, envp);
 
 		// testing heredoc
-		if (commands && commands->infile)
+		while (commands)
 		{
-			int fd = open(commands->infile, O_RDONLY);
-			if (fd < 0)
-				perror("open heredoc temp file");
-			else
+			if (commands->infile)
 			{
-				char buf[1024];
-				int bytes;
-
-				printf("\nHeredoc contents from %s:\n", commands->infile);
-				while ((bytes = read(fd, buf, sizeof(buf) - 1)) > 0)
+				int fd = open(commands->infile, O_RDONLY);
+				if (fd < 0)
+					perror("open heredoc temp file");
+				else
 				{
-					buf[bytes] = '\0';
-					printf("%s", buf);
+					char buf[1024];
+					int bytes;
+
+					printf("\nHeredoc contents from %s:\n", commands->infile);
+					while ((bytes = read(fd, buf, sizeof(buf) - 1)) > 0)
+					{
+						buf[bytes] = '\0';
+						printf("%s", buf);
+					}
+					printf("\n--- End of heredoc ---\n\n");
+					close(fd);
+					unlink(commands->infile);
 				}
-				printf("\n--- End of heredoc ---\n\n");
-				close(fd);
-				unlink(commands->infile);
 			}
+			commands = commands->next;
 		}
 
 		//print command structure test (for debugging)
