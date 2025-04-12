@@ -12,15 +12,7 @@
 
 #include "minishell.h"
 
-int ft_strcmp(char *str1, char *str2)
-{
-    while (*str1 && (*str1 == *str2))
-    {
-        str1++;
-        str2++;
-    }
-    return *(unsigned char *)str1 - *(unsigned char *)str2;
-}
+
 
 size_t	ft_strcpy(char *dst, const char *src)
 {
@@ -144,15 +136,13 @@ void    handle_export(char  *arg)
         return ;
     }
 
-   void     handle_newenv(char *key, char *value)
+void	handle_newenv(char *key, char *value)
     {
-        int len;
+        int     len;
         char    *env_entry;
-        char    *env_key;
         char    **split;
-        int i;
+        int		i;
 
-        env_key = NULL;
         len = ft_strlen(key) + ft_strlen(value) + 2;
         env_entry = malloc (len);
         if (!env_entry)
@@ -160,9 +150,9 @@ void    handle_export(char  *arg)
             perror("malloc failed");
             return ;
         }
-        ft_strcpy(env_entry, key);
-        ft_strcat(env_entry, "=");
-        ft_strcat(env_entry, value);
+        ft_strlcpy(env_entry, key, len);
+        ft_strlcat(env_entry, "=", len);
+        ft_strlcat(env_entry, value, len);
         i = 0;
         while (environ[i])
         {
