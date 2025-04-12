@@ -6,21 +6,28 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/03/20 14:02:55 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/12 17:49:48 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include "libft.h"
 # include "lexer.h"
+# include "libft.h"
 # include "parser.h"
-# include <stdio.h>					// for printf
-# include <stdlib.h>				// for malloc, free, exit
-# include <unistd.h>				// for fork, execve, pipe
-# include <sys/wait.h>				// for wait
-# include <readline/readline.h>
 # include <readline/history.h>
+# include <readline/readline.h>
+# include <stdio.h>    // for printf
+# include <stdlib.h>   // for malloc, free, exit
+# include <sys/wait.h> // for wait
+# include <unistd.h>   // for fork, execve, pipe
+
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}					t_env;
 
 #endif

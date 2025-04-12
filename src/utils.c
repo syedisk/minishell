@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:33:46 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/06 10:43:52 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/12 18:27:00 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,5 +65,19 @@ char	*remove_quotes(const char *str)
 	}
 	result[j] = '\0';
 	return (result);
+}
+
+void	free_split(char **split)
+{
+	int	i = 0;
+
+	if (!split)
+		return;
+	while (split[i])
+	{
+		free(split[i]);
+		i++;
+	}
+	free(split);
 }
 

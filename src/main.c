@@ -6,12 +6,27 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/09 18:47:02 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/12 18:26:33 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <fcntl.h>
+
+t_env *create_env_node(char *env_str)
+{
+	t_env *node;
+	char **split;
+
+	split = ft_split(env_str, '=');
+	if (!split)
+		return (NULL);
+	node = malloc(sizeof(t_env));
+	if (!node)
+		return (NULL);
+
+	node->key = ft_strdup(split[0]);
+}
 
 char **tokens_to_args(t_token *tokens)
 {
@@ -55,6 +70,8 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	(void)envp;
 	
+	t_env *env_list = create_env_list(envp);
+
 	while (1)
 	{
 		input = readline("minishell$ ");
