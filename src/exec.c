@@ -6,11 +6,14 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/12 11:35:09 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/12 13:32:52 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <fcntl.h>
 #include "minishell.h"
+
+extern char **environ;
 
 void	ft_free_split(char **arr)
 {
@@ -137,7 +140,7 @@ void	execute_commands(t_command *cmd_head)
 		{
 			if (cmd_head->infile)
 			{
-				int fd = open(cmd_head->infile, O_RDONLY);
+				fd = open(cmd_head->infile, O_RDONLY);
 				if (fd == -1)
 				{
 					perror("open infile failed");
@@ -146,7 +149,7 @@ void	execute_commands(t_command *cmd_head)
 				dup2(fd, STDIN_FILENO);
 				close(fd);
 			}
-			else if (fd_in != 0)
+			else if (fd_in != 0) // why would fd_in not be zero? it is set to zero above.
 			{
 				dup2(fd_in, STDIN_FILENO);
 				close(fd_in);

@@ -10,6 +10,7 @@ LIBS		= -lreadline \
 
 SRC			= src/main.c src/lexer.c src/parser.c \
 			  src/expander.c src/heredoc.c src/utils.c \
+			  src/exec.c \
 
 OBJ			= $(SRC:.c=.o)
 
