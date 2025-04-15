@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/15 18:25:39 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:40:24 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include "libft.h"
 # include "parser.h"
 # include "builtins.h"
+# include "utils.h"
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <stdio.h>    // for printf

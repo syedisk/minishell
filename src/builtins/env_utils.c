@@ -6,11 +6,12 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:34:32 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/15 18:20:44 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:39:28 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtins.h"
+#include "minishell.h"
 #include <stddef.h>
 
 t_env	*create_env_node(char *env_str)
@@ -82,7 +83,7 @@ void	set_env_value(t_env **env, const char *key, const char *value)
 		if (ft_strcmp(curr->key, key) == 0)
 		{
 			free(curr->value);
-			curr->value = ft_stdup(value);
+			curr->value = ft_strdup(value);
 			return ;
 		}
 		curr = curr->next;

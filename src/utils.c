@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:33:46 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/12 18:27:00 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/15 18:33:12 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,5 +79,18 @@ void	free_split(char **split)
 		i++;
 	}
 	free(split);
+}
+
+char	*ft_strjoin_three(char *s1, char *s2, char *s3)
+{
+	char	*tmp;
+	char	*result;
+
+	tmp = ft_strjoin(s1, s2);
+	if (!tmp)
+		return (NULL);
+	result = ft_strjoin(tmp, s3);
+	free(tmp);
+	return (result);
 }
 

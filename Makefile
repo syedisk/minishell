@@ -1,5 +1,5 @@
 NAME		= minishell
-CFLAGS		= -Wall -Wextra -Werror -g
+CFLAGS		= -Wall -Wextra -Werror -Wno-unused-function -g
 
 LIBFT_DIR	= ./lib/libft
 
@@ -10,7 +10,8 @@ LIBS		= -lreadline \
 
 SRC			= src/main.c src/lexer.c src/parser.c \
 			  src/expander.c src/heredoc.c src/utils.c \
-			  src/exec.c \
+			  src/builtins/env_utils.c src/builtins/env.c \
+			  src/builtins/export.c src/builtins/unset.c \
 
 OBJ			= $(SRC:.c=.o)
 

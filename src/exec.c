@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/14 17:33:18 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:33:01 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,13 @@ void	ft_free_split(char **arr)
 	free(arr);
 }
 
-char *resolve_path(char *cmd) {
+char *resolve_path(char *cmd)
+{
 	char **paths;
 	char *env_path;
 	char *full;
 	int i;
+	size_t len;
 
 	i = 0;
 	env_path = getenv("PATH");
@@ -43,12 +45,18 @@ char *resolve_path(char *cmd) {
 	paths = ft_split(env_path, ':');
 	while (paths[i]) 
 	{
-		full = malloc(ft_strlen(paths[i]) + ft_strlen(cmd) + 2);
-		ft_strcpy(full, paths[i]);
-		ft_strcat(full, "/");
-		ft_strcat(full, cmd);
+		len = ft_strlen(paths[i]) + ft_strlen(cmd) + 2; // why +2?
+		full = malloc(len);
+		if (!full)
+		{
+			ft_free_split(paths);
+			return (NULL);
+		}
+		ft_strlcpy(full, paths[i], len);
+		ft_strlcat(full, "/", len);
+		ft_strlcat(full, cmd, len);
 
-		if (access(full, X_OK) == 0)
+		if (access(full, X_OK) == 0) // what is access??
 		{
 			ft_free_split(paths);
 			return full;
@@ -57,7 +65,7 @@ char *resolve_path(char *cmd) {
 		i++;
 	}
 	ft_free_split(paths);
-	return NULL;
+	return (NULL);
 }
 
 int	is_builtin(char	*cmd)
@@ -79,7 +87,7 @@ int	execute_builtin(t_command *cmd)
 			write(2, "cd: Argument missing\n", 21);
 			return (1);
 		}
-		if (chdir(cmd->argv[1]) != 0)
+		if (chdir(cmd->argv[1]) != 0)  //what is chdir?
 		{
 			perror("cd");
 			return (1);
@@ -88,7 +96,7 @@ int	execute_builtin(t_command *cmd)
 	}
 	else if (!ft_strcmp(cmd->argv[0], "pwd"))
 	{
-		char cwd[1024];
+		char cwd[1024]; // buffer size enough?
 		if (getcwd(cwd, sizeof(cwd)))
 			printf("%s\n", cwd);
 		else
@@ -101,8 +109,8 @@ int	execute_builtin(t_command *cmd)
 		handle_export(cmd->argv[1]);
 	else if (!ft_strcmp(cmd->argv[0], "unset"))
 		handle_unset(cmd->argv[1]);
-	else if (!ft_strcmp(cmd->argv[0], "env"))
-		ft_env();
+	// else if (!ft_strcmp(cmd->argv[0], "env"))
+	// 	ft_env();
 	else if (!ft_strcmp(cmd->argv[0], "exit"))
 		exit (0);
 	else

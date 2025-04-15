@@ -6,27 +6,12 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/15 16:16:00 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:02:22 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <fcntl.h>
-
-t_env *create_env_node(char *env_str)
-{
-	t_env *node;
-	char **split;
-
-	split = ft_split(env_str, '=');
-	if (!split)
-		return (NULL);
-	node = malloc(sizeof(t_env));
-	if (!node)
-		return (NULL);
-
-	node->key = ft_strdup(split[0]);
-}
 
 char **tokens_to_args(t_token *tokens)
 {
@@ -55,6 +40,21 @@ char **tokens_to_args(t_token *tokens)
 	return (args);
 }
 
+
+void	print_env_list(t_env *env) //debugger to delete
+{
+	printf("\n--- ENVIRONMENT DEBUG ---\n");
+	while (env)
+	{
+		if (env->value)
+			printf("%s=%s\n", env->key, env->value);
+		else
+			printf("%s (no value)\n", env->key);
+		env = env->next;
+	}
+	printf("--- END ENV ---\n\n");
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
@@ -64,6 +64,7 @@ int	main(int argc, char **argv, char **envp)
 	t_env		*env_list;
 
 	env_list = create_env_list(envp);
+	print_env_list(env_list);
 	// char	**args;
 	// pid_t	pid;
 	// int		i;
@@ -71,9 +72,7 @@ int	main(int argc, char **argv, char **envp)
 	// - [ ] to remove
 	(void)argc;
 	(void)argv;
-	(void)envp;
 	
-	t_env *env_list = create_env_list(envp);
 
 	while (1)
 	{
@@ -87,6 +86,13 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			break ;
 		}
+		if (ft_strncmp(input, "env", 3) == 0 && input[3] == '\0')
+		{
+			print_env_list(env_list);
+			free(input);
+			continue;
+		}
+
 		tokens = tokenise(input);
 		//test tokenise by printing tokens (for debugging)
 		tmp = tokens;
@@ -166,3 +172,4 @@ int	main(int argc, char **argv, char **envp)
 	}
 	return (0);
 }
+
