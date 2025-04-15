@@ -1,27 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   env.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/15 18:25:39 by sbin-ham         ###   ########.fr       */
+/*   Created: 2025/04/15 16:13:05 by sbin-ham          #+#    #+#             */
+/*   Updated: 2025/04/15 16:17:05 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#ifndef ENV_H
+# define ENV_H
 
-# include "lexer.h"
-# include "libft.h"
-# include "parser.h"
-# include "builtins.h"
-# include <readline/history.h>
-# include <readline/readline.h>
-# include <stdio.h>    // for printf
-# include <stdlib.h>   // for malloc, free, exit, NULL
-# include <sys/wait.h> // for wait
-# include <unistd.h>   // for fork, execve, pipe
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}					t_env;
+
+t_env				*create_env_node(char *env_str);
+t_env				*create_env_list(char **envp);
+char				*get_env_value(t_env *env, const char *key);
+void				set_env_value(t_env **env, const char *key,
+						const char *value);
 
 #endif

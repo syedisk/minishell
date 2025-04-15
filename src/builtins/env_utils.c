@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:34:32 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/14 17:30:59 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/15 18:20:44 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "builtins.h"
+#include <stddef.h>
 
 t_env	*create_env_node(char *env_str)
 {
@@ -59,7 +60,7 @@ t_env	*create_env_list(char **envp)
 	return (head);
 }
 
-char *get_env_value(t_env *env, const char *key)
+char	*get_env_value(t_env *env, const char *key)
 {
 	while (env)
 	{
@@ -72,8 +73,8 @@ char *get_env_value(t_env *env, const char *key)
 
 void	set_env_value(t_env **env, const char *key, const char *value)
 {
-	t_env *curr;
-	t_env *new_node;
+	t_env	*curr;
+	t_env	*new_node;
 
 	curr = *env;
 	while (curr)
@@ -93,3 +94,57 @@ void	set_env_value(t_env **env, const char *key, const char *value)
 	*env = new_node;
 }
 
+int	env_size(t_env *env)
+{
+	int count = 0;
+	while (env)
+	{
+		count++;
+		env = env->next;
+	}
+	return (count);
+}
+
+char	**convert_env_to_array(t_env *env)
+{
+	int		size;
+	char	**envp;
+	char	*joined;
+	int		i;
+
+	size = env_size(env);
+	envp = malloc(sizeof(char *) * (size + 1));
+	i = 0;
+	if (!envp)
+		return (NULL); // need to print error message to stderr??
+	while (env)
+	{
+		if (env->value)
+		{
+			joined = ft_strjoin_three(env->key, "=", env->value);
+			envp[i++] = joined;
+		}
+		else
+		{
+			envp[i++] = ft_strdup(env->key); // CHECK export VAR with no value.
+		}
+		env = env->next;
+	}
+	envp[i] = NULL;
+	return (envp);
+}
+
+
+void	free_env_list(t_env *env)
+{
+	t_env	*tmp;
+	
+	while (env)
+	{
+		tmp = env;
+		free(env->key);
+		free(env->value);
+		env = env->next;
+		free(tmp);
+	}
+}
