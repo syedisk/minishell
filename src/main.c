@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/15 19:02:22 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:49:36 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ int	main(int argc, char **argv, char **envp)
 	t_env		*env_list;
 
 	env_list = create_env_list(envp);
-	print_env_list(env_list);
 	// char	**args;
 	// pid_t	pid;
 	// int		i;
