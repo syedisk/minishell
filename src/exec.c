@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/15 19:33:01 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/16 16:34:11 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ int	execute_builtin(t_command *cmd)
 		return (0);
 	return (0);
 }
-void	execute_commands(t_command *cmd_head)
+void	execute_commands(t_command *cmd_head, char **envp)
 {
 	int fd_in;
 	int fd;
@@ -188,7 +188,7 @@ void	execute_commands(t_command *cmd_head)
 				perror("Command not found");
 				exit(127);
 			}
-			if (execve(full_path, cmd_head->argv, environ) == 1)
+			if (execve(full_path, cmd_head->argv, envp) == -1)  // changed environ to envp and 1 to -1
 			{
 				perror("execve failed");
 				exit(EXIT_FAILURE);

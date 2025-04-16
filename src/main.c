@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/16 13:27:39 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/16 16:54:39 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int	main(int argc, char **argv, char **envp)
 		tokens = tokenise(input);
 		// Debug: print tokens
 		printf("==== TOKENS ====\n");
-		for (t_token *tmp = tokens; tmp; tmp = tmp->next)
+		for (t_token *cmd = tokens; tmp; tmp = tmp->next)
 			printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
 		tmp = tokens;
 		while (tmp)
