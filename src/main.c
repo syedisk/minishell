@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/15 19:49:36 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/16 13:27:39 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,19 +59,13 @@ int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
 	t_token 	*tokens;
-	t_token		*tmp;
 	t_command	*commands;
 	t_env		*env_list;
 
-	env_list = create_env_list(envp);
-	// char	**args;
-	// pid_t	pid;
-	// int		i;
-
-	// - [ ] to remove
 	(void)argc;
 	(void)argv;
 	
+	env_list = create_env_list(envp);
 
 	while (1)
 	{
@@ -93,7 +87,10 @@ int	main(int argc, char **argv, char **envp)
 		}
 
 		tokens = tokenise(input);
-		//test tokenise by printing tokens (for debugging)
+		// Debug: print tokens
+		printf("==== TOKENS ====\n");
+		for (t_token *tmp = tokens; tmp; tmp = tmp->next)
+			printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
 		tmp = tokens;
 		while (tmp)
 		{
