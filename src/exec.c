@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/18 11:59:58 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/18 15:06:07 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,27 +77,27 @@ int	is_builtin(char	*cmd)
 		|| !ft_strcmp(cmd, "exit") || !ft_strcmp(cmd, "export") || !ft_strcmp(cmd, "unset"));
 }
 
-int	execute_builtin(t_command *cmd)
+int	execute_builtin(t_command *cmd, t_env *env_list)
 {
 	if (!cmd || !cmd->argv[0])
 		return (0);
-	if (!ft_strcmp(cmd->argv[0], "cd"))
+	if (ft_strcmp(cmd->argv[0], "cd") == 0)
 	{
 		if(!cmd->argv[1])
 		{
-			write(2, "cd: Argument missing\n", 21);
+			write(2, "cd: Argument missing\n", 21); // in most shells, cd with no arguments sends you to the $HOME directory. check obsidan 18 Apr
 			return (1);
 		}
-		if (chdir(cmd->argv[1]) != 0)  //what is chdir?
+		if (chdir(cmd->argv[1]) != 0)  // if changing directory fails
 		{
 			perror("cd");
 			return (1);
 		}
 		return (0);
 	}
-	else if (!ft_strcmp(cmd->argv[0], "pwd"))
+	else if (ft_strcmp(cmd->argv[0], "pwd") == 0)
 	{
-		char cwd[1024]; // buffer size enough?
+		char cwd[1024]; // buffer size enough? use PATH_MAX with <limits.h>? or #define PATH_MAX 4096?
 		if (getcwd(cwd, sizeof(cwd)))
 			printf("%s\n", cwd);
 		else
@@ -110,14 +110,14 @@ int	execute_builtin(t_command *cmd)
 		handle_export(cmd->argv[1]);
 	else if (!ft_strcmp(cmd->argv[0], "unset"))
 		handle_unset(cmd->argv[1]);
-	// else if (!ft_strcmp(cmd->argv[0], "env"))
-	// 	ft_env();
+	else if (!ft_strcmp(cmd->argv[0], "env"))
+	 	ft_env(env_list);
 	else if (!ft_strcmp(cmd->argv[0], "exit"))
 		exit (0);
 	else
 		return (0);
-	return (0);
 }
+
 void	execute_commands(t_command *cmd_head, char **envp)
 {
 	int fd_in;
