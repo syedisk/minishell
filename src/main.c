@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/18 11:35:41 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/18 19:09:51 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ int	main(int argc, char **argv, char **envp)
 
 		// Step 3: Execute command
 		env_array =  convert_env_to_array(env_list);
-		execute_commands(commands, env_array); // execve in here
+		execute_commands(commands, &env_list, env_array); // execve in here
 		free_split(env_array);
 
 		// Step 4: Clean up

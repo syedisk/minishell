@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/18 15:38:27 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/18 19:15:46 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,52 +52,70 @@ int	handle_echo(char **argv)
 	return (0);
 }
 
-void	handle_export(char *arg)
+int	handle_export(char **argv, t_env **env_list)
 {
-	char	**value;
-	char	**env;
-	char	*existing_value;
 	int		i;
+	char	**key_value;
 
-	i = 0;
-	if (!arg)
+	if (!argv[1])
 	{
-		while (environ[i])
+		for (int j = 0; (*env_list) && (env_list[j]); j++) // change for to if, or use print_env_list?
+			printf("declare -x %s=\"%s\"\n", env_list[j]->key, env_list[j]->value);
+		return (0);
+	}
+	
+	i = 1;
+	while (argv[i])
+	{
+		key_value = ft_split(argv[i], '=');
+		if (!key_value || !key_value[0]) // removed !key_value[1] ; VAR= is set to empty string. what about VAR without =?
 		{
-			printf("declare -x %s\n", environ[i]);
+			printf("export: `%s': not a valid identifier\n", argv[i]);
+			if (key_value)
+				ft_free_split(key_value);
 			i++;
+			continue ;
 		}
-		return ;
-	}
-	if (arg[0])
-		env = ft_split(arg, ' ');
+
+	// Debug
+	if (get_env_value(*env_list, key_value[0]))
+		printf("Updating: %s=%s\n", key_value[0], key_value[1]);
 	else
-		env = &arg;
-	while (env[i])
-	{
-		value = ft_split(env[i], '=');
-		i++;
+		printf("Creating: %s=%s\n", key_value[0], key_value[1]);
+
+	handle_newenv(env_list, key_value[0], key_value[1]);
+	ft_free_split(key_value);
+	i++;
 	}
-	if (!value || !value[1])
+	return (0);
+}
+
+void	handle_newenv(t_env **env_list, char *key, char *value)
+{
+	t_env *curr = *env_list;
+
+	while (curr)
 	{
-		printf("export: invalid format, use KEY=VALUE %s\n", value[1]);
+		if (ft_strcmp(curr->key, key) == 0)
+		{
+			free(curr->value);
+			curr->value =  ft_strdup(value);
+			return ;
+		}
+		curr = curr->next;
+	}
+
+	// add new variable
+	t_env *new = malloc(sizeof(t_env));
+	if (!new)
+	{
+		perror("malloc");
 		return ;
 	}
-	i = 0;
-	while (env[i])
-	{
-		existing_value = getenv(value[i]);
-		if (existing_value)
-			printf("Updating existing variable: %s=%s\n", value[i],
-				existing_value);
-		else
-			printf("Creating new variable: %s=%s\n", value[i], value[i + 1]);
-		handle_newenv(value[i], value[i + 1]);
-		i++;
-	}
-	free(env);
-	free(value);
-	return ;
+	new->key = ft_strdup(key);
+	new->value = ft_strdup(value);
+	new->next = *env_list;
+	*env_list = new;
 }
 
 void	handle_unset(char *var)

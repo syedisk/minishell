@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/18 15:06:07 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/18 21:20:41 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ int	execute_builtin(t_command *cmd, t_env *env_list)
 	else if (!ft_strcmp(cmd->argv[0], "echo"))
 		handle_echo(cmd->argv);
 	else if (!ft_strcmp(cmd->argv[0], "export"))
-		handle_export(cmd->argv[1]);
+		return (handle_export(cmd->argv, env_list));
 	else if (!ft_strcmp(cmd->argv[0], "unset"))
 		handle_unset(cmd->argv[1]);
 	else if (!ft_strcmp(cmd->argv[0], "env"))
@@ -118,7 +118,7 @@ int	execute_builtin(t_command *cmd, t_env *env_list)
 		return (0);
 }
 
-void	execute_commands(t_command *cmd_head, char **envp)
+void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp)
 {
 	int fd_in;
 	int fd;
@@ -130,7 +130,7 @@ void	execute_commands(t_command *cmd_head, char **envp)
 	{
 		if (is_builtin(cmd_head->argv[0]))
 		{
-			execute_builtin(cmd_head);
+			execute_builtin(cmd_head, env_list);
 			cmd_head = cmd_head->next;
 			continue;  
 		}
