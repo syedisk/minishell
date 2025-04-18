@@ -6,12 +6,12 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/16 16:54:39 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/18 11:35:41 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <fcntl.h>
+
 
 char **tokens_to_args(t_token *tokens)
 {
@@ -61,6 +61,7 @@ int	main(int argc, char **argv, char **envp)
 	t_token 	*tokens;
 	t_command	*commands;
 	t_env		*env_list;
+	char		**env_array;
 
 	(void)argc;
 	(void)argv;
@@ -74,46 +75,43 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 		if (*input)
 			add_history(input);
+		// exit
 		if (ft_strncmp(input, "exit", 4) == 0 && input[4] == '\0')
 		{
 			free(input);
 			break ;
 		}
+		// env
 		if (ft_strncmp(input, "env", 3) == 0 && input[3] == '\0')
 		{
 			print_env_list(env_list);
 			free(input);
 			continue;
 		}
-
+		// Step 1: tokenise
 		tokens = tokenise(input);
+
 		// Debug: print tokens
 		printf("==== TOKENS ====\n");
-		for (t_token *cmd = tokens; tmp; tmp = tmp->next)
+		for (t_token *tmp = tokens; tmp; tmp = tmp->next)
 			printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
-		tmp = tokens;
-		while (tmp)
-		{
-			printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
-			tmp = tmp->next;
-		}
-		// parse tokens into commands
+		
+		// Step 2: Parse into command structure
 		commands = parse_tokens(tokens, envp);
 
-		// testing heredoc
-		while (commands)
+		// Debug: Heredoc test
+		for (t_command *cmd = commands; cmd; cmd = cmd->next)
 		{
-			if (commands->infile)
+			if (cmd->infile)
 			{
-				int fd = open(commands->infile, O_RDONLY);
+				int fd = open(cmd->infile, O_RDONLY);
 				if (fd < 0)
 					perror("open heredoc temp file");
 				else
 				{
 					char buf[1024];
 					int bytes;
-
-					printf("\nHeredoc contents from %s:\n", commands->infile);
+					printf("\nHeredoc contents from %s:\n", cmd->infile);
 					while ((bytes = read(fd, buf, sizeof(buf) - 1)) > 0)
 					{
 						buf[bytes] = '\0';
@@ -121,50 +119,33 @@ int	main(int argc, char **argv, char **envp)
 					}
 					printf("\n--- End of heredoc ---\n\n");
 					close(fd);
-					unlink(commands->infile);
+					unlink(cmd->infile); // clean up temp file
 				}
 			}
-			commands = commands->next;
 		}
 
-		//print command structure test (for debugging)
-		t_command *cmd = commands;
-		int i;
-		while (cmd)
+		// Debug: print command info
+		printf("==== COMMANDS ====\n");
+		for (t_command *cmd = commands; cmd; cmd = cmd->next)
 		{
 			printf("COMMAND:\n");
-			for(i = 0; cmd->argv && cmd->argv[i]; i++)
+			for (int i = 0; cmd->argv && cmd->argv[i]; i++)
 				printf("  Arg[%d]: %s\n", i, cmd->argv[i]);
 			if (cmd->infile)
 				printf("  Infile: %s\n", cmd->infile);
 			if (cmd->outfile)
 				printf("  Outfile: %s (append: %d)\n", cmd->outfile, cmd->append_out);
-			cmd = cmd->next;
 		}
 
-		// args = token_to_args(tokens);
-		// if (args && args[0])
-		// {
-		// 	pid = fork();
-		// 	if (pid == 0)
-		// 	{
-		// 		execve(args[0], args, NULL); // to add envp?
-		// 		perror("execve");
-		// 		exit(1);
-		// 	}
-		// 	else
-		// 		wait(NULL);
-		// }
+		// Step 3: Execute command
+		env_array =  convert_env_to_array(env_list);
+		execute_commands(commands, env_array); // execve in here
+		free_split(env_array);
+
+		// Step 4: Clean up
 		free(input);
 		free_tokens(tokens);
 		free_commands(commands);
-		// i = 0;
-		// while (args && args[i])
-		// {
-		// 	free(args[i]);
-		// 	i++;
-		// }
-		// free(args);
 	}
 	return (0);
 }

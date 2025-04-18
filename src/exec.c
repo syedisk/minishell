@@ -6,12 +6,13 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/16 16:34:11 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/18 11:59:58 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <fcntl.h>
 #include "minishell.h"
+#include "exec.h"
+#include <fcntl.h>
 
 extern char **environ;
 
