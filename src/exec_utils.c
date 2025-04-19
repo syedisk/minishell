@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/19 12:28:51 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/19 18:07:04 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,12 +127,13 @@ void	handle_newenv(t_env **env_list, char *key, char *value)
 	*env_list = new;
 }
 
-void	handle_unset(char *var)
+int	handle_unset(char *var)
 {
 	if (!var)
 	{
 		printf("unset: not enough arguments\n");
-		return ;
+		return (1);
 	}
 	ft_unsetenv(var);
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/19 17:47:26 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/19 18:10:29 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,13 +122,13 @@ int	execute_builtin(t_command *cmd, t_env *env_list)
 		return (0);
 	}
 	else if (!ft_strcmp(cmd->argv[0], "echo"))
-		handle_echo(cmd->argv);
+		return (handle_echo(cmd->argv));
 	else if (!ft_strcmp(cmd->argv[0], "export"))
 		return (handle_export(cmd->argv, env_list));
 	else if (!ft_strcmp(cmd->argv[0], "unset"))
-		handle_unset(cmd->argv[1]);
+		return (handle_unset(cmd->argv[1]));
 	else if (!ft_strcmp(cmd->argv[0], "env"))
-	 	ft_env(env_list);
+	 	return (ft_env(env_list));
 	else if (!ft_strcmp(cmd->argv[0], "exit"))
 	{
 		if (cmd->argv[1])
