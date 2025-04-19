@@ -6,15 +6,13 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/19 18:57:00 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/19 19:14:35 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "exec.h"
 #include <fcntl.h>
-
-extern char **environ;
 
 void	ft_free_split(char **arr)
 {
@@ -152,7 +150,7 @@ void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp)
 	{
 		if (is_builtin(cmd_head->argv[0]))
 		{
-			execute_builtin(cmd_head, *env_list);
+			execute_builtin(cmd_head, env_list);
 			cmd_head = cmd_head->next;
 			continue;  
 		}
