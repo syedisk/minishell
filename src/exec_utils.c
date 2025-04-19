@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/18 19:15:46 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/19 12:28:51 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,20 @@ int	handle_export(char **argv, t_env **env_list)
 {
 	int		i;
 	char	**key_value;
+	t_env	*curr;
+
+	curr = *env_list;
 
 	if (!argv[1])
 	{
-		for (int j = 0; (*env_list) && (env_list[j]); j++) // change for to if, or use print_env_list?
-			printf("declare -x %s=\"%s\"\n", env_list[j]->key, env_list[j]->value);
+		while (curr)
+		{
+			if (curr->value)
+				printf("declare -x %s=\"%s\"\n", curr->key, curr->value);
+			else
+				printf("declare -x %s\n", curr->key); // does this match bash behaviour?
+			curr = curr->next;
+		}
 		return (0);
 	}
 	

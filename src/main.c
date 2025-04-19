@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/18 19:09:51 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/19 12:28:49 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char **tokens_to_args(t_token *tokens)
 }
 
 
-void	print_env_list(t_env *env) //debugger to delete
+void	debug_print_env_list(t_env *env) //debugger to delete
 {
 	printf("\n--- ENVIRONMENT DEBUG ---\n");
 	while (env)
