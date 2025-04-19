@@ -1,5 +1,5 @@
 NAME		= minishell
-CFLAGS		= -Wall -Wextra -Werror -Wno-unused-function -g
+CFLAGS		= -Wall -Wextra -Werror -g
 
 LIBFT_DIR	= ./lib/libft
 
@@ -34,8 +34,5 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
-
-test_lexer:
-	cc $(CFLAGS) $(INCLUDE) test/test_lexer.c src/lexer.c -o test_lexer
 
 .PHONY: all clean fclean re test

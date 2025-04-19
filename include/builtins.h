@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:13:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/19 18:08:43 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/19 19:53:31 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ void				free_env_list(t_env *env);
 int					ft_env(t_env *env);
 
 // export.c
-static int			is_valid_export_format(const char *str);
 void				ft_export(char **args, t_env **env);
 
 // unset.c
