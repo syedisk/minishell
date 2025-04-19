@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/19 12:28:49 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/19 17:50:23 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,19 +75,7 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 		if (*input)
 			add_history(input);
-		// exit
-		if (ft_strncmp(input, "exit", 4) == 0 && input[4] == '\0')
-		{
-			free(input);
-			break ;
-		}
-		// env
-		if (ft_strncmp(input, "env", 3) == 0 && input[3] == '\0')
-		{
-			print_env_list(env_list);
-			free(input);
-			continue;
-		}
+
 		// Step 1: tokenise
 		tokens = tokenise(input);
 

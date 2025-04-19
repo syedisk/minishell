@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/18 21:20:41 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/19 17:47:26 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,23 @@ int	is_builtin(char	*cmd)
 		|| !ft_strcmp(cmd, "exit") || !ft_strcmp(cmd, "export") || !ft_strcmp(cmd, "unset"));
 }
 
+// use this instead for modularity?
+
+// int	is_builtin(char *cmd)
+// {
+// 	const char *builtins[] = {"cd", "pwd", "echo", "env", "exit", "export", "unset", NULL};
+// 	int i = 0;
+
+// 	while (builtins[i])
+// 	{
+// 		if (!ft_strcmp(cmd, builtins[i]))
+// 			return (1);
+// 		i++;
+// 	}
+// 	return (0);
+// }
+
+
 int	execute_builtin(t_command *cmd, t_env *env_list)
 {
 	if (!cmd || !cmd->argv[0])
@@ -113,7 +130,12 @@ int	execute_builtin(t_command *cmd, t_env *env_list)
 	else if (!ft_strcmp(cmd->argv[0], "env"))
 	 	ft_env(env_list);
 	else if (!ft_strcmp(cmd->argv[0], "exit"))
-		exit (0);
+	{
+		if (cmd->argv[1])
+			exit(ft_atoi(cmd->argv[1])); // `echo $?` prints exit code of the last command.
+		else
+			exit(0);
+	}
 	else
 		return (0);
 }
