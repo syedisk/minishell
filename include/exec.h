@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/19 18:57:41 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/21 16:38:11 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,13 @@ int		is_builtin(char *cmd);
 int		execute_builtin(t_command *cmd, t_env **env_list);
 void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp);
 
+
 // exec_utils.c
 int		is_n_flag(char *str);
 int		handle_echo(char **argv);
 int		handle_export(char **argv, t_env **env_list);
 void	handle_newenv(t_env **env_list, char *key, char *value);
 int		handle_unset(char **args, t_env **env_list);
+void    set_signals(void);
 
 #endif
