@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/19 18:55:55 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:18:45 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,11 @@ int	is_n_flag(char *str)
 	return (1);
 }
 
-int	handle_echo(char **argv)
+int	handle_echo(char **argv, t_env	*env_list)
 {
 	int	i;
 	int	newline;
+	char	*expanded;
 
 	i = 1;
 	newline = 0;
@@ -42,13 +43,19 @@ int	handle_echo(char **argv)
 	}
 	while (argv[i])
 	{
-		printf("%s", argv[i]);
+		expanded = expand_variables(argv[i], env_list, last_exit_status);
+		if (expanded)
+		{
+			printf("%s", expanded);
+			free(expanded);
+		}
 		if (argv[i + 1])
 			printf(" ");
 		i++;
 	}
 	if (!newline)
 		printf("\n");
+	last_exit_status = 0; // on success
 	return (0);
 }
 
@@ -96,6 +103,7 @@ int	handle_export(char **argv, t_env **env_list)
 	ft_free_split(key_value);
 	i++;
 	}
+	last_exit_status = 0; // on success
 	return (0);
 }
 
@@ -119,12 +127,14 @@ void	handle_newenv(t_env **env_list, char *key, char *value)
 	if (!new)
 	{
 		perror("malloc");
+		last_exit_status = 1; // on error
 		return ;
 	}
 	new->key = ft_strdup(key);
 	new->value = ft_strdup(value);
 	new->next = *env_list;
 	*env_list = new;
+	last_exit_status = 0; // on success
 }
 
 int	handle_unset(char **args, t_env **env_list)
@@ -132,8 +142,10 @@ int	handle_unset(char **args, t_env **env_list)
 	if (!args[1])
 	{
 		printf("unset: not enough arguments\n"); // to check with bash
+		last_exit_status = 1; // on error
 		return (1);
 	}
 	ft_unset(args, env_list);
+	last_exit_status = 0; // on success
 	return (0);
 }

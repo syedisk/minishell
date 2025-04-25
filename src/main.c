@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/21 16:36:09 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:07:15 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,9 @@ void	debug_print_env_list(t_env *env) //debugger to delete
 
 int	main(int argc, char **argv, char **envp)
 {
+	// Clean up old heredoc temp files to avoid crashesi
+	system("rm -f /tmp/.heredoc_*");
+
 	char		*input;
 	t_token 	*tokens;
 	t_command	*commands;
@@ -67,6 +70,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	
 	env_list = create_env_list(envp);
+	void ignore_sigquit(void);  // Ignore Ctrl+
 
 	while (1)
 	{
@@ -86,7 +90,7 @@ int	main(int argc, char **argv, char **envp)
 			printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
 		
 		// Step 2: Parse into command structure
-		commands = parse_tokens(tokens, envp);
+		commands = parse_tokens(tokens, env_list);
 
 		// Debug: Heredoc test
 		for (t_command *cmd = commands; cmd; cmd = cmd->next)
@@ -108,7 +112,7 @@ int	main(int argc, char **argv, char **envp)
 					}
 					printf("\n--- End of heredoc ---\n\n");
 					close(fd);
-					unlink(cmd->infile); // clean up temp file
+					//unlink(cmd->infile); // clean up temp file
 				}
 			}
 		}

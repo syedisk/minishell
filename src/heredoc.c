@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/08 20:18:29 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/23 19:01:17 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <unistd.h> 
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/wait.h>
 
 char *generate_heredoc_filename(int id)
 {
@@ -33,34 +34,58 @@ char *generate_heredoc_filename(int id)
 	return (filename);
 }
 
-int create_heredoc_file(const char *filepath, char *delimiter, int expand, char **envp)
+int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env *env_list)
 {
 	char	*line;
 	char	*expanded;
 	int		fd;
+	pid_t	pid;
+	int		status;
 
-	fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd < 0)
-		return (-1);
-	while (1)
+	pid = fork();
+	if (pid == 0)
 	{
-		line = readline("> ");
-		if (!line || ft_strcmp(line, delimiter) == 0)
+		// CHILD PROCESS: handle heredoc
+		handle_heredoc_signals();  // Heredoc signal handler
+		fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (fd < 0)
+			exit(EXIT_FAILURE); // exit on failure in child
+		while (1)
 		{
+			line = readline("> ");
+			if (!line || ft_strcmp(line, delimiter) == 0)
+			{
+				free(line);
+				break ;
+			}
+			if (expand)
+			{
+				expanded = expand_variables(line, env_list, last_exit_status);
+				safe_write_line(fd, expanded);
+				free(expanded);
+			}
+			else
+				safe_write_line(fd, line);
 			free(line);
-			break ;
 		}
-		if (expand)
-		{
-			expanded = expand_variables(line, envp);
-			safe_write_line(fd, expanded);
-			free(expanded);
-		}
-		else
-			safe_write_line(fd, line);
-		free(line);
+		close(fd);
+		exit(EXIT_SUCCESS); // exit from child process properly
 	}
-	close(fd);
+	else if (pid > 0)
+	{
+		// PARENT: wait for child
+		waitpid(pid, &status, 0);
+		if (WIFSIGNALED(status)) //This is a macro that checks if the child was terminated by a signal (like SIGINT from Ctrl+C). Returns true if the process didn’t exit normally (e.g., interrupted).
+		{
+			unlink(filepath); //cleanup if interrupted
+			return (-1);
+		}
+	}
+	else
+	{
+		perror("fork failed");
+		return (-1);
+	}
 	return (0);
 }
 

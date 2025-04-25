@@ -3,16 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/19 19:14:35 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:30:21 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "exec.h"
+#include "heredoc.h"
 #include <fcntl.h>
+
+int last_exit_status = 0;
 
 void	ft_free_split(char **arr)
 {
@@ -101,13 +104,16 @@ int	execute_builtin(t_command *cmd, t_env **env_list)
 		if(!cmd->argv[1])
 		{
 			write(2, "cd: Argument missing\n", 21); // in most shells, cd with no arguments sends you to the $HOME directory. check obsidan 18 Apr
+			last_exit_status = 1; // on error
 			return (1);
 		}
 		if (chdir(cmd->argv[1]) != 0)  // if changing directory fails
 		{
 			perror("cd");
+			last_exit_status = 1; // on error
 			return (1);
 		}
+		last_exit_status = 0; // on success
 		return (0);
 	}
 	else if (ft_strcmp(cmd->argv[0], "pwd") == 0)
@@ -116,12 +122,17 @@ int	execute_builtin(t_command *cmd, t_env **env_list)
 		if (getcwd(cwd, sizeof(cwd)))
 			printf("%s\n", cwd);
 		else
+		{
 			perror("pwd");
+			last_exit_status = 1; // on error
+			return (1);
+		}
+		last_exit_status = 0; // on success
 		return (0);
 	}
 	else if (!ft_strcmp(cmd->argv[0], "echo"))
-		return (handle_echo(cmd->argv));
-	else if (!ft_strcmp(cmd->argv[0], "export"))
+		return (handle_echo(cmd->argv, *env_list));
+	else if (!ft_strcmp(cmd->argv[0], "export"))	//Do we need to handle echo & export error?
 		return (handle_export(cmd->argv, env_list));
 	else if (!ft_strcmp(cmd->argv[0], "unset"))
 		return (handle_unset(cmd->argv, env_list));
@@ -130,7 +141,7 @@ int	execute_builtin(t_command *cmd, t_env **env_list)
 	else if (!ft_strcmp(cmd->argv[0], "exit"))
 	{
 		if (cmd->argv[1])
-			exit(ft_atoi(cmd->argv[1])); // `echo $?` prints exit code of the last command.
+			exit(ft_atoi(cmd->argv[1])); // `echo $?` prints exit code of the last command. //Handled
 		else
 			exit(0);
 	}
@@ -144,11 +155,13 @@ void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp)
 	int fd;
 	int pipefd[2];
 	pid_t	pid;
+	pid_t	last_pid = -1;
+	int		status;
 
 	fd_in = 0;
 	while (cmd_head)
 	{
-		if (is_builtin(cmd_head->argv[0]))
+		if (is_builtin(cmd_head->argv[0]) && !cmd_head->next && fd_in == 0)
 		{
 			execute_builtin(cmd_head, env_list);
 			cmd_head = cmd_head->next;
@@ -160,6 +173,7 @@ void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp)
 			exit(EXIT_FAILURE);
 		}
 		pid = fork();
+		// waitpid(pid, &status, 0);	// Wait for all children and capture last command’s exit status
 		if (pid == -1)
 		{
 			perror("fork failed");
@@ -167,7 +181,20 @@ void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp)
 		}
 		if (pid == 0)
 		{
-			if (cmd_head->infile)
+			if (cmd_head->heredoc)
+			{
+				// fd = create_heredoc_file(cmd_head->infile, cmd_head->delimiter, 1, envp);
+				fd = open(cmd_head->infile, O_RDONLY);
+				if (fd == -1)
+				{
+					perror("heredoc failed");
+					exit(EXIT_FAILURE);
+				}
+				dup2(fd, STDIN_FILENO);
+				close(fd);
+				unlink(cmd_head->infile); // clean up temp file
+			}
+			else if (cmd_head->infile)
 			{
 				fd = open(cmd_head->infile, O_RDONLY);
 				if (fd == -1)
@@ -203,18 +230,26 @@ void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp)
 				close(pipefd[1]);
 				close(pipefd[0]);
 			}
-			char *full_path = resolve_path(cmd_head->argv[0]);
-			if (!full_path)
+			if (is_builtin(cmd_head->argv[0]))
+				execute_builtin(cmd_head, env_list);
+			else
 			{
-				perror("Command not found");
-				exit(127);
+				char *full_path = resolve_path(cmd_head->argv[0]);
+				if (!full_path)
+				{
+					perror("Command not found");
+					exit(127);
+				}
+				if (execve(full_path, cmd_head->argv, envp) == -1)  // changed environ to envp and 1 to -1
+				{
+					perror("execve failed");
+					exit(EXIT_FAILURE);
+				}
 			}
-			if (execve(full_path, cmd_head->argv, envp) == -1)  // changed environ to envp and 1 to -1
-			{
-				perror("execve failed");
-				exit(EXIT_FAILURE);
-			}
+			exit(EXIT_SUCCESS);
 		}
+		else
+			last_pid = pid;
 		if (fd_in != 0)
 			close(fd_in);
 		if (cmd_head->next)
@@ -224,5 +259,16 @@ void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp)
 		}
 		cmd_head = cmd_head->next;
 	}
-	while (wait(NULL) > 0);
+	// while (wait(NULL) > 0); Replace by below block of code
+	// Wait for all children and capture last command’s exit status
+	while ((pid = wait(&status)) > 0)
+	{
+		if (pid == last_pid)
+		{
+			if (WIFEXITED(status))
+				last_exit_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+				last_exit_status = 128 + WTERMSIG(status);
+		}
+	}
 }

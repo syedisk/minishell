@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/08 19:20:11 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/23 18:58:41 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "heredoc.h"
 #include "utils.h"
 
-t_command	*parse_tokens(t_token *tokens, char **envp)
+t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 {
 	t_command	*cmd_head;
 	t_command	*current_cmd;
@@ -40,6 +40,7 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 			new_cmd->outfile = NULL;
 			new_cmd->append_out = 0;
 			new_cmd->next = NULL;
+			new_cmd->heredoc = 0;
 			if (!cmd_head)
 				cmd_head = new_cmd;
 			else
@@ -65,7 +66,7 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 		{
 			if (curr->type == WORD)
 			{
-				expanded = expand_variables(curr->value, envp);
+				expanded = expand_variables(curr->value, env_list, last_exit_status);
 				cleaned = remove_quotes(expanded);
 				current_cmd->argv[argc++] = cleaned;
 				free(expanded);
@@ -106,7 +107,8 @@ t_command	*parse_tokens(t_token *tokens, char **envp)
 					char *heredoc_path = generate_heredoc_filename(heredoc_id++);
 					if (!heredoc_path)
 						return (NULL); // handle error
-					create_heredoc_file(heredoc_path, delim, expand, envp);
+					create_heredoc_file(heredoc_path, delim, expand, env_list);
+					current_cmd->heredoc = 1;
 					free(delim);
 					current_cmd->infile = heredoc_path;
 				}
