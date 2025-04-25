@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:28:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/25 16:25:48 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:05:08 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,77 @@ char *expand_variables(char *line, t_env *env_list, int last_exit_status)
 				value = get_env_value(env_list, var_name);
 				result = ft_strjoin_free(result, value);
 				free(var_name);
+			}
+			else if (ft_strcmp(line,"'") == 0)
+			{
+				// Handle single quotes, treat literally
+				result = ft_strjoin_char(result, *line);
+				line++;
+				while (*line && *line != '\'')
+				{
+					result = ft_strjoin_char(result, *line);
+					line++;
+				}
+				if (*line == '\'')
+					line++; // skip closing quote
+			}
+			else if (*line == '"')
+			{
+				// Handle double quotes, expand variables inside
+				result = ft_strjoin_char(result, *line);
+				line++;
+				while (*line && *line != '"')
+				{
+					if (*line == '$')
+						break; // break to handle variable expansion
+					result = ft_strjoin_char(result, *line);
+					line++;
+				}
+				if (*line == '"')
+					line++; // skip closing quote
+			}
+			else if (*line == '\\')
+			{
+				// Handle escape character
+				line++;
+				// Skip the escape character
+				if (*line)
+					result = ft_strjoin_char(result, *line);
+				line++;
+			}
+				else if (*line == '\"')
+			{
+				// Handle double quotes, treat literally
+				result = ft_strjoin_char(result, *line);
+				line++;
+				while (*line && *line != '\"')
+				{
+					result = ft_strjoin_char(result, *line);
+					line++;
+				}
+				if (*line == '\"')
+					line++; // skip closing quote
+			}
+			else if (*line == '\'')
+			{
+				// Handle single quotes, treat literally
+				result = ft_strjoin_char(result, *line);
+				line++;
+				while (*line && *line != '\'')
+				{
+					result = ft_strjoin_char(result, *line);
+					line++;
+				}
+				if (*line == '\'')
+					line++; // skip closing quote
+			}
+			else if (*line == '\\')
+			{
+				// Handle escape character
+				line++;
+				if (*line)
+					result = ft_strjoin_char(result, *line);
+				line++;
 			}
 			else
 			{

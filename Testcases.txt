@@ -1,7 +1,7 @@
 #basic
 ls
 ls -la
-/usr/bin/ls
+/usr/bin/ls - Need to handle
 usr/bin/ls
 ./ls
 hello
@@ -109,7 +109,7 @@ ls "'
 ls " "
 ls " ' "
 "ls"
-l"s"
+l"s" //included in tester.sh until here
 
 #env-variables
 $USER
@@ -439,7 +439,7 @@ mkdir a a/b; cd a/b; rm -rf ../../a; unset PWD OLDPWD; cd ..
 unset PATH; cd
 unset PATH; cd; pwd
 unset PATH; cd .
-unset PATH; cd .; pwd
+unset PATH; cd .; pwdls /no/such/path
 unset PATH; cd ..
 unset PATH; cd ..; pwd
 unset PATH; cd existing_dir
@@ -713,7 +713,7 @@ cd valid_infile_1; echo $?
 ls dir_does_not_exist; echo $?
 
 
-Basic
+Edge cases
 
 echo bonjour ; |
  echo bonjour | |

@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/25 16:07:15 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:16:58 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,50 +85,50 @@ int	main(int argc, char **argv, char **envp)
 		tokens = tokenise(input);
 
 		// Debug: print tokens
-		printf("==== TOKENS ====\n");
-		for (t_token *tmp = tokens; tmp; tmp = tmp->next)
-			printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
+		// printf("==== TOKENS ====\n");
+		// for (t_token *tmp = tokens; tmp; tmp = tmp->next)
+		// 	printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
 		
 		// Step 2: Parse into command structure
 		commands = parse_tokens(tokens, env_list);
 
 		// Debug: Heredoc test
-		for (t_command *cmd = commands; cmd; cmd = cmd->next)
-		{
-			if (cmd->infile)
-			{
-				int fd = open(cmd->infile, O_RDONLY);
-				if (fd < 0)
-					perror("open heredoc temp file");
-				else
-				{
-					char buf[1024];
-					int bytes;
-					printf("\nHeredoc contents from %s:\n", cmd->infile);
-					while ((bytes = read(fd, buf, sizeof(buf) - 1)) > 0)
-					{
-						buf[bytes] = '\0';
-						printf("%s", buf);
-					}
-					printf("\n--- End of heredoc ---\n\n");
-					close(fd);
-					//unlink(cmd->infile); // clean up temp file
-				}
-			}
-		}
+		// for (t_command *cmd = commands; cmd; cmd = cmd->next)
+		// {
+		// 	if (cmd->infile)
+		// 	{
+		// 		int fd = open(cmd->infile, O_RDONLY);
+		// 		if (fd < 0)
+		// 			perror("open heredoc temp file");
+		// 		else
+		// 		{
+		// 			char buf[1024];
+		// 			int bytes;
+		// 			printf("\nHeredoc contents from %s:\n", cmd->infile);
+		// 			while ((bytes = read(fd, buf, sizeof(buf) - 1)) > 0)
+		// 			{
+		// 				buf[bytes] = '\0';
+		// 				printf("%s", buf);
+		// 			}
+		// 			printf("\n--- End of heredoc ---\n\n");
+		// 			close(fd);
+		// 			//unlink(cmd->infile); // clean up temp file
+		// 		}
+		// 	}
+		// }
 
 		// Debug: print command info
-		printf("==== COMMANDS ====\n");
-		for (t_command *cmd = commands; cmd; cmd = cmd->next)
-		{
-			printf("COMMAND:\n");
-			for (int i = 0; cmd->argv && cmd->argv[i]; i++)
-				printf("  Arg[%d]: %s\n", i, cmd->argv[i]);
-			if (cmd->infile)
-				printf("  Infile: %s\n", cmd->infile);
-			if (cmd->outfile)
-				printf("  Outfile: %s (append: %d)\n", cmd->outfile, cmd->append_out);
-		}
+		// printf("==== COMMANDS ====\n");
+		// for (t_command *cmd = commands; cmd; cmd = cmd->next)
+		// {
+		// 	printf("COMMAND:\n");
+		// 	for (int i = 0; cmd->argv && cmd->argv[i]; i++)
+		// 		printf("  Arg[%d]: %s\n", i, cmd->argv[i]);
+		// 	if (cmd->infile)
+		// 		printf("  Infile: %s\n", cmd->infile);
+		// 	if (cmd->outfile)
+		// 		printf("  Outfile: %s (append: %d)\n", cmd->outfile, cmd->append_out);
+		// }
 
 		// Step 3: Execute command
 		env_array =  convert_env_to_array(env_list);
