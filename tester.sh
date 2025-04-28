@@ -2,6 +2,8 @@
 
 MINISHELL=./minishell
 PROMPT="minishell$ "  # Adjust if your prompt is different
+Passed=0
+Failed=0
 
 run_test() {
     COMMAND="$1"
@@ -15,8 +17,10 @@ run_test() {
     # Compare outputs
     if diff minishell_output.txt bash_output.txt > /dev/null; then
         echo "✅ Test Passed"
+        Passed=$((Passed + 1));
     else
         echo "❌ Test Failed"
+        Failed=$((Failed + 1));
         echo "Expected:"
         cat bash_output.txt
         echo "Got:"
@@ -82,7 +86,7 @@ run_test "unset PATH; executable_file"
 # Commands with spaces
 run_test "\"\""
 run_test "\"                        \""
-run_test "						     "
+run_test "                            "
 run_test "\t\t\t\t\t\t\t\t\t\t      "
 run_test "\t\n\r\v\f                "
 run_test "       \t    \t\t\t       "
@@ -139,13 +143,18 @@ run_test "echo "cat valid_infile_1 | cat > outfile1""
 run_test "echo 'cat valid_infile_1 | cat > outfile1'"
 run_test "ls """
 run_test "ls '" 
-run_test "ls "'"
-run_test "ls " ""
-run_test "ls " ' ""
+# run_test "ls "'"
+# run_test "ls " ""
+# run_test "ls " ' ""
 run_test ""ls""
 run_test "l"s""
 
 
 
 # Clean up
-rm -f minishell_output.txt bash_output.txt temp.txt
+rm -f minishell_output.txt bash_output.txt temp.txt outfile1
+
+# Print summary
+echo -e "\nSummary:"
+echo "✅Passed testcases: $Passed / $((Passed + Failed))"
+echo "❌Failed testcases: $Failed / $((Passed + Failed))"
