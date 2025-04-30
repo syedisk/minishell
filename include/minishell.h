@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/28 16:17:22 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:23:47 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include "exec.h"
 # include "utils.h"
 # include "expander.h"
+# include "error_handle.h"
 # include <fcntl.h> // open
 # include <readline/history.h>
 # include <readline/readline.h>
@@ -29,5 +30,9 @@
 # include <unistd.h>   // for fork, execve, pipe
 
 extern	int	last_exit_status;
+
+int readline_active_state(void);
+char *custom_readline(const char *prompt);
+void	debug_print_env_list(t_env *env);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 18:02:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/25 15:50:47 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/04/30 14:55:25 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,12 @@ void    sig_handler(int signal)
     (void)signal;
 
     write(STDOUT_FILENO, "\n", 1);
-    rl_replace_line("", 0);
-    rl_on_new_line();
-    rl_redisplay();
+    if (readline_active_state())
+	{
+        rl_replace_line("", 0);
+        rl_on_new_line();
+        rl_redisplay();
+    }
     last_exit_status = 130;
 }
 
@@ -30,8 +33,8 @@ void    set_signals(void)
     struct sigaction sa_sig;
     
     sa_sig.sa_handler = sig_handler;
-    sa_sig.sa_flags = SA_RESTART;
     sigemptyset(&sa_sig.sa_mask);
+    sa_sig.sa_flags = SA_RESTART;
     sigaction(SIGINT, &sa_sig, NULL);
 
     if (sigaction(SIGINT, &sa_sig, NULL) == -1)

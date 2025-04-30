@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/25 18:16:58 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:04:23 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,21 @@ void	debug_print_env_list(t_env *env) //debugger to delete
 	printf("--- END ENV ---\n\n");
 }
 
+static int is_readline_active = 0;
+
+int readline_active_state(void)
+{
+    return is_readline_active;
+}
+
+char *custom_readline(const char *prompt)
+{
+    is_readline_active = 1;
+    char *line = readline(prompt);
+    is_readline_active = 0;
+    return line;
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	// Clean up old heredoc temp files to avoid crashesi
@@ -75,12 +90,16 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		set_signals();
-		input = readline("minishell$ ");
+		input = custom_readline("$minishell ");
 		if (!input)
 			break ;
 		if (*input)
 			add_history(input);
-
+		if (check_syntax_error(input))
+		{
+			free(input);
+			continue; 
+		}
 		// Step 1: tokenise
 		tokens = tokenise(input);
 

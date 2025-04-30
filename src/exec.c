@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/25 16:50:53 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/04/30 13:41:27 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,8 @@ int	is_builtin(char	*cmd)
 
 int	execute_builtin(t_command *cmd, t_env **env_list)
 {
+	int	i;
+
 	if (!cmd || !cmd->argv[0])
 		return (0);
 	if (ft_strcmp(cmd->argv[0], "cd") == 0)
@@ -140,8 +142,24 @@ int	execute_builtin(t_command *cmd, t_env **env_list)
 	 	return (ft_env(*env_list));
 	else if (!ft_strcmp(cmd->argv[0], "exit"))
 	{
-		if (cmd->argv[1])
+		i = 0;
+		while (cmd->argv[1][i])
+		{
+			if((ft_isalpha(cmd->argv[1][i])) == 1)
+			{			
+				printf("exit\nexit: %s: numeric argument required\n", cmd->argv[1]);
+				exit(2);
+			}
+			i++;
+		}
+		if (cmd->argv[1] && !cmd->argv[2])
 			exit(ft_atoi(cmd->argv[1])); // `echo $?` prints exit code of the last command. //Handled
+		else if (cmd->argv[2])	// To handle more than one argument for exit command
+		{
+			printf("exit\nexit: too many arguments\n");
+			last_exit_status = 1; // on error
+			return (1);
+		}
 		else
 			exit(0);
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/05 18:03:30 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/04/29 18:20:45 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,6 @@ char	*read_quoted(const char *s, int *i)
 		(*i)++;
 	return (val);
 }
-
 t_token	*tokenise(const char *input)
 {
 	t_token			*tokens;
@@ -165,8 +164,8 @@ t_token	*tokenise(const char *input)
 		}
 		else if (input[i] == '"' || input[i] == '\'')
 		{
-			quoted = read_quoted(input, &i);
-			add_token(&tokens, new_token(quoted, WORD));
+			quoted = read_quoted(input, &i); // Extract quoted string
+            add_token(&tokens, new_token(quoted, WORD));
 		}
 		else
 		{

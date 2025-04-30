@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/23 18:58:41 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/04/29 18:04:54 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,12 +101,17 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 				if (curr)
 				{
 					int expand = 1;
+					printf("Processing HEREDOC with value: %s\n", curr->value);
 					if (curr->value[0] == '\'' || curr->value[0] == '"')
+					// {
 						expand = 0;
+						// i++;
+					// }
 					char *delim = remove_quotes(curr->value);
 					char *heredoc_path = generate_heredoc_filename(heredoc_id++);
 					if (!heredoc_path)
 						return (NULL); // handle error
+					printf ("Expand is %d\n", expand);
 					create_heredoc_file(heredoc_path, delim, expand, env_list);
 					current_cmd->heredoc = 1;
 					free(delim);
