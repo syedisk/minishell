@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:33:46 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/29 18:06:13 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/04 18:37:30 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <limits.h>
 
 int	safe_write_line(int fd, const char *line)
 {
@@ -94,3 +95,43 @@ char	*ft_strjoin_three(char *s1, char *s2, char *s3)
 	return (result);
 }
 
+long long	ft_atoi_long(const char *str)
+{
+	long long	result;
+	int	sign;
+	int digit;
+
+	result = 0;
+	sign = 1;
+	while (*str == ' ' || *str == '\t' || *str == '\n'
+		|| *str == '\v' || *str == '\f' || *str == '\r')
+		str++;
+	if (*str == '-' || *str == '+')
+	{
+		if (*str == '-')
+			sign = -1;
+		str++;
+	}
+	while (*str)
+	{
+		if (!ft_isdigit(*str))
+			return 0;
+
+		digit = *str - '0';
+
+		if (sign == 1)
+		{
+			if (result > (LLONG_MAX - digit) / 10)
+				return 0; // Overflow for positive (LLONG_MAX is 9223372036854775807)
+		}
+		else
+		{
+			if (result > (-(LLONG_MIN + digit)) / 10)
+				return 0; // Overflow for negative (LLONG_MIN is -9223372036854775808)
+		}
+		result = result * 10 + digit;
+		str++;
+	}
+	result *= sign;
+	return (result);
+}

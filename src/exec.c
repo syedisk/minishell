@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/04/30 13:41:27 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/04 19:24:43 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ int	execute_builtin(t_command *cmd, t_env **env_list)
 {
 	int	i;
 
+	i = 0;
 	if (!cmd || !cmd->argv[0])
 		return (0);
 	if (ft_strcmp(cmd->argv[0], "cd") == 0)
@@ -109,11 +110,43 @@ int	execute_builtin(t_command *cmd, t_env **env_list)
 			last_exit_status = 1; // on error
 			return (1);
 		}
-		if (chdir(cmd->argv[1]) != 0)  // if changing directory fails
+		if (ft_strcmp(cmd->argv[1], "~") == 0)
+		{
+			char *home = getenv("HOME");
+			//printf("home: %s\n", home);
+			if (home)
+			{
+				char *new_path = malloc(strlen(home) + strlen(cmd->argv[1]) + 1);
+				if (!new_path)
+					return (1);
+				strcpy(new_path, home);
+				strcat(new_path, cmd->argv[1] + 1); // skip ~
+				if (chdir(new_path) != 0)
+				{
+					perror("cd");
+					free(new_path);
+					last_exit_status = 1; // on error
+					return (1);
+				}
+				free(new_path);
+			}
+			else
+			{
+				write(2, "cd: HOME not set\n", 17);
+				last_exit_status = 1; // on error
+				return (1);
+			}
+		}
+		else if (chdir(cmd->argv[1]) != 0)  // if changing directory fails
 		{
 			perror("cd");
 			last_exit_status = 1; // on error
 			return (1);
+		}
+		else
+		{
+			last_exit_status = 0; // on success
+			return (0);
 		}
 		last_exit_status = 0; // on success
 		return (0);
@@ -143,25 +176,36 @@ int	execute_builtin(t_command *cmd, t_env **env_list)
 	else if (!ft_strcmp(cmd->argv[0], "exit"))
 	{
 		i = 0;
+		printf("exit\n");
+		if (!cmd->argv[1])
+			exit(0);
 		while (cmd->argv[1][i])
 		{
 			if((ft_isalpha(cmd->argv[1][i])) == 1)
 			{			
-				printf("exit\nexit: %s: numeric argument required\n", cmd->argv[1]);
+				printf("exit: %s: numeric argument required\n", cmd->argv[1]);
 				exit(2);
 			}
 			i++;
 		}
-		if (cmd->argv[1] && !cmd->argv[2])
+		if (cmd->argv[1] && !cmd->argv[2] )
+		{
+			if (!(ft_atoi_long(cmd->argv[1])))
+			{
+				printf("exit: %s: numeric argument required\n", cmd->argv[1]);
+				exit(2);
+			}
 			exit(ft_atoi(cmd->argv[1])); // `echo $?` prints exit code of the last command. //Handled
+		}
 		else if (cmd->argv[2])	// To handle more than one argument for exit command
 		{
-			printf("exit\nexit: too many arguments\n");
+			printf("exit: too many arguments\n");
 			last_exit_status = 1; // on error
 			return (1);
 		}
-		else
-			exit(0);
+		// else
+		// 	exit(0);
+		return (0);
 	}
 	else
 		return (0);
@@ -184,7 +228,7 @@ void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp)
 			execute_builtin(cmd_head, env_list);
 			cmd_head = cmd_head->next;
 			continue;  
-		}
+		}printf("exit\n");
 		if (cmd_head->next && pipe(pipefd) == -1)
 		{
 			perror("pipe failed");
