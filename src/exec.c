@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/04 19:24:43 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/07 18:03:49 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,6 @@ int	is_builtin(char	*cmd)
 }
 
 // use this instead for modularity?
-
 // int	is_builtin(char *cmd)
 // {
 // 	const char *builtins[] = {"cd", "pwd", "echo", "env", "exit", "export", "unset", NULL};
@@ -204,7 +203,7 @@ int	execute_builtin(t_command *cmd, t_env **env_list)
 			return (1);
 		}
 		// else
-		// 	exit(0);
+		//  	exit(0);
 		return (0);
 	}
 	else
@@ -228,7 +227,7 @@ void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp)
 			execute_builtin(cmd_head, env_list);
 			cmd_head = cmd_head->next;
 			continue;  
-		}printf("exit\n");
+		}
 		if (cmd_head->next && pipe(pipefd) == -1)
 		{
 			perror("pipe failed");
@@ -299,6 +298,7 @@ void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp)
 				char *full_path = resolve_path(cmd_head->argv[0]);
 				if (!full_path)
 				{
+					//printf("%s:", cmd_head->argv[0]);
 					perror("Command not found");
 					exit(127);
 				}

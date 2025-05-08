@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 18:02:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/03 16:15:24 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/07 17:13:22 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void    sig_handler(int signal)
     (void)signal;
 
     write(STDOUT_FILENO, "\n", 1);
-    if (readline_active_state())
+    // if (readline_active_state())
 	{
         rl_replace_line("", 0);
         rl_on_new_line();
@@ -35,8 +35,6 @@ void    set_signals(void)
     sa_sig.sa_handler = sig_handler;
     sigemptyset(&sa_sig.sa_mask);
     sa_sig.sa_flags = SA_RESTART;
-    sigaction(SIGINT, &sa_sig, NULL);
-
     if (sigaction(SIGINT, &sa_sig, NULL) == -1)
         perror("sigaction");
 

@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/03 16:16:28 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/06 16:44:53 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,11 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 		if (!cmd_head || curr->type == PIPE)
 		{
 			new_cmd = malloc(sizeof(t_command));
+			if (!new_cmd)
+			{
+				free_commands(cmd_head); // Free previously allocated commands
+				return (NULL); // handle error
+			}
 			new_cmd->argv = NULL;
 			new_cmd->infile = NULL;
 			new_cmd->outfile = NULL;
@@ -61,15 +66,30 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 			temp = temp->next;
 		}
 		current_cmd->argv = malloc(sizeof(char *) * (argc + 1));
+		if (!current_cmd->argv)
+		{
+			free_commands(cmd_head);
+			return (NULL);
+		}
 		argc = 0;
 		while (curr && curr->type != PIPE)
 		{
 			if (curr->type == WORD)
 			{
 				expanded = expand_variables(curr->value, env_list, last_exit_status);
+				if (!expanded)
+				{
+					free_commands(cmd_head);
+					return (NULL); // handle error
+				}
 				cleaned = remove_quotes(expanded);
-				current_cmd->argv[argc++] = cleaned;
 				free(expanded);
+				if (!cleaned)
+				{
+					free_commands(cmd_head);
+					return (NULL); // handle error
+				}
+				current_cmd->argv[argc++] = cleaned;
 			}
 			else if (curr->type == REDIR_IN)
 			{
@@ -110,7 +130,11 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 					char *delim = remove_quotes(curr->value);
 					char *heredoc_path = generate_heredoc_filename(heredoc_id++);
 					if (!heredoc_path)
-						return (NULL); // handle error
+					{
+						free(delim);
+						free_commands(cmd_head);
+						return (NULL);
+					}
 					printf ("Expand is %d\n", expand);
 					create_heredoc_file(heredoc_path, delim, expand, env_list);
 					current_cmd->heredoc = 1;
@@ -125,29 +149,3 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 	return (cmd_head);
 }
 
-void	free_commands(t_command *cmds)
-{
-	int			i;
-	t_command	*tmp;
-
-	while (cmds)
-	{
-		tmp = cmds->next;
-		if (cmds->argv)
-		{
-			i = 0;
-			while (cmds->argv[i])
-			{
-				free(cmds->argv[i]);
-				i++;
-			}
-			free(cmds->argv);
-		}
-		if (cmds->infile)
-			free(cmds->infile);
-		if (cmds->outfile)
-			free(cmds->outfile);
-		free(cmds);
-		cmds = tmp;
-	}
-}

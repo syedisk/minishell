@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/30 17:04:23 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/07 18:27:12 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ char *custom_readline(const char *prompt)
 
 int	main(int argc, char **argv, char **envp)
 {
-	// Clean up old heredoc temp files to avoid crashesi
+	// Clean up old heredoc temp files
 	system("rm -f /tmp/.heredoc_*");
 
 	char		*input;
@@ -85,6 +85,11 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	
 	env_list = create_env_list(envp);
+	if (!env_list)
+	{
+		printf("Error: Failed to create environment list\n");
+		return (1);
+	}
 	void ignore_sigquit(void);  // Ignore Ctrl+
 
 	while (1)
@@ -92,7 +97,11 @@ int	main(int argc, char **argv, char **envp)
 		set_signals();
 		input = custom_readline("$minishell ");
 		if (!input)
-			break ;
+		{
+            printf("exit\n");
+            free_env_list(env_list); // Free environment list
+            exit(0); // Exit gracefully
+        }
 		if (*input)
 			add_history(input);
 		if (check_syntax_error(input))
@@ -152,13 +161,14 @@ int	main(int argc, char **argv, char **envp)
 		// Step 3: Execute command
 		env_array =  convert_env_to_array(env_list);
 		execute_commands(commands, &env_list, env_array); // execve in here
-		free_split(env_array);
 
 		// Step 4: Clean up
 		free(input);
 		free_tokens(tokens);
 		free_commands(commands);
+		free_split(env_array);
 	}
+	free_env_list(env_list);
 	return (0);
 }
 

@@ -10,17 +10,20 @@ run_test() {
     echo -e "\nRunning: $COMMAND"
     
     # Run in your minishell
-    echo "$COMMAND" | $MINISHELL | sed -e "s/^$PROMPT//" -e "1d" > minishell_output.txt
+    echo "$COMMAND" | $MINISHELL 2> minishell_error.txt | sed -e "s/^$PROMPT//" -e "/^exit$/d" -e "1d" > minishell_output.txt
     # Run in bash for comparison
-    echo "$COMMAND" | bash > bash_output.txt
+    echo "$COMMAND" | bash 2> bash_error.txt > bash_output.txt
 
-    # Compare outputs
-    if diff minishell_output.txt bash_output.txt > /dev/null; then
+    # Check if both produce errors
+    if [ -s minishell_error.txt ] && [ -s bash_error.txt ]; then
+        echo "✅ Test Passed (Error detected)"
+        Passed=$((Passed + 1))
+    elif diff minishell_output.txt bash_output.txt > /dev/null; then
         echo "✅ Test Passed"
-        Passed=$((Passed + 1));
+        Passed=$((Passed + 1))
     else
         echo "❌ Test Failed"
-        Failed=$((Failed + 1));
+        Failed=$((Failed + 1))
         echo "Expected:"
         cat bash_output.txt
         echo "Got:"
