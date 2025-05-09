@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/09 14:26:04 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/03 16:17:47 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,11 @@
 # define EXEC_H
 
 // exec.c
+void	ft_free_split(char **arr);
+char	*resolve_path(char *cmd);
 int		is_builtin(char *cmd);
 int		execute_builtin(t_command *cmd, t_env **env_list);
 void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp);
-void    wait_for_child_processes(int last_pid);
-void    setup_child_fds(int fd_in, t_command *cmd, int *pipefd);
-void    execute_child(t_command *cmd, t_env **env_list, char **envp, int *pipefd);
-void    close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd);
-int        fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, int *pipefd);
 
 
 // exec_utils.c
@@ -31,12 +28,5 @@ int		handle_export(char **argv, t_env **env_list);
 void	handle_newenv(t_env **env_list, char *key, char *value);
 int		handle_unset(char **args, t_env **env_list);
 void    set_signals(void);
-char    *try_path(char *dir, char *cmd);
-void	ft_free_split(char **arr);
-char    *resolve_path(char *cmd);
-void	handle_infile(t_command *cmd, int fd_in);
-void	handle_outfile(t_command *cmd, int *pipefd);
-int		handle_pwd(void);
-int		ft_env(t_env *env_list);
 
 #endif  
