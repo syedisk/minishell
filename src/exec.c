@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/09 16:10:18 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:34:44 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,15 @@ int fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, i
     {
         if (fd_in != 0) 
         {
-            dup2(fd_in, STDIN_FILENO);
+           if (dup2(fd_in, STDIN_FILENO) == -1)
+                exit((perror("dup2 failed for fd_in"),EXIT_FAILURE));
             close(fd_in);
         }
-        if (cmd->next) 
+        if (pipefd) 
         {
             close(pipefd[0]);
-            dup2(pipefd[1], STDOUT_FILENO);
+            if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+                exit((perror("dup2 failed for pipefd[1]"),EXIT_FAILURE));
             close(pipefd[1]);
         }
         execute_child(cmd, env_list, envp, NULL);
@@ -91,11 +93,16 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp)
                 perror("pipe failed");
                 exit(EXIT_FAILURE);
             }
+            pid = fork_and_execute(cmd, env_list, envp, fd_in, pipefd);
         }
-        pid = fork_and_execute(cmd, env_list, envp, fd_in, pipefd);
+        else
+            pid = fork_and_execute(cmd, env_list, envp, fd_in, NULL);
         if (pid == -1)
             exit((perror("fork failed"), EXIT_FAILURE));
-        close_and_update_fds(&fd_in, cmd, pipefd);
+        if (cmd->next)
+            close_and_update_fds(&fd_in, cmd, pipefd);
+        else
+            close_and_update_fds(&fd_in, cmd, NULL);
         cmd = cmd->next;
     }
     wait_for_child_processes(pid);

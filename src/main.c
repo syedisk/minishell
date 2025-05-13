@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/07 18:27:12 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/13 15:07:07 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,18 +109,18 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			continue; 
 		}
-		// Step 1: tokenise
+		//Step 1: tokenise
 		tokens = tokenise(input);
 
-		// Debug: print tokens
+		//Debug: print tokens
 		// printf("==== TOKENS ====\n");
 		// for (t_token *tmp = tokens; tmp; tmp = tmp->next)
 		// 	printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
 		
-		// Step 2: Parse into command structure
+		//Step 2: Parse into command structure
 		commands = parse_tokens(tokens, env_list);
 
-		// Debug: Heredoc test
+		//Debug: Heredoc test
 		// for (t_command *cmd = commands; cmd; cmd = cmd->next)
 		// {
 		// 	if (cmd->infile)
@@ -145,7 +145,7 @@ int	main(int argc, char **argv, char **envp)
 		// 	}
 		// }
 
-		// Debug: print command info
+		//Debug: print command info
 		// printf("==== COMMANDS ====\n");
 		// for (t_command *cmd = commands; cmd; cmd = cmd->next)
 		// {
@@ -158,11 +158,11 @@ int	main(int argc, char **argv, char **envp)
 		// 		printf("  Outfile: %s (append: %d)\n", cmd->outfile, cmd->append_out);
 		// }
 
-		// Step 3: Execute command
+		//Step 3: Execute command
 		env_array =  convert_env_to_array(env_list);
 		execute_commands(commands, &env_list, env_array); // execve in here
 
-		// Step 4: Clean up
+		//Step 4: Clean up
 		free(input);
 		free_tokens(tokens);
 		free_commands(commands);

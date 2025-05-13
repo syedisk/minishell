@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:33:46 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/06 16:52:59 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:34:35 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <limits.h>
+#include "minishell.h"
 
 int	safe_write_line(int fd, const char *line)
 {
@@ -45,6 +46,7 @@ char	*remove_quotes(const char *str)
 
 	i = 0;
 	j = 0;
+	quote = 0;
 	if (!str)
 		return (NULL);
 	len = ft_strlen(str);
@@ -53,14 +55,14 @@ char	*remove_quotes(const char *str)
 		return (NULL);
 	while (str[i])
 	{
-		if (str[i] == '\'' || str[i] == '"')
+		if ((str[i] == '\'' || str[i] == '"') && (!quote || quote == str[i]))
 		{
-			quote = str[i++];
-			while (str[i] && str[i] != quote)
-				result[j++] = str[i++];
-			if (str[i] == quote)
-				i++; // skip closing quote
-		}
+			if (!quote)
+                quote = str[i]; // Start of a quoted section
+            else
+                quote = 0; // End of a quoted section
+            i++; // Skip the quote character
+        }
 		else
 			result[j++] = str[i++];
 	}

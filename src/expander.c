@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:28:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/28 16:56:29 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:44:49 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,77 +62,63 @@ char *expand_variables(char *line, t_env *env_list, int last_exit_status)
 	char	*var_name;
 	char	*value;
 	const char *start;
+	char    pos_quote = 0;
 
 	while (*line)
 	{
-		if (*line == '\'') // handle ''
-		{
-			if (*line == '\'' && *(line + 1) == '\'') // empty single quotes
+			if (*line == '\'' || *line == '"') // Handle quotes
 			{
-				line += 2; // Skip over the two single quotes
-			}
-			// line++;
-			start = line;
-			while (*line && *line != '\'')
-				line++;
-			if (line != start)
-            {
-				temp = ft_substr(start, 0, line - start);
-				result = ft_strjoin_free(result, temp);
-				free(temp);
-			}
-			if (*line == '\'')
-				line++; // skip closing single quote
-		}
-		else if (*line == '$')
-		{
-			line++;
-			if (*line == '\'' && *(line + 1) == '\'') // empty single quotes
-			{
-				line += 2; // Skip over the two single quotes
-				continue;
-			}
-			else if (*line == '?') // handle $?
-			{
-				temp = ft_itoa(last_exit_status);
-				result = ft_strjoin_free(result, temp);
-				free(temp);
+				if (pos_quote == 0) // Start of a quoted section
+					pos_quote = *line;
+				else if (pos_quote == *line) // End of the quoted section
+					pos_quote = 0;
+				//result = ft_strjoin_char(result, *line); // Append the quote if inside another quote
 				line++;
 			}
-			else if (*line == '{') // handle ${VAR}
+			else if (*line == '$' && pos_quote != '\'') // Handle variable expansion (skip if inside single quotes)
 			{
 				line++;
-				start = line;
-				while (*line && *line != '}')
+				if (*line == '?') // Handle $?
+				{
+					temp = ft_itoa(last_exit_status);
+					result = ft_strjoin_free(result, temp);
+					free(temp);
 					line++;
-				var_name = ft_substr(start, 0, line - start);
-				value = get_env_value(env_list, var_name);
-				if (value)
-					result = ft_strjoin_free(result, value);
-				free(var_name);
-				if (*line == '}')
-					line++; // skip closing brace
-			}
-			else if (ft_isalpha(*line) || *line == '_') // handle $VAR
-			{
-				start = line;
-				while (*line && (ft_isalnum(*line) || *line == '_'))
+				}
+				else if (*line == '{') // Handle ${VAR}
+				{
 					line++;
-				var_name = ft_substr(start, 0, line - start);
-				value = get_env_value(env_list, var_name);
-				if (value)
-					result = ft_strjoin_free(result, value);
-				free(var_name);
+					start = line;
+					while (*line && *line != '}')
+						line++;
+					var_name = ft_substr(start, 0, line - start);
+					value = get_env_value(env_list, var_name);
+					if (value)
+						result = ft_strjoin_free(result, value);
+					free(var_name);
+					if (*line == '}')
+						line++; // Skip closing brace
+				}
+				else if (ft_isalpha(*line) || *line == '_') // Handle $VAR
+				{
+					start = line;
+					while (*line && (ft_isalnum(*line) || *line == '_'))
+						line++;
+					var_name = ft_substr(start, 0, line - start);
+					value = get_env_value(env_list, var_name);
+					if (value)
+						result = ft_strjoin_free(result, value);
+					free(var_name);
+				}
+				else
+					result = ft_strjoin_char(result, '$'); // Just a lone $, treat literally
 			}
 			else
-				// Just a lone $, treat literally
-				result = ft_strjoin_char(result, '$');
+			{
+				result = ft_strjoin_char(result, *line);
+				line++;
+			}
+			//printf("line: %s\n", line);
 		}
-		else
-		{
-			result = ft_strjoin_char(result, *line);
-			line++;
-		}
-	}
 	return result;
 }

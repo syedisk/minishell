@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/06 16:44:53 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/12 20:07:31 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,11 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 						// i++;
 					// }
 					char *delim = remove_quotes(curr->value);
+					if (!delim)
+       	 			{
+            			free_commands(cmd_head);
+            			return (NULL);
+       				}
 					char *heredoc_path = generate_heredoc_filename(heredoc_id++);
 					if (!heredoc_path)
 					{
@@ -138,8 +143,9 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 					printf ("Expand is %d\n", expand);
 					create_heredoc_file(heredoc_path, delim, expand, env_list);
 					current_cmd->heredoc = 1;
-					free(delim);
 					current_cmd->infile = heredoc_path;
+					free(delim);
+					
 				}
 			}
 			curr = curr->next;
