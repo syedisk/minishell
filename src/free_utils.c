@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 16:22:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/06 16:53:05 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/14 17:56:23 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,5 +64,18 @@ void	free_commands(t_command *cmds)
 			free(cmds->outfile);
 		free(cmds);
 		cmds = tmp;
+	}
+}
+void	free_env_list(t_env *env)
+{
+	t_env	*tmp;
+	
+	while (env)
+	{
+		tmp = env;
+		free(env->key);
+		free(env->value);
+		env = env->next;
+		free(tmp);
 	}
 }

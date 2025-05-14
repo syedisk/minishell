@@ -1,22 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstiter.c                                       :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/14 10:13:02 by sbin-ham          #+#    #+#             */
-/*   Updated: 2024/06/14 14:51:38 by sbin-ham         ###   ########.fr       */
+/*   Created: 2025/05/14 17:23:44 by thkumara          #+#    #+#             */
+/*   Updated: 2025/05/14 18:47:24 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-void	ft_lstiter(t_list *lst, void (*f)(void *))
+int	handle_pwd(void)
 {
-	while (lst)
+	char	cwd[1024];
+
+	if (getcwd(cwd, sizeof(cwd)))
+		printf("%s\n", cwd);
+	else
 	{
-		f(lst->content);
-		lst = lst->next;
+		perror("pwd");
+		last_exit_status = 1;
+		return (1);
 	}
+	last_exit_status = 0;
+	return (0);
 }

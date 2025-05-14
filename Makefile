@@ -11,7 +11,8 @@ LIBS		= -lreadline \
 SRC			= src/main.c src/lexer.c src/parser.c src/signal.c src/free_utils.c \
 			  src/expander.c src/heredoc.c src/utils.c src/error_handler.c \
 			  src/builtins/env_utils.c src/builtins/env.c \
-			  src/builtins/export.c src/builtins/unset.c \
+			  src/builtins/export.c src/builtins/unset.c src/builtins/pwd.c\
+			  src/builtins/cd.c src/builtins/echo.c src/builtins/exit.c \
 			  src/exec.c src/exec_builtin.c src/exec_utils.c src/exec_utils1.c src/exec_utils2.c\
 
 OBJ			= $(SRC:.c=.o)

@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/03 16:15:58 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/14 18:01:17 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@
 # include <stdlib.h>   // for malloc, free, exit, NULL
 # include <sys/wait.h> // for wait
 # include <unistd.h>   // for fork, execve, pipe
+#include <sys/stat.h> // for stat
+#include <stddef.h>
 
 extern	int	last_exit_status;
 
