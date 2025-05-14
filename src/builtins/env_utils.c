@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:34:32 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/15 19:39:28 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/14 18:29:03 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtins.h"
 #include "minishell.h"
-#include <stddef.h>
 
 t_env	*create_env_node(char *env_str)
 {
@@ -24,18 +23,25 @@ t_env	*create_env_node(char *env_str)
 		return (NULL);
 	node = malloc(sizeof(t_env));
 	if (!node)
-		return (NULL);
+        return (free(split), NULL);
 	node->key = ft_strdup(split[0]);
+	if (!node->key)
+	{
+		free(node);
+		return (free(split), NULL);
+	}
 	if (split[1])
 		node->value = ft_strdup(split[1]);
 	else
 		node->value = NULL;
+	if (split[1] && !node->value)
+	{
+		free(node->key);
+		free(node);
+		return (free(split), NULL);
+	}
 	node->next = NULL;
-	free(split[0]);
-	if (split[1])
-		free(split[1]);
-	free(split);
-	return (node);
+	return (free(split), node);
 }
 
 t_env	*create_env_list(char **envp)
@@ -51,6 +57,11 @@ t_env	*create_env_list(char **envp)
 	while (envp[i])
 	{
 		new_node = create_env_node(envp[i]);
+		if (!new_node)
+        {
+            free_env_list(head);
+            return (NULL);
+        }
 		if (!head)
 			head = new_node;
 		else
@@ -71,81 +82,155 @@ char	*get_env_value(t_env *env, const char *key)
 	}
 	return (NULL);
 }
+static void	update_env_value(t_env *curr, const char *key, const char *value)
+{
+	while (curr)
+	{
+		if (ft_strcmp(curr->key, key) == 0)
+		{
+			char *new_value = ft_strdup(value);
+			if (!new_value)
+			{
+				free(curr->key);
+				free(curr);
+				printf("Error: Memory allocation failed in set_env_value\n");
+				exit(1);
+			}
+			free(curr->value);
+			curr->value = new_value;
+			return ;
+		}
+		curr = curr->next;
+	}
+}
 
+static void	add_env_var(t_env **env, const char *key, const char *value)
+{
+	t_env *new_node;
+	char *dup_key;
+	char *dup_value;
+
+	new_node = malloc(sizeof(t_env));
+	if (!new_node)
+		return ;
+	dup_key = ft_strdup(key);
+	if (!dup_key)
+	{
+		free(new_node);
+		return ;
+	}
+	dup_value = ft_strdup(value);
+	if (!dup_value)
+	{
+		free(dup_key);
+		free(new_node);
+		return ;
+	}
+	new_node->key = dup_key;
+	new_node->value = dup_value;
+	new_node->next = *env;
+	*env = new_node;
+}
 void	set_env_value(t_env **env, const char *key, const char *value)
 {
-	t_env	*curr;
-	t_env	*new_node;
+	t_env *curr;
+
+	curr = *env;
+	update_env_value(curr, key, value);
 
 	curr = *env;
 	while (curr)
 	{
 		if (ft_strcmp(curr->key, key) == 0)
-		{
-			free(curr->value);
-			curr->value = ft_strdup(value);
 			return ;
-		}
 		curr = curr->next;
 	}
-	new_node = malloc(sizeof(t_env));
-	new_node->key = ft_strdup(key);
-	new_node->value = ft_strdup(value);
-	new_node->next = *env;
-	*env = new_node;
+	add_env_var(env, key, value);
 }
+// void	set_env_value(t_env **env, const char *key, const char *value)
+// {
+// 	t_env	*curr;
+// 	t_env	*new_node;
 
-int	env_size(t_env *env)
+// 	curr = *env;
+// 	while (curr)
+// 	{
+// 		if (ft_strcmp(curr->key, key) == 0)
+// 		{
+// 			free(curr->value);
+// 			curr->value = ft_strdup(value);
+// 			if (!curr->value)
+// 			{
+// 				free(curr->key);
+// 				free(curr);
+// 				printf("Error: Memory allocation failed in set_env_value\n");
+// 				exit(1);
+// 			}
+// 			return ;
+// 		}
+// 		curr = curr->next;
+// 	}
+// 	new_node = malloc(sizeof(t_env));
+// 	if (!new_node)
+// 		return ;
+// 	new_node->key = ft_strdup(key);
+// 	if (!new_node->key)
+//     {
+//         free(new_node);
+//         return;
+//     }
+// 	new_node->value = ft_strdup(value);
+// 	if (!new_node->value)
+//     {
+//         free(new_node->key);
+//         free(new_node);
+//         return;
+//     }
+// 	new_node->next = *env;
+// 	*env = new_node;
+// }
+
+static char **env_new(t_env *env)
 {
-	int count = 0;
+	int count;
+	char **envp;
+	
+	count = 0;
 	while (env)
 	{
 		count++;
 		env = env->next;
 	}
-	return (count);
+	envp = malloc(sizeof(char *) * (count + 1));
+	if (!envp)
+		return (NULL);
+	return (envp);
 }
 
 char	**convert_env_to_array(t_env *env)
 {
-	int		size;
 	char	**envp;
 	char	*joined;
 	int		i;
 
-	size = env_size(env);
-	envp = malloc(sizeof(char *) * (size + 1));
+	envp = env_new(env);
 	i = 0;
-	if (!envp)
-		return (NULL); // need to print error message to stderr??
 	while (env)
 	{
 		if (env->value)
-		{
 			joined = ft_strjoin_three(env->key, "=", env->value);
-			envp[i++] = joined;
-		}
 		else
+			joined = ft_strdup(env->key);
+		if (!joined)
 		{
-			envp[i++] = ft_strdup(env->key); // CHECK export VAR with no value.
+			while (i > 0)
+				free(envp[--i]);
+			free(envp);
+			return (NULL);
 		}
+		envp[i++] = joined;
 		env = env->next;
 	}
 	envp[i] = NULL;
 	return (envp);
-}
-
-
-void	free_env_list(t_env *env)
-{
-	t_env	*tmp;
-	
-	while (env)
-	{
-		tmp = env;
-		free(env->key);
-		free(env->value);
-		env = env->next;
-		free(tmp);
-	}
 }

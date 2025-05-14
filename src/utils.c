@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:33:46 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/15 18:33:12 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:34:35 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "libft.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <limits.h>
+#include "minishell.h"
 
 int	safe_write_line(int fd, const char *line)
 {
@@ -44,6 +46,7 @@ char	*remove_quotes(const char *str)
 
 	i = 0;
 	j = 0;
+	quote = 0;
 	if (!str)
 		return (NULL);
 	len = ft_strlen(str);
@@ -52,14 +55,14 @@ char	*remove_quotes(const char *str)
 		return (NULL);
 	while (str[i])
 	{
-		if (str[i] == '\'' || str[i] == '"')
+		if ((str[i] == '\'' || str[i] == '"') && (!quote || quote == str[i]))
 		{
-			quote = str[i++];
-			while (str[i] && str[i] != quote)
-				result[j++] = str[i++];
-			if (str[i] == quote)
-				i++; // skip closing quote
-		}
+			if (!quote)
+                quote = str[i]; // Start of a quoted section
+            else
+                quote = 0; // End of a quoted section
+            i++; // Skip the quote character
+        }
 		else
 			result[j++] = str[i++];
 	}
@@ -94,3 +97,43 @@ char	*ft_strjoin_three(char *s1, char *s2, char *s3)
 	return (result);
 }
 
+long long	ft_atoi_long(const char *str)
+{
+	long long	result;
+	int	sign;
+	int digit;
+
+	result = 0;
+	sign = 1;
+	while (*str == ' ' || *str == '\t' || *str == '\n'
+		|| *str == '\v' || *str == '\f' || *str == '\r')
+		str++;
+	if (*str == '-' || *str == '+')
+	{
+		if (*str == '-')
+			sign = -1;
+		str++;
+	}
+	while (*str)
+	{
+		if (!ft_isdigit(*str))
+			return 0;
+
+		digit = *str - '0';
+
+		if (sign == 1)
+		{
+			if (result > (LLONG_MAX - digit) / 10)
+				return 0; // Overflow for positive (LLONG_MAX is 9223372036854775807)
+		}
+		else
+		{
+			if (result > (-(LLONG_MIN + digit)) / 10)
+				return 0; // Overflow for negative (LLONG_MIN is -9223372036854775808)
+		}
+		result = result * 10 + digit;
+		str++;
+	}
+	result *= sign;
+	return (result);
+}

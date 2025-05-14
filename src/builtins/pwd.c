@@ -1,36 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.h                                            :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 12:43:42 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/29 18:20:52 by thkumara         ###   ########.fr       */
+/*   Created: 2025/05/14 17:23:44 by thkumara          #+#    #+#             */
+/*   Updated: 2025/05/14 18:47:24 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LEXER_H
-# define LEXER_H
+#include "minishell.h"
 
-typedef enum e_token_type
+int	handle_pwd(void)
 {
-	WORD,
-	PIPE,
-	REDIR_IN,
-	REDIR_OUT,
-	APPEND,
-	HEREDOC
-}	t_token_type;
+	char	cwd[1024];
 
-typedef struct s_token
-{
-	char			*value;
-	t_token_type	type;
-	struct s_token	*next;
-}					t_token;
-
-t_token	*tokenise(const char *input);
-void	free_tokens(t_token *tokens);
-
-#endif
+	if (getcwd(cwd, sizeof(cwd)))
+		printf("%s\n", cwd);
+	else
+	{
+		perror("pwd");
+		last_exit_status = 1;
+		return (1);
+	}
+	last_exit_status = 0;
+	return (0);
+}

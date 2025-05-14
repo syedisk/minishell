@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:13:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/19 19:53:31 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/14 18:34:07 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,17 @@ t_env				*create_env_list(char **envp);
 char				*get_env_value(t_env *env, const char *key);
 void				set_env_value(t_env **env, const char *key,
 						const char *value);
-int					env_size(t_env *env);
 char				**convert_env_to_array(t_env *env);
 void				free_env_list(t_env *env);
 
-// env.c
-int					ft_env(t_env *env);
+//Builtins
+int handle_cd(char **argv);
+int handle_pwd(void);
+int	handle_echo(char **argv, t_env	*env_list);
+int	handle_export(char **argv, t_env **env_list);
+int	handle_unset(char **args, t_env **env_list);
+int handle_exit(char **argv);
+int	handle_env(t_env *env);
 
-// export.c
-void				ft_export(char **args, t_env **env);
-
-// unset.c
-void				unset_env_key(t_env **env, const char *key);
-void				ft_unset(char **args, t_env **env);
 
 #endif

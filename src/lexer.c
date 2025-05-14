@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/05 18:03:30 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/06 16:48:21 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,19 +49,6 @@ void	add_token(t_token **head, t_token *new)
 	while (cur->next)
 		cur = cur->next;
 	cur->next = new;
-}
-
-void free_tokens(t_token *tokens)
-{
-	t_token *tmp;
-	
-	while (tokens)
-	{
-		tmp = tokens->next;
-		free(tokens->value);
-		free(tokens);
-		tokens = tmp;
-	}
 }
 
 int	is_operator_char(char c)
@@ -136,7 +123,6 @@ char	*read_quoted(const char *s, int *i)
 		(*i)++;
 	return (val);
 }
-
 t_token	*tokenise(const char *input)
 {
 	t_token			*tokens;
@@ -165,8 +151,8 @@ t_token	*tokenise(const char *input)
 		}
 		else if (input[i] == '"' || input[i] == '\'')
 		{
-			quoted = read_quoted(input, &i);
-			add_token(&tokens, new_token(quoted, WORD));
+			quoted = read_quoted(input, &i); // Extract quoted string
+            add_token(&tokens, new_token(quoted, WORD));
 		}
 		else
 		{

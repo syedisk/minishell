@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:40:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/15 17:46:49 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/14 17:29:37 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	unset_env_key(t_env **env, const char *key)
+static void	unset_env_key(t_env **env, const char *key)
 {
 	t_env	*curr = *env;
 	t_env	*prev = NULL;
@@ -35,7 +35,7 @@ void	unset_env_key(t_env **env, const char *key)
 		curr = curr->next;
 	}
 }
-void	ft_unset(char **args, t_env **env)
+static void 	ft_unset(char **args, t_env **env)
 {
 	int	i = 1;
 
@@ -45,4 +45,15 @@ void	ft_unset(char **args, t_env **env)
 		unset_env_key(env, args[i]);
 		i++;
 	}
+}
+int	handle_unset(char **args, t_env **env_list)
+{
+	if (!args[1])
+	{
+		last_exit_status = 0; // on error
+		return (0);
+	}
+	ft_unset(args, env_list);
+	last_exit_status = 0; // on success
+	return (0);
 }
