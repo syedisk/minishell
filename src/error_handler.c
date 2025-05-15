@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:07:47 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/14 16:28:43 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/15 15:33:14 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,13 @@ int check_syntax_error(const char *input)
 
     if (has_unclosed_quotes(input)) 
     {
-        printf("minishell: syntax error: unclosed quote\n");
+        write(2, "minishell: syntax error: unclosed quote\n", 40);
         return (1);
     }
 
     if (has_trailing_operator(input)) 
     {
-        printf("minishell: syntax error near unexpected token `newline`\n");
+        write(2, "minishell: syntax error near unexpected token `newline`\n", 57);
         return (1);
     }
     return (0);
@@ -95,11 +95,19 @@ void error_msg(char *error)
     else if (ft_strcmp(error, "is_directory") == 0)
         write(2, "Is a directory\n", 16);
     else if (ft_strcmp(error, "export_fail") == 0)
-        write(2, "not a valid identifier\n", 32);
+        write(2, "not a valid identifier\n", 24);
     else if (ft_strcmp(error, "unset_fail") == 0)
         write(2, "unset: not a valid identifier\n", 31);
     else if (ft_strcmp(error, "cd_fail") == 0)
         write(2, "cd: no such file or directory\n", 31);
+    else if (ft_strcmp(error, "dup2_failed_fd") == 0)
+        write(2, "dup2 failed for fd\n", 20);
+    else if (ft_strcmp(error, "pwd_got_arg") == 0)
+        write (2, "pwd: too many arguments\n", 24);
     else
-        write(2, "Error\n", 7);
+    {
+        write(2, "Error: ", 7);
+        write(2, error, ft_strlen(error));
+        write(2, "\n", 1);
+    }
 }

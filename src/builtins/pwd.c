@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:23:44 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/14 18:47:24 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/15 16:28:01 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int	handle_pwd(void)
 {
 	char	cwd[1024];
 
+	//cwd[0] = '\0';
 	if (getcwd(cwd, sizeof(cwd)))
 		printf("%s\n", cwd);
 	else

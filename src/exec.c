@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/12 17:34:44 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/15 16:43:40 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,14 @@ int fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, i
         if (fd_in != 0) 
         {
            if (dup2(fd_in, STDIN_FILENO) == -1)
-                exit((perror("dup2 failed for fd_in"),EXIT_FAILURE));
+                exit((error_msg("dup2_failed_fd"),EXIT_FAILURE));
             close(fd_in);
         }
         if (pipefd) 
         {
             close(pipefd[0]);
             if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-                exit((perror("dup2 failed for pipefd[1]"),EXIT_FAILURE));
+                exit((error_msg("dup2_failed_fd"),EXIT_FAILURE));
             close(pipefd[1]);
         }
         execute_child(cmd, env_list, envp, NULL);
@@ -73,6 +73,7 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp)
     int fd_in = 0;
     int pid = -1;
 
+    pipefd[0] = -1;
     while (cmd)
     {
         if (!cmd->argv || !cmd->argv[0])
@@ -90,7 +91,7 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp)
         {
             if (pipe(pipefd) == -1)
             {
-                perror("pipe failed");
+                write(2, "pipe failed\n", 12);
                 exit(EXIT_FAILURE);
             }
             pid = fork_and_execute(cmd, env_list, envp, fd_in, pipefd);

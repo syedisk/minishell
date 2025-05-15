@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:10:24 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/14 18:14:07 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/15 17:10:47 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,14 @@ static int check_exportvalue(char **argv)
 	{
 		if (!(ft_strchr(argv[i], '=')))
 		{
+			// printf("argv[i] is %s", argv[i]);
 			i++;
-			error_msg("export_fail");
+			//error_msg("export_fail");
 			continue;
 		}
 		if (ft_strchr(argv[i], '-') || ft_strchr(argv[i], '+') || ft_strchr(argv[i], ' '))
 		{
+			//printf("argv[i] is %s", argv[i]);
 			error_msg("export_fail");
 			last_exit_status = 1;
 			return (1);
@@ -85,8 +87,6 @@ int	handle_export(char **argv, t_env **env_list)
 	}
 	if (check_exportvalue(argv) != 0)
 		return (1);
-	else
-        return (0);
 	i = 1;
 	while (argv[i])
 	{
@@ -94,7 +94,7 @@ int	handle_export(char **argv, t_env **env_list)
 
 		if (!key_value || !key_value[0] || !key_value[1])
 		{
-			printf("export: `%s': not a valid identifier\n", argv[i]);
+			error_msg("export_fail");
 			if (key_value)
 				ft_free_split(key_value);
 			i++; 
