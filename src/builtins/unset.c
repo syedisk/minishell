@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:40:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/14 17:29:37 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 21:16:04 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ int	handle_unset(char **args, t_env **env_list)
 {
 	if (!args[1])
 	{
-		last_exit_status = 0; // on error
+		g_last_exit_status = 0; // on error
 		return (0);
 	}
 	ft_unset(args, env_list);
-	last_exit_status = 0; // on success
+	g_last_exit_status = 0; // on success
 	return (0);
 }

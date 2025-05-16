@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:13:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/15 16:25:53 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 23:11:01 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ typedef struct s_env
 }					t_env;
 
 // env_utils.c
-t_env				*create_env_node(char *env_str);
+t_env				*create_env_node(char *env_str, char *sep);
 t_env				*create_env_list(char **envp);
 char				*get_env_value(t_env *env, const char *key);
 void				set_env_value(t_env **env, const char *key,

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:07:47 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/15 15:33:14 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 22:44:29 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,10 @@ void error_msg(char *error)
         write(2, "dup2 failed for fd\n", 20);
     else if (ft_strcmp(error, "pwd_got_arg") == 0)
         write (2, "pwd: too many arguments\n", 24);
+    else if (ft_strcmp(error, "exit_arg") == 0)
+        write(2, "numeric argument required\n", 27);
+    else if (ft_strcmp(error, "exit_too_many_arg") == 0)
+        write(2, "exit: too many arguments\n", 25);
     else
     {
         write(2, "Error: ", 7);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:46:58 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/14 18:34:34 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 22:53:07 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ int	handle_env(t_env *env)
 	{
 		if (env->value)
 			printf("%s=%s\n", env->key, env->value);
+		else
+			printf("%s\n", env->key);
 		env = env->next;
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:28:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/12 21:44:49 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 21:08:07 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ char *ft_strjoin_char(char *s, char c)
     return ft_strjoin_free(s, str);
 }
 
-char *expand_variables(char *line, t_env *env_list, int last_exit_status)
+char *expand_variables(char *line, t_env *env_list, int g_last_exit_status)
 {
 	char	*result = ft_strdup(""); // start with empty string
 	char	*temp;
@@ -80,7 +80,7 @@ char *expand_variables(char *line, t_env *env_list, int last_exit_status)
 				line++;
 				if (*line == '?') // Handle $?
 				{
-					temp = ft_itoa(last_exit_status);
+					temp = ft_itoa(g_last_exit_status);
 					result = ft_strjoin_free(result, temp);
 					free(temp);
 					line++;

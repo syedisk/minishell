@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/14 18:01:17 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 21:04:15 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 #include <sys/stat.h> // for stat
 #include <stddef.h>
 
-extern	int	last_exit_status;
+extern	int	g_last_exit_status;
 
 int readline_active_state(void);
 char *custom_readline(const char *prompt);

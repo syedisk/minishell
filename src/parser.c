@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/12 20:07:31 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 21:06:04 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 		{
 			if (curr->type == WORD)
 			{
-				expanded = expand_variables(curr->value, env_list, last_exit_status);
+				expanded = expand_variables(curr->value, env_list, g_last_exit_status);
 				if (!expanded)
 				{
 					free_commands(cmd_head);

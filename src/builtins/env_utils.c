@@ -3,37 +3,47 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:34:32 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/14 18:29:03 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 23:12:24 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtins.h"
 #include "minishell.h"
 
-t_env	*create_env_node(char *env_str)
+t_env	*create_env_node(char *env_str, char *sep)
 {
 	t_env	*node;
 	char	**split;
-
+	
 	split = ft_split(env_str, '=');
 	if (!split)
 		return (NULL);
 	node = malloc(sizeof(t_env));
 	if (!node)
         return (free(split), NULL);
-	node->key = ft_strdup(split[0]);
-	if (!node->key)
-	{
-		free(node);
-		return (free(split), NULL);
-	}
-	if (split[1])
-		node->value = ft_strdup(split[1]);
+	if (sep)
+		{
+			*sep = '\0'; // Temporarily split key and value
+			node->key = ft_strdup(env_str);       // Before '='
+			node->value = ft_strdup(sep + 1);     // After '='
+			*sep = '='; // Restore original string
+		}
 	else
-		node->value = NULL;
+	{
+		node->key = ft_strdup(split[0]);
+		if (!node->key)
+		{
+			free(node);
+			return (free(split), NULL);
+		}
+		if (split[1])
+			node->value = ft_strdup(split[1]);
+		else
+			node->value = NULL;
+	}
 	if (split[1] && !node->value)
 	{
 		free(node->key);
@@ -49,6 +59,7 @@ t_env	*create_env_list(char **envp)
 	t_env	*head;
 	t_env	*tail;
 	t_env	*new_node;
+	char	*sep;
 	int		i;
 
 	head = NULL;
@@ -56,7 +67,8 @@ t_env	*create_env_list(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		new_node = create_env_node(envp[i]);
+		sep = ft_strchr(envp[i], '=');
+		new_node = create_env_node(envp[i], sep);
 		if (!new_node)
         {
             free_env_list(head);

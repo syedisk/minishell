@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/15 16:43:40 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 22:39:44 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int last_exit_status = 0;
+int g_last_exit_status = 0;
 
 void wait_for_child_processes(int last_pid)
 {
@@ -25,9 +25,9 @@ void wait_for_child_processes(int last_pid)
         if (pid == last_pid)
         {
             if (WIFEXITED(status))
-                last_exit_status = WEXITSTATUS(status);
+                g_last_exit_status = WEXITSTATUS(status);
             else
-                last_exit_status = 128 + WTERMSIG(status);
+                g_last_exit_status = 128 + WTERMSIG(status);
         }
     }
 }
@@ -83,9 +83,12 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp)
         }
         if (is_builtin(cmd->argv[0]) && !cmd->next && fd_in == 0)
         {
-            last_exit_status = execute_builtin(cmd, env_list);
+            g_last_exit_status = execute_builtin(cmd, env_list);
             cmd = cmd->next;
-            continue;
+            if (cmd)
+                continue;
+            else
+                exit(g_last_exit_status);
         }
         if (cmd->next)
         {

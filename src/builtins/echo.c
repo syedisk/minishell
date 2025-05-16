@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/15 14:30:22 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 21:08:34 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	handle_echo(char **argv, t_env	*env_list)
 	}
 	while (argv[i])
 	{
-		expanded = expand_variables(argv[i], env_list, last_exit_status);
+		expanded = expand_variables(argv[i], env_list, g_last_exit_status);
 		if (expanded)
 		{
 			printf("%s", expanded);
@@ -55,6 +55,6 @@ int	handle_echo(char **argv, t_env	*env_list)
 	}
 	if (!newline)
 		printf("\n");
-	last_exit_status = 0;
+	g_last_exit_status = 0;
 	return (0);
 }
