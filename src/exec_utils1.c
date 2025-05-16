@@ -72,27 +72,3 @@ char *resolve_path(char *cmd)
 	ft_free_split(paths);
 	return (NULL);
 }
-
-int	is_builtin(char	*cmd)
-{
-	if (!cmd)
-		return (0);
-	return (!ft_strcmp(cmd, "cd") || !ft_strcmp(cmd, "pwd") || !ft_strcmp(cmd, "echo") || !ft_strcmp(cmd, "env")
-		|| !ft_strcmp(cmd, "exit") || !ft_strcmp(cmd, "export") || !ft_strcmp(cmd, "unset"));
-}
-
-int handle_pwd(void)
-{
-	char cwd[1024];
-
-	if (getcwd(cwd, sizeof(cwd)))
-		printf("%s\n", cwd);
-	else
-	{
-		perror("pwd");
-		last_exit_status = 1;
-		return (1);
-	}
-	last_exit_status = 0;
-	return (0);
-}

@@ -3,67 +3,107 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:10:24 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/15 17:25:58 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/15 17:10:47 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	is_valid_export_format(const char *str)
+static void	handle_newenv(t_env **env_list, char *key, char *value)
 {
-	int	i = 0;
+	t_env *curr = *env_list;
 
-	if (!str || !str[0])
-		return (0);
-	if (!(ft_isalpha(str[0]) || str[0] == '_'))
-		return (0);
-	while (str[i] && str[i] != '=')
+	while (curr)
 	{
-		if (!(ft_isalnum(str[i]) || str[i] == '_'))
-			return (0);
-		i++;
+		if (ft_strcmp(curr->key, key) == 0)
+		{
+			free(curr->value);
+			curr->value =  ft_strdup(value);
+			return ;
+		}
+		curr = curr->next;
 	}
-	return (1);
+	t_env *new = malloc(sizeof(t_env));
+	if (!new)
+	{
+		perror("malloc");
+		last_exit_status = 1;
+		return ;
+	}
+	new->key = ft_strdup(key);
+	new->value = ft_strdup(value);
+	new->next = *env_list;
+	*env_list = new;
+	last_exit_status = 0;
 }
 
-void	ft_export(char **args, t_env **env)
+static int check_exportvalue(char **argv)
+{
+	int	i;
+	
+	i = 1;
+	while (argv[i])
+	{
+		if (!(ft_strchr(argv[i], '=')))
+		{
+			// printf("argv[i] is %s", argv[i]);
+			i++;
+			//error_msg("export_fail");
+			continue;
+		}
+		if (ft_strchr(argv[i], '-') || ft_strchr(argv[i], '+') || ft_strchr(argv[i], ' '))
+		{
+			//printf("argv[i] is %s", argv[i]);
+			error_msg("export_fail");
+			last_exit_status = 1;
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
+
+int	handle_export(char **argv, t_env **env_list)
 {
 	int		i;
-	char	**kv;
+	char	**key_value;
+	t_env	*curr;
 
-	i = 1;
-	if (!args[1])
+	curr = *env_list;
+	if (!argv[1])
 	{
-		t_env *curr = *env;
 		while (curr)
 		{
 			if (curr->value)
-				printf("declare -x %s=\"%s\"\n", curr->key, curr->value);
+				printf("declare -x %s=\"%s\"\n", curr->key, curr->value); //Check with bash
 			else
 				printf("declare -x %s\n", curr->key);
 			curr = curr->next;
 		}
-		return ;
+		return (0);
 	}
-	while (args[i])
+	if (check_exportvalue(argv) != 0)
+		return (1);
+	i = 1;
+	while (argv[i])
 	{
-		if (!is_valid_export_format(args[i]))
+		key_value = ft_split(argv[i], '=');
+
+		if (!key_value || !key_value[0] || !key_value[1])
 		{
-			printf("export: `%s`: not a valid identifier\n", args[i]);
-			i++;
-			continue ;
+			error_msg("export_fail");
+			if (key_value)
+				ft_free_split(key_value);
+			i++; 
+			return (1);
 		}
-		kv = ft_split(args[i], '=');
-		if (!kv)
-			return ;
-		set_env_value(env, kv[0], kv[1]);
-		free(kv[0]);
-		if (kv[1])
-			free(kv[1]);
-		free(kv);
-		i++;
+	handle_newenv(env_list, key_value[0], key_value[1]);
+	ft_free_split(key_value);
+	i++;
 	}
+	last_exit_status = 0;
+	return (0);
 }

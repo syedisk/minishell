@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/13 15:07:07 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/13 20:00:56 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ char *custom_readline(const char *prompt)
 int	main(int argc, char **argv, char **envp)
 {
 	// Clean up old heredoc temp files
-	system("rm -f /tmp/.heredoc_*");
+	//system("rm -f /tmp/.heredoc_*");
 
 	char		*input;
 	t_token 	*tokens;
