@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 12:43:42 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 17:25:05 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:11:55 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
-	int				quoted;
+	int				quote_type; // 0 = unquoted, 1 = single, 2 = double
 	struct s_token	*next;
 }					t_token;
 

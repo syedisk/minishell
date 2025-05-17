@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 15:51:45 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:17:59 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	ft_isspace(char c)
 	return (0);
 }
 
-t_token	*new_token(char *value, t_token_type type, int quoted)
+t_token	*new_token(char *value, t_token_type type, int quote_type)
 {
 	t_token	*token;
 
@@ -32,7 +32,7 @@ t_token	*new_token(char *value, t_token_type type, int quoted)
 		return (NULL);
 	token->value = value;
 	token->type = type;
-	token->quoted = quoted;
+	token->quote_type = quote_type;
 	token->next = NULL;
 	return (token);
 }
@@ -133,6 +133,8 @@ t_token	*tokenise(const char *input)
 	char			*op;
 	char			*quoted;
 	char			*word;
+	char			quote;
+	int				quote_type;
 
 	tokens = NULL;
 	i = 0;
@@ -152,8 +154,13 @@ t_token	*tokenise(const char *input)
 		}
 		else if (input[i] == '"' || input[i] == '\'')
 		{
+			quote = input[i];
 			quoted = read_quoted(input, &i); // Extract quoted string
-            add_token(&tokens, new_token(quoted, WORD, 1));
+			if (quote == '\'')
+				quote_type = 1;
+			else
+				quote_type = 2;
+            add_token(&tokens, new_token(quoted, WORD, quote_type));
 		}
 		else
 		{

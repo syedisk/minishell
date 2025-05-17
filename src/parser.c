@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 19:11:14 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:30:52 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static t_token *dup_token_list(t_token *start, t_token *end)
 			return (free_tokens(new_head), NULL);
 		new_tok->value = ft_strdup(start->value);
 		new_tok->type = start->type;
-		new_tok->quoted = start->quoted;
+		new_tok->quote_type = start->quote_type;
 		new_tok->next = NULL;
 		if (last)
 			last->next = new_tok;
@@ -108,7 +108,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 		{
 			if (curr->type == WORD)
 			{
-				if (curr->quoted)
+				if (curr->quote_type == 1)
 					expanded = ft_strdup(curr->value);
 				else
 					expanded = expand_variables(curr->value, env_list, g_last_exit_status);

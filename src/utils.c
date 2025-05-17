@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:33:46 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 14:02:01 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:46:34 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,38 +38,22 @@ int	safe_write_line(int fd, const char *line)
 
 char	*remove_quotes(const char *str)
 {
-	char	*result;
-	int		i;
-	int		j;
-	char	quote;
 	size_t	len;
+	char	*result;
 
-	i = 0;
-	j = 0;
-	quote = 0;
 	if (!str)
 		return (NULL);
 	len = ft_strlen(str);
-	result = malloc(len + 1); // max size: original length
-	if (!result)
-		return (NULL);
-	while (str[i])
+	if ((str[0] == '\'' && str[len - 1] == '\'') || (str[0] == '"' && str[len - 1] == '"'))
 	{
-		if ((str[i] == '\'' || str[i] == '"'))
-		{
-			if (!quote)
-                quote = str[i]; // Start of a quoted section
-            else if (quote == str[i])
-                quote = 0; // End of a quoted section
-			else
-				result[j++] = str[i]; // keep mismatched quote
-        }
-		else
-			result[j++] = str[i];
-		i++;
+		result = malloc(len - 1); // len - 2 for content, +1 for '\0'
+		if (!result)
+			return (NULL);
+		ft_strlcpy(result, str + 1, len - 1); // skip first and last quote
+		return (result);
 	}
-	result[j] = '\0';
-	return (result);
+	else
+		return (ft_strdup(str));
 }
 
 void	free_split(char **split)

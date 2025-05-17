@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/17 19:15:43 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:19:23 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	handle_echo(t_token *args, t_env *env_list)
 	}
 	while (args && args->type == WORD)
 	{
-		if (args->quoted)
+		if (args->quote_type == 1)
 			printf("%s", args->value);
 		else
 		{
