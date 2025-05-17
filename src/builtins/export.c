@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:10:24 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/16 22:39:26 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 12:58:28 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static void	handle_newenv(t_env **env_list, char *key, char *value)
 		{
 			free(curr->value);
 			curr->value =  ft_strdup(value);
-			return ;
+			return;
 		}
 		curr = curr->next;
 	}
@@ -48,14 +48,12 @@ static void	handle_newenv(t_env **env_list, char *key, char *value)
 	if (!new)
 	{
 		perror("malloc");
-		g_last_exit_status = 1;
 		return ;
 	}
 	new->key = ft_strdup(key);
 	new->value = ft_strdup(value);
 	new->next = *env_list;
 	*env_list = new;
-	g_last_exit_status = 0;
 }
 
 static int check_exportvalue(char **argv)
@@ -136,6 +134,5 @@ int	handle_export(char **argv, t_env **env_list)
 	ft_free_split(key_value);
 	i++;
 	}
-	g_last_exit_status = 0;
 	return (0);
 }
