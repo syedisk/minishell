@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 13:47:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/03 16:17:23 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 16:00:40 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ typedef struct s_command
 	char				*delimiter; // delimiter for heredoc
 	int					pipe_after; // 1 if pipe to next command, 0 if not
 	int					is_builtin; // 1 if command is builtin
+	t_token				*raw_tokens;
 	struct s_command	*next;
 }						t_command;
 

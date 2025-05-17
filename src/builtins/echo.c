@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/16 21:08:34 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 19:15:43 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,30 +28,34 @@ static int	is_n_flag(char *str)
 	return (1);
 }
 
-int	handle_echo(char **argv, t_env	*env_list)
+int	handle_echo(t_token *args, t_env *env_list)
 {
-	int		i;
 	int		newline;
 	char	*expanded;
 
-	i = 1;
 	newline = 0;
-	while (argv[i] && is_n_flag(argv[i]))
+	args = args->next;
+	while (args && args->type == WORD && is_n_flag(args->value))
 	{
 		newline = 1;
-		i++;
+		args = args->next;
 	}
-	while (argv[i])
+	while (args && args->type == WORD)
 	{
-		expanded = expand_variables(argv[i], env_list, g_last_exit_status);
-		if (expanded)
+		if (args->quoted)
+			printf("%s", args->value);
+		else
 		{
-			printf("%s", expanded);
-			free(expanded);
+			expanded = expand_variables(args->value, env_list, g_last_exit_status);
+			if (expanded)
+			{
+				printf("%s", expanded);
+				free(expanded);
+			}
 		}
-		if (argv[i + 1])
+		if (args->next && args->next->type == WORD)
 			printf(" ");
-		i++;
+		args = args->next;
 	}
 	if (!newline)
 		printf("\n");

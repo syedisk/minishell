@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/16 21:06:04 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 19:11:14 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,32 @@
 #include "expander.h"
 #include "heredoc.h"
 #include "utils.h"
+
+static t_token *dup_token_list(t_token *start, t_token *end)
+{
+	t_token *new_head = NULL;
+	t_token *new_tok;
+	t_token *last = NULL;
+
+	while (start && start != end)
+	{
+		new_tok = malloc(sizeof(t_token));
+		if (!new_tok)
+			return (free_tokens(new_head), NULL);
+		new_tok->value = ft_strdup(start->value);
+		new_tok->type = start->type;
+		new_tok->quoted = start->quoted;
+		new_tok->next = NULL;
+		if (last)
+			last->next = new_tok;
+		else
+			new_head = new_tok;
+		last = new_tok;
+		start = start->next;
+	}
+	return (new_head);
+}
+
 
 t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 {
@@ -46,6 +72,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 			new_cmd->append_out = 0;
 			new_cmd->next = NULL;
 			new_cmd->heredoc = 0;
+			new_cmd->raw_tokens = NULL;
 			if (!cmd_head)
 				cmd_head = new_cmd;
 			else
@@ -53,6 +80,11 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 			current_cmd = new_cmd;
 			if (curr->type == PIPE)
 				curr = curr->next;
+			t_token *tok_start = curr;
+			t_token *tok_end = curr;
+			while (tok_end && tok_end->type != PIPE)
+				tok_end = tok_end->next;
+			current_cmd->raw_tokens = dup_token_list(tok_start, tok_end);
 		}
 		argc = 0;
 		temp = curr;
@@ -76,7 +108,10 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 		{
 			if (curr->type == WORD)
 			{
-				expanded = expand_variables(curr->value, env_list, g_last_exit_status);
+				if (curr->quoted)
+					expanded = ft_strdup(curr->value);
+				else
+					expanded = expand_variables(curr->value, env_list, g_last_exit_status);
 				if (!expanded)
 				{
 					free_commands(cmd_head);

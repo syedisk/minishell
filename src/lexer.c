@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/06 16:48:21 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 15:51:45 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	ft_isspace(char c)
 	return (0);
 }
 
-t_token	*new_token(char *value, t_token_type type)
+t_token	*new_token(char *value, t_token_type type, int quoted)
 {
 	t_token	*token;
 
@@ -32,6 +32,7 @@ t_token	*new_token(char *value, t_token_type type)
 		return (NULL);
 	token->value = value;
 	token->type = type;
+	token->quoted = quoted;
 	token->next = NULL;
 	return (token);
 }
@@ -146,18 +147,18 @@ t_token	*tokenise(const char *input)
 		{
 			type = get_operator_type(&input[i], &op_len);
 			op = ft_strndup(&input[i], op_len);
-			add_token(&tokens, new_token(op, type));
+			add_token(&tokens, new_token(op, type, 0));
 			i += op_len;
 		}
 		else if (input[i] == '"' || input[i] == '\'')
 		{
 			quoted = read_quoted(input, &i); // Extract quoted string
-            add_token(&tokens, new_token(quoted, WORD));
+            add_token(&tokens, new_token(quoted, WORD, 1));
 		}
 		else
 		{
 			word = read_word(input, &i);
-			add_token(&tokens, new_token(word, WORD));
+			add_token(&tokens, new_token(word, WORD, 0));
 		}
 	}
 	return (tokens);

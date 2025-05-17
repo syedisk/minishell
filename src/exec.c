@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/16 22:39:44 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 19:44:47 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,10 +85,7 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp)
         {
             g_last_exit_status = execute_builtin(cmd, env_list);
             cmd = cmd->next;
-            if (cmd)
-                continue;
-            else
-                exit(g_last_exit_status);
+            continue;
         }
         if (cmd->next)
         {

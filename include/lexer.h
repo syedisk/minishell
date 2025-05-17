@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 12:43:42 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/29 18:20:52 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 17:25:05 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,12 @@ typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
+	int				quoted;
 	struct s_token	*next;
 }					t_token;
 
 t_token	*tokenise(const char *input);
 void	free_tokens(t_token *tokens);
+void	add_token(t_token **head, t_token *new);
 
 #endif

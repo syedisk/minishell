@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 16:22:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/14 17:56:23 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 16:58:47 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ void free_tokens(t_token *tokens)
 	while (tokens)
 	{
 		tmp = tokens->next;
-		free(tokens->value); // Free the token value
+		if(tokens->value)
+			free(tokens->value); // Free the token value
 		free(tokens);   // Free the token node
 		tokens = tmp;
 	}
@@ -62,6 +63,8 @@ void	free_commands(t_command *cmds)
 			free(cmds->infile);
 		if (cmds->outfile)
 			free(cmds->outfile);
+		if (cmds->raw_tokens)
+			free_tokens(cmds->raw_tokens);
 		free(cmds);
 		cmds = tmp;
 	}
