@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 18:02:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/07 17:13:22 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 21:06:04 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void    sig_handler(int signal)
         rl_on_new_line();
         rl_redisplay();
     }
-    last_exit_status = 130;
+    g_last_exit_status = 130;
 }
 
 void    set_signals(void)
@@ -48,14 +48,14 @@ void ignore_sigquit(void)
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sigaction(SIGQUIT, &sa, NULL);
-    last_exit_status = 131; // typical value for SIGQUIT
+    g_last_exit_status = 131; // typical value for SIGQUIT
 }
 
 void heredoc_sigint_handler(int sig)
 {
     (void)sig;
     write(1, "\n", 1);
-    last_exit_status = 130;
+    g_last_exit_status = 130;
     exit(130);  // Bash exits heredoc on Ctrl+C with 130
 }
 

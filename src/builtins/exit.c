@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:30:30 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/14 18:41:28 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 22:44:02 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static int	handle_exit_value(char *arg)
 {
 	if (!ft_atoi_long(arg))
 	{
-		printf("exit: %s: numeric argument required\n", arg);
+		error_msg("exit_arg");
 		exit(2);
 	}
 	exit(ft_atoi(arg));
@@ -34,7 +34,7 @@ int	handle_exit(char **argv)
 	{
 		if (ft_isalpha(argv[1][i]))
 		{
-			printf("exit: %s: numeric argument required\n", argv[1]);
+			error_msg("exit_arg");
 			exit(2);
 		}
 		i++;
@@ -43,8 +43,8 @@ int	handle_exit(char **argv)
 		handle_exit_value(argv[1]);
 	if (argv[2])
 	{
-		printf("exit: too many arguments\n");
-		last_exit_status = 1;
+		error_msg("exit_too_many_arg");
+		g_last_exit_status = 1;
 		return (1);
 	}
 	return (0);

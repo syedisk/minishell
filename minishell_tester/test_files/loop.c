@@ -1,30 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   loop.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: lalex-ku <lalex-ku@42sp.org.br>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/14 17:23:44 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/16 21:15:51 by thkumara         ###   ########.fr       */
+/*   Created: 2022/06/22 17:32:45 by lalex-ku          #+#    #+#             */
+/*   Updated: 2022/06/22 17:32:50 by lalex-ku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
 
-int	handle_pwd(void)
+int	main(int argc, char const *argv[])
 {
-	char	cwd[1024];
+	int	pid;
 
-	//cwd[0] = '\0';
-	if (getcwd(cwd, sizeof(cwd)))
-		printf("%s\n", cwd);
-	else
+	pid = fork();
+	open("infile", O_RDONLY);
+	while (1)
 	{
-		perror("pwd");
-		g_last_exit_status = 1;
-		return (1);
+		printf("Helloo miniHELL %i\n", pid);
+		sleep(1);
 	}
-	g_last_exit_status = 0;
 	return (0);
 }

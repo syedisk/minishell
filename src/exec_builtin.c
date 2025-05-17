@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:13:56 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/14 18:46:08 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/15 16:28:25 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	execute_builtin(t_command *cmd, t_env **env_list)
 		return (handle_env(*env_list));
 	else if (!ft_strcmp(cmd->argv[0], "exit"))
 		return (handle_exit(cmd->argv));
-	return (0);
+	return (1);
 }
 
 int	is_builtin(char	*cmd)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/04/23 19:01:17 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/16 21:06:04 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env
 			}
 			if (expand)
 			{
-				expanded = expand_variables(line, env_list, last_exit_status);
+				expanded = expand_variables(line, env_list, g_last_exit_status);
 				safe_write_line(fd, expanded);
 				free(expanded);
 			}
