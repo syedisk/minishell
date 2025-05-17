@@ -3,41 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 18:02:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/16 21:06:04 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 21:00:54 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <signal.h>
 
-
-void    sig_handler(int signal)
+void sig_handler(int sig)
 {
-    (void)signal;
+    (void)sig;
+    g_sig_received = 130;
 
-    write(STDOUT_FILENO, "\n", 1);
-    // if (readline_active_state())
-	{
-        rl_replace_line("", 0);
-        rl_on_new_line();
-        rl_redisplay();
-    }
-    g_last_exit_status = 130;
+    // If readline is active, interrupt it immediately
+    write(1, "\n", 2);
+    rl_replace_line("", 0);
+    rl_on_new_line();
+    rl_redisplay();
+
+    rl_done = 1; // This causes readline to return
 }
 
-void    set_signals(void)
+void set_signals(void)
 {
     struct sigaction sa_sig;
-    
+
     sa_sig.sa_handler = sig_handler;
     sigemptyset(&sa_sig.sa_mask);
     sa_sig.sa_flags = SA_RESTART;
-    if (sigaction(SIGINT, &sa_sig, NULL) == -1)
-        perror("sigaction");
 
+    if (sigaction(SIGINT, &sa_sig, NULL) == -1)
+        perror("sigaction SIGINT");
     signal(SIGQUIT, SIG_IGN);
 }
 
@@ -48,14 +47,13 @@ void ignore_sigquit(void)
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sigaction(SIGQUIT, &sa, NULL);
-    g_last_exit_status = 131; // typical value for SIGQUIT
+    g_sig_received = 131; // Set exit value for SIGQUIT
 }
 
 void heredoc_sigint_handler(int sig)
 {
     (void)sig;
     write(1, "\n", 1);
-    g_last_exit_status = 130;
     exit(130);  // Bash exits heredoc on Ctrl+C with 130
 }
 

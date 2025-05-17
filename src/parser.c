@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/16 21:06:04 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:37:05 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "heredoc.h"
 #include "utils.h"
 
-t_command	*parse_tokens(t_token *tokens, t_env *env_list)
+t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 {
 	t_command	*cmd_head;
 	t_command	*current_cmd;
@@ -46,6 +46,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 			new_cmd->append_out = 0;
 			new_cmd->next = NULL;
 			new_cmd->heredoc = 0;
+			//new_cmd->exit_value = 0;
 			if (!cmd_head)
 				cmd_head = new_cmd;
 			else
@@ -76,7 +77,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 		{
 			if (curr->type == WORD)
 			{
-				expanded = expand_variables(curr->value, env_list, g_last_exit_status);
+				expanded = expand_variables(curr->value, env_list, exit_value);
 				if (!expanded)
 				{
 					free_commands(cmd_head);
@@ -141,7 +142,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 						return (NULL);
 					}
 					printf ("Expand is %d\n", expand);
-					create_heredoc_file(heredoc_path, delim, expand, env_list);
+					create_heredoc_file(heredoc_path, delim, expand, env_list, exit_value);
 					current_cmd->heredoc = 1;
 					current_cmd->infile = heredoc_path;
 					free(delim);

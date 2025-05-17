@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:23:44 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/16 21:15:51 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 16:41:30 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,7 @@ int	handle_pwd(void)
 	else
 	{
 		perror("pwd");
-		g_last_exit_status = 1;
 		return (1);
 	}
-	g_last_exit_status = 0;
 	return (0);
 }

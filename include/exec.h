@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/14 18:31:07 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:42:41 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 
 // exec.c
 int		is_builtin(char *cmd);
-int		execute_builtin(t_command *cmd, t_env **env_list);
-void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp);
-void    wait_for_child_processes(int last_pid);
-void    execute_child(t_command *cmd, t_env **env_list, char **envp, int *pipefd);
+int		execute_builtin(t_command *cmd, t_env **env_list, int *exit_value);
+void	execute_commands(t_command *cmd_head, t_env **env_list, char **envp, int *exit_value);
+void wait_for_child_processes(int last_pid, int *exit_value);
+void    execute_child(t_command *cmd, t_env **env_list, char **envp, int *pipefd, int *exit_value);
 void    close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd);
-int        fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, int *pipefd);
+int        fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, int *pipefd , int *exit_value);
 
 
 // exec_utils.c

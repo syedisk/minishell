@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 13:47:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/03 16:17:23 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:36:23 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,11 @@ typedef struct s_command
 	char				*delimiter; // delimiter for heredoc
 	int					pipe_after; // 1 if pipe to next command, 0 if not
 	int					is_builtin; // 1 if command is builtin
+	int					exit_value; // exit value of the command
 	struct s_command	*next;
 }						t_command;
 
-t_command	*parse_tokens(t_token *tokens, t_env *env_list);
+t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value);
 void					free_commands(t_command *cmds);
 
 #endif

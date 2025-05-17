@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/16 21:08:34 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:38:06 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static int	is_n_flag(char *str)
 	return (1);
 }
 
-int	handle_echo(char **argv, t_env	*env_list)
+int	handle_echo(char **argv, t_env	*env_list, int *exit_value)
 {
 	int		i;
 	int		newline;
@@ -43,7 +43,7 @@ int	handle_echo(char **argv, t_env	*env_list)
 	}
 	while (argv[i])
 	{
-		expanded = expand_variables(argv[i], env_list, g_last_exit_status);
+		expanded = expand_variables(argv[i], env_list, exit_value);
 		if (expanded)
 		{
 			printf("%s", expanded);
@@ -55,6 +55,6 @@ int	handle_echo(char **argv, t_env	*env_list)
 	}
 	if (!newline)
 		printf("\n");
-	g_last_exit_status = 0;
+	exit_value = 0;
 	return (0);
 }

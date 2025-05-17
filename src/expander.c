@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:28:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/16 21:08:07 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:31:20 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ char *ft_strjoin_char(char *s, char c)
     return ft_strjoin_free(s, str);
 }
 
-char *expand_variables(char *line, t_env *env_list, int g_last_exit_status)
+char *expand_variables(char *line, t_env *env_list, int *exit_value)
 {
 	char	*result = ft_strdup(""); // start with empty string
 	char	*temp;
@@ -80,7 +80,12 @@ char *expand_variables(char *line, t_env *env_list, int g_last_exit_status)
 				line++;
 				if (*line == '?') // Handle $?
 				{
-					temp = ft_itoa(g_last_exit_status);
+					if (g_sig_received != 0)
+					{
+						temp = ft_itoa(g_sig_received);
+						result = ft_strjoin_free(result, temp);
+					}
+					temp = ft_itoa(*exit_value);
 					result = ft_strjoin_free(result, temp);
 					free(temp);
 					line++;
@@ -93,8 +98,9 @@ char *expand_variables(char *line, t_env *env_list, int g_last_exit_status)
 						line++;
 					var_name = ft_substr(start, 0, line - start);
 					value = get_env_value(env_list, var_name);
-					if (value)
-						result = ft_strjoin_free(result, value);
+					if (!value)
+    					value = ""; 
+					result = ft_strjoin_free(result, value);
 					free(var_name);
 					if (*line == '}')
 						line++; // Skip closing brace

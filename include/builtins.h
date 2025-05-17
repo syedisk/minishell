@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:13:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/16 23:11:01 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:31:38 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void				free_env_list(t_env *env);
 //Builtins
 int handle_cd(char **argv);
 int handle_pwd(void);
-int	handle_echo(char **argv, t_env	*env_list);
+int	handle_echo(char **argv, t_env	*env_list, int *exit_value);
 int	handle_export(char **argv, t_env **env_list);
 int	handle_unset(char **args, t_env **env_list);
 int handle_exit(char **argv);

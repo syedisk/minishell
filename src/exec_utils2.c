@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/15 16:49:01 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 20:42:48 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,14 @@ void handle_infile(t_command *cmd, int fd_in)
 	{
 		fd = open(cmd->infile, O_RDONLY);
 		if (fd == -1)
-		exit((error_msg("heredoc_fail"), EXIT_FAILURE));
+			exit((error_msg("heredoc_fail"), EXIT_FAILURE));
 		unlink(cmd->infile);
 	}
 	else if (cmd->infile)
 	{
 		fd = open(cmd->infile, O_RDONLY);
 		if (fd == -1)
-		exit((error_msg("infile_fail"), EXIT_FAILURE));
+			exit((error_msg("infile_fail"), EXIT_FAILURE));
 		dup2(fd, STDIN_FILENO);
         close(fd);
 	}
@@ -77,10 +77,11 @@ void handle_outfile(t_command *cmd, int *pipefd)
 }
 
 void execute_child(t_command *cmd, t_env **env_list,
-	char **envp, int *pipefd)
+	char **envp, int *pipefd, int *exit_value)
 {
 	char *full_path;
 
+	//printf("1. execve failed for %s\n", cmd->argv[0]);
 	if (pipefd != NULL)
 		handle_infile(cmd, pipefd[0]);
 	else
@@ -92,7 +93,7 @@ void execute_child(t_command *cmd, t_env **env_list,
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		exit((printf("Error: Null pointer in execute_child\n"), 127));
 	if (is_builtin(cmd->argv[0]))
-		exit(execute_builtin(cmd, env_list));
+		exit(execute_builtin(cmd, env_list, exit_value));
 	if (is_directory(cmd->argv[0]) != 0)
 		exit((error_msg("is_directory"), 126));
 	if (cmd->argv[0] && !ft_strcmp(cmd->argv[0], "export="))
@@ -101,9 +102,9 @@ void execute_child(t_command *cmd, t_env **env_list,
     {
 	    full_path = resolve_path(cmd->argv[0]);
 	    if (!full_path)
-		    exit((perror("Command not found"), 127));
+			exit((error_msg("execve_fail"), 127));
 	    if ((execve(full_path, cmd->argv, envp) == -1) && cmd->argv[0])
-		    exit((free(full_path), error_msg("execve_fail"), 127));
+		    exit((error_msg("execve_fail"), 127));
 		free(full_path);
 	}
 	    exit(EXIT_SUCCESS);

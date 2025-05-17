@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:30:30 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/16 22:44:02 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 16:38:16 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ int	handle_exit(char **argv)
 	if (argv[2])
 	{
 		error_msg("exit_too_many_arg");
-		g_last_exit_status = 1;
 		return (1);
 	}
 	return (0);

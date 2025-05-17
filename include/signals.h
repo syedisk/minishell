@@ -1,21 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   heredoc.h                                          :+:      :+:    :+:   */
+/*   signals.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/05 17:05:10 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 20:32:02 by thkumara         ###   ########.fr       */
+/*   Created: 2025/05/17 19:07:57 by thkumara          #+#    #+#             */
+/*   Updated: 2025/05/17 19:16:34 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HEREDOC_H
-# define HEREDOC_H
-#include "minishell.h"
+#ifndef SIGNALS_H
+# define SIGNALS_H
 
-char	*generate_heredoc_filename(int id);
-int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env *env_list, int *exit_value);
-		void handle_heredoc_signals(void);
+
+#include <signal.h>
+
+
+
+void set_signals(void);
+void sig_handler(int sig);
+void ignore_sigquit(void);
+void handle_heredoc_signals(void);
+void heredoc_sigint_handler(int sig);
 
 #endif
