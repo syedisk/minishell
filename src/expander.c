@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:28:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/16 21:08:07 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 11:37:20 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,63 +62,52 @@ char *expand_variables(char *line, t_env *env_list, int g_last_exit_status)
 	char	*var_name;
 	char	*value;
 	const char *start;
-	char    pos_quote = 0;
 
 	while (*line)
 	{
-			if (*line == '\'' || *line == '"') // Handle quotes
+		if (*line == '$')
+		{
+			line++;
+			if (*line == '?') // Handle $?
 			{
-				if (pos_quote == 0) // Start of a quoted section
-					pos_quote = *line;
-				else if (pos_quote == *line) // End of the quoted section
-					pos_quote = 0;
-				//result = ft_strjoin_char(result, *line); // Append the quote if inside another quote
+				temp = ft_itoa(g_last_exit_status);
+				result = ft_strjoin_free(result, temp);
+				free(temp);
 				line++;
 			}
-			else if (*line == '$' && pos_quote != '\'') // Handle variable expansion (skip if inside single quotes)
+			else if (*line == '{') // Handle ${VAR}
 			{
 				line++;
-				if (*line == '?') // Handle $?
-				{
-					temp = ft_itoa(g_last_exit_status);
-					result = ft_strjoin_free(result, temp);
-					free(temp);
+				start = line;
+				while (*line && *line != '}')
 					line++;
-				}
-				else if (*line == '{') // Handle ${VAR}
-				{
+				var_name = ft_substr(start, 0, line - start);
+				value = get_env_value(env_list, var_name);
+				if (value)
+					result = ft_strjoin_free(result, value);
+				free(var_name);
+				if (*line == '}')
+					line++; // Skip closing brace
+			}
+			else if (ft_isalpha(*line) || *line == '_') // Handle $VAR
+			{
+				start = line;
+				while (*line && (ft_isalnum(*line) || *line == '_'))
 					line++;
-					start = line;
-					while (*line && *line != '}')
-						line++;
-					var_name = ft_substr(start, 0, line - start);
-					value = get_env_value(env_list, var_name);
-					if (value)
-						result = ft_strjoin_free(result, value);
-					free(var_name);
-					if (*line == '}')
-						line++; // Skip closing brace
-				}
-				else if (ft_isalpha(*line) || *line == '_') // Handle $VAR
-				{
-					start = line;
-					while (*line && (ft_isalnum(*line) || *line == '_'))
-						line++;
-					var_name = ft_substr(start, 0, line - start);
-					value = get_env_value(env_list, var_name);
-					if (value)
-						result = ft_strjoin_free(result, value);
-					free(var_name);
-				}
-				else
-					result = ft_strjoin_char(result, '$'); // Just a lone $, treat literally
+				var_name = ft_substr(start, 0, line - start);
+				value = get_env_value(env_list, var_name);
+				if (value)
+					result = ft_strjoin_free(result, value);
+				free(var_name);
 			}
 			else
-			{
-				result = ft_strjoin_char(result, *line);
-				line++;
-			}
-			//printf("line: %s\n", line);
+				result = ft_strjoin_char(result, '$'); // Just a lone $, treat literally
 		}
+		else
+		{
+			result = ft_strjoin_char(result, *line);
+			line++;
+		}
+	}
 	return result;
 }

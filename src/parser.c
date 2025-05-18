@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 20:30:52 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 11:06:26 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,21 +109,27 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 			if (curr->type == WORD)
 			{
 				if (curr->quote_type == 1)
+				{
 					expanded = ft_strdup(curr->value);
-				else
+					cleaned = ft_strdup(expanded);
+				}
+				else if (curr->quote_type == 2)
+				{
 					expanded = expand_variables(curr->value, env_list, g_last_exit_status);
-				if (!expanded)
+					cleaned = ft_strdup(expanded);
+				}
+				else
 				{
+					expanded = expand_variables(curr->value, env_list, g_last_exit_status);
+					cleaned = remove_quotes(expanded);
+				}
+				if (!expanded || !cleaned)
+				{
+					free(expanded);
 					free_commands(cmd_head);
 					return (NULL); // handle error
 				}
-				cleaned = remove_quotes(expanded);
 				free(expanded);
-				if (!cleaned)
-				{
-					free_commands(cmd_head);
-					return (NULL); // handle error
-				}
 				current_cmd->argv[argc++] = cleaned;
 			}
 			else if (curr->type == REDIR_IN)

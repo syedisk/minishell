@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:33:46 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 20:46:34 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 11:40:23 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,9 @@ char	*remove_quotes(const char *str)
 	if (!str)
 		return (NULL);
 	len = ft_strlen(str);
-	if ((str[0] == '\'' && str[len - 1] == '\'') || (str[0] == '"' && str[len - 1] == '"'))
+	if (len >= 2
+		&& ((str[0] == '\'' && str[len - 1] == '\'')
+			|| (str[0] == '"' && str[len - 1] == '"')))
 	{
 		result = malloc(len - 1); // len - 2 for content, +1 for '\0'
 		if (!result)
@@ -52,8 +54,7 @@ char	*remove_quotes(const char *str)
 		ft_strlcpy(result, str + 1, len - 1); // skip first and last quote
 		return (result);
 	}
-	else
-		return (ft_strdup(str));
+	return (ft_strdup(str));
 }
 
 void	free_split(char **split)
