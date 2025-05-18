@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/18 16:31:34 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 19:09:51 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 				else
 				{
 					expanded = expand_variables(curr->value, env_list, exit_value);
-					cleaned = remove_quotes(expanded); // check
+					cleaned = ft_strdup(expanded); //remove_quotes(expanded); // check
 				}
 				if (!expanded || !cleaned)
 				{

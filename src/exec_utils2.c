@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 20:02:56 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 20:23:09 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,9 @@ void handle_infile(t_command *cmd, int fd_in)
 		fd = open(cmd->infile, O_RDONLY);
 		if (fd == -1)
 			exit((error_msg("heredoc_fail"), EXIT_FAILURE));
+		if (dup2(fd, STDIN_FILENO) == -1)
+			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+		close(fd);
 		unlink(cmd->infile);
 	}
 	else if (cmd->infile)

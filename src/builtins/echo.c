@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 16:09:54 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 19:58:50 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ int	handle_echo(t_token *args, t_env *env_list, int *exit_value)
 {
 	int		newline;
 	char	*expanded;
+	int		need_space = 0;
 
 	newline = 0;
 	args = args->next;
@@ -62,32 +63,44 @@ int	handle_echo(t_token *args, t_env *env_list, int *exit_value)
 		newline = 1;
 		args = args->next;
 	}
-	while (args && args->type == WORD)
+	while (args)
 	{
-		if (args->quote_type == 1)
-			printf("%s", args->value);
-		else if (args->quote_type == 2)
+		if (args->type == REDIR_IN || args->type == REDIR_OUT
+			|| args->type == APPEND || args->type == HEREDOC)
 		{
-			expanded = expand_variables(args->value, env_list, exit_value);
-			if (expanded)
-			{
-				printf("%s", expanded);
-				free(expanded);
-			}
+			args = args->next;
+			if (args)
+				args = args->next;
+			continue ;
 		}
-		else
+		else if (args->type == WORD)
 		{
-			char *stripped = strip_inner_quotes(args->value);
-			expanded = expand_variables(stripped, env_list, exit_value);
-			free(stripped);
-			if (expanded)
+			if (need_space)
+				printf(" ");
+			if (args->quote_type == 1)
+				printf("%s", args->value);
+			else if (args->quote_type == 2)
 			{
-				printf("%s", expanded);
-				free(expanded);
+				expanded = expand_variables(args->value, env_list, exit_value);
+				if (expanded)
+				{
+					printf("%s", expanded);
+					free(expanded);
+				}
 			}
+			else
+			{
+				char *stripped = strip_inner_quotes(args->value);
+				expanded = expand_variables(stripped, env_list, exit_value);
+				free(stripped);
+				if (expanded)
+				{
+					printf("%s", expanded);
+					free(expanded);
+				}
+			}
+			need_space = 1;
 		}
-		if (args->next && args->next->type == WORD)
-			printf(" ");
 		args = args->next;
 	}
 	if (!newline)
