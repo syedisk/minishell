@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:07:47 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/16 22:44:29 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 12:47:45 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void error_msg(char *error)
         write(2, "unset: not a valid identifier\n", 31);
     else if (ft_strcmp(error, "cd_fail") == 0)
         write(2, "cd: no such file or directory\n", 31);
-    else if (ft_strcmp(error, "dup2_failed_fd") == 0)
+    else if (ft_strcmp(error, "dup2_failed") == 0)
         write(2, "dup2 failed for fd\n", 20);
     else if (ft_strcmp(error, "pwd_got_arg") == 0)
         write (2, "pwd: too many arguments\n", 24);
@@ -108,6 +108,8 @@ void error_msg(char *error)
         write(2, "numeric argument required\n", 27);
     else if (ft_strcmp(error, "exit_too_many_arg") == 0)
         write(2, "exit: too many arguments\n", 25);
+    else if (ft_strcmp(error, "undef_var") == 0)
+        write(2, "command not found\n", 19);
     else
     {
         write(2, "Error: ", 7);

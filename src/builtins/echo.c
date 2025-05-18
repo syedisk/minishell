@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 15:25:21 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 16:09:54 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static char	*strip_inner_quotes(const char *str)
 }
 
 
-int	handle_echo(t_token *args, t_env *env_list)
+int	handle_echo(t_token *args, t_env *env_list, int *exit_value)
 {
 	int		newline;
 	char	*expanded;
@@ -68,7 +68,7 @@ int	handle_echo(t_token *args, t_env *env_list)
 			printf("%s", args->value);
 		else if (args->quote_type == 2)
 		{
-			expanded = expand_variables(args->value, env_list, g_last_exit_status);
+			expanded = expand_variables(args->value, env_list, exit_value);
 			if (expanded)
 			{
 				printf("%s", expanded);
@@ -78,7 +78,7 @@ int	handle_echo(t_token *args, t_env *env_list)
 		else
 		{
 			char *stripped = strip_inner_quotes(args->value);
-			expanded = expand_variables(stripped, env_list, g_last_exit_status);
+			expanded = expand_variables(stripped, env_list, exit_value);
 			free(stripped);
 			if (expanded)
 			{
@@ -92,6 +92,6 @@ int	handle_echo(t_token *args, t_env *env_list)
 	}
 	if (!newline)
 		printf("\n");
-	g_last_exit_status = 0;
+	exit_value = 0;
 	return (0);
 }

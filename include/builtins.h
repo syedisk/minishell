@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:13:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 16:37:06 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 16:22:02 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void				free_env_list(t_env *env);
 //Builtins
 int handle_cd(char **argv);
 int handle_pwd(void);
-int	handle_echo(t_token *args, t_env *env_list);
+int	handle_echo(t_token *args, t_env *env_list, int *exit_value);
 int	handle_export(char **argv, t_env **env_list);
 int	handle_unset(char **args, t_env **env_list);
 int handle_exit(char **argv);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/16 21:04:15 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/17 19:17:38 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 # include "utils.h"
 # include "expander.h"
 # include "error_handle.h"
+#include "heredoc.h"
+# include "signals.h"
 # include <fcntl.h> // open
 # include <readline/history.h>
 # include <readline/readline.h>
@@ -30,8 +32,9 @@
 # include <unistd.h>   // for fork, execve, pipe
 #include <sys/stat.h> // for stat
 #include <stddef.h>
+#include <signal.h>
 
-extern	int	g_last_exit_status;
+extern volatile sig_atomic_t g_sig_received;
 
 int readline_active_state(void);
 char *custom_readline(const char *prompt);

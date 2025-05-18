@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/18 15:57:55 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 16:20:53 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,7 @@ static t_token *dup_token_list(t_token *start, t_token *end)
 	return (new_head);
 }
 
-
-t_command	*parse_tokens(t_token *tokens, t_env *env_list)
+t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 {
 	t_command	*cmd_head;
 	t_command	*current_cmd;
@@ -115,7 +114,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 				}
 				else if (curr->quote_type == 2)
 				{
-					expanded = expand_variables(curr->value, env_list, g_last_exit_status);
+					expanded = expand_variables(curr->value, env_list, exit_value);
 					cleaned = ft_strdup(expanded);
 				}
 				else
@@ -182,7 +181,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list)
 						return (NULL);
 					}
 					printf ("Expand is %d\n", expand);
-					create_heredoc_file(heredoc_path, delim, expand, env_list);
+					create_heredoc_file(heredoc_path, delim, expand, env_list, exit_value);
 					current_cmd->heredoc = 1;
 					current_cmd->infile = heredoc_path;
 					free(delim);

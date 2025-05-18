@@ -6,12 +6,14 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/13 20:00:56 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 15:17:30 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <signal.h>
 
+volatile sig_atomic_t g_sig_received = 0;
 
 char **tokens_to_args(t_token *tokens)
 {
@@ -67,7 +69,20 @@ char *custom_readline(const char *prompt)
     is_readline_active = 1;
     char *line = readline(prompt);
     is_readline_active = 0;
+	if (!line)
+        return NULL;
     return line;
+}
+
+static int is_only_whitespace(const char *str)
+{
+    while (*str)
+    {
+        if (!isspace((unsigned char)*str))
+            return 0;
+        str++;
+    }
+    return 1;
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -80,18 +95,18 @@ int	main(int argc, char **argv, char **envp)
 	t_command	*commands;
 	t_env		*env_list;
 	char		**env_array;
+	int			exit_value;
 
+	exit_value = 0;
 	(void)argc;
 	(void)argv;
 	
+	// commands = NULL;
+	// commands->exit_value = 0;
 	env_list = create_env_list(envp);
 	if (!env_list)
-	{
-		printf("Error: Failed to create environment list\n");
-		return (1);
-	}
-	void ignore_sigquit(void);  // Ignore Ctrl+
-
+		return (printf("Error: Failed to create environment list\n"), 1);
+	void ignore_sigquit(void); 
 	while (1)
 	{
 		set_signals();
@@ -102,6 +117,22 @@ int	main(int argc, char **argv, char **envp)
             free_env_list(env_list); // Free environment list
             exit(0); // Exit gracefully
         }
+		if (g_sig_received == 130)
+		{
+			exit_value = 130;
+    		g_sig_received = 0;
+    		if (*input == '\0') // Only skip empty lines
+    		{
+				free(input);
+				continue;
+    		}
+		}
+		if (*input == '\0' || is_only_whitespace(input))
+		{
+    		free(input);
+    		continue;
+		}
+
 		if (*input)
 			add_history(input);
 		if (check_syntax_error(input))
@@ -112,15 +143,21 @@ int	main(int argc, char **argv, char **envp)
 		//Step 1: tokenise
 		tokens = tokenise(input);
 
-		//Debug: print tokens
+		// Debug: print tokens
 		// printf("==== TOKENS ====\n");
 		// for (t_token *tmp = tokens; tmp; tmp = tmp->next)
 		// 	printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
 		
 		//Step 2: Parse into command structure
-		commands = parse_tokens(tokens, env_list);
-
-		//Debug: Heredoc test
+		commands = parse_tokens(tokens, env_list, &exit_value);
+		if (!commands)
+		{
+			free_tokens(tokens);
+			free(input);
+			continue; // Skip to next iteration if parsing fails
+		}
+		// printf("Command list created successfully. %s\n", commands->argv[0]);
+		// // Debug: Heredoc test
 		// for (t_command *cmd = commands; cmd; cmd = cmd->next)
 		// {
 		// 	if (cmd->infile)
@@ -145,7 +182,7 @@ int	main(int argc, char **argv, char **envp)
 		// 	}
 		// }
 
-		//Debug: print command info
+		// // Debug: print command info
 		// printf("==== COMMANDS ====\n");
 		// for (t_command *cmd = commands; cmd; cmd = cmd->next)
 		// {
@@ -160,7 +197,7 @@ int	main(int argc, char **argv, char **envp)
 
 		//Step 3: Execute command
 		env_array =  convert_env_to_array(env_list);
-		execute_commands(commands, &env_list, env_array); // execve in here
+		execute_commands(commands, &env_list, env_array, &exit_value); // execve in here
 
 		//Step 4: Clean up
 		free(input);
@@ -168,7 +205,6 @@ int	main(int argc, char **argv, char **envp)
 		free_commands(commands);
 		free_split(env_array);
 	}
-	free_env_list(env_list);
-	return (0);
+	return (free_env_list(env_list), 0);
 }
 

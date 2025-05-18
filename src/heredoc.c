@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/16 21:06:04 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 13:18:39 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ char *generate_heredoc_filename(int id)
 	return (filename);
 }
 
-int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env *env_list)
+int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env *env_list, int *exit_value)
 {
 	char	*line;
 	char	*expanded;
@@ -45,6 +45,8 @@ int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env
 	pid = fork();
 	if (pid == 0)
 	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		// CHILD PROCESS: handle heredoc
 		handle_heredoc_signals();  // Heredoc signal handler
 		fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -60,7 +62,7 @@ int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env
 			}
 			if (expand)
 			{
-				expanded = expand_variables(line, env_list, g_last_exit_status);
+				expanded = expand_variables(line, env_list, exit_value);
 				safe_write_line(fd, expanded);
 				free(expanded);
 			}

@@ -6,15 +6,13 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:13:56 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/17 16:40:38 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 16:09:43 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-extern int	g_last_exit_value;
-
-int	execute_builtin(t_command *cmd, t_env **env_list)
+int	execute_builtin(t_command *cmd, t_env **env_list, int *exit_value)
 {
 	if (!cmd || !cmd->argv[0])
 		return (0);
@@ -23,7 +21,7 @@ int	execute_builtin(t_command *cmd, t_env **env_list)
 	else if (ft_strcmp(cmd->argv[0], "pwd") == 0)
 		return (handle_pwd());
 	else if (!ft_strcmp(cmd->argv[0], "echo"))
-		return (handle_echo(cmd->raw_tokens, *env_list));
+		return (handle_echo(cmd->raw_tokens, *env_list, exit_value));
 	else if (!ft_strcmp(cmd->argv[0], "export"))
 		return (handle_export(cmd->argv, env_list));
 	else if (!ft_strcmp(cmd->argv[0], "unset"))
