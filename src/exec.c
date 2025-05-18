@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 16:11:41 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 21:00:18 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,14 @@ int fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, i
                 exit((error_msg("dup2_failed_fd"),EXIT_FAILURE));
             close(pipefd[1]);
         }
+        
         execute_child(cmd, env_list, envp, NULL, exit_value);
+    }
+    else if (pid == -1)
+    {
+        perror("fork failed");
+        error_msg("fork_failed");
+        exit(EXIT_FAILURE);
     }
     return pid;
 }
