@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/17 20:42:48 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 15:36:44 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void handle_infile(t_command *cmd, int fd_in)
 	else if (fd_in != 0)
 	{
 		if (dup2(fd_in, STDIN_FILENO) == -1)
-			exit((perror("dup2 failed for fd_in"),EXIT_FAILURE));
+			exit((error_msg("dup2_failed"),EXIT_FAILURE));
 		close(fd_in);
 	}
 }
@@ -70,7 +70,7 @@ void handle_outfile(t_command *cmd, int *pipefd)
 	else if (cmd->next && pipefd)
 	{
 		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-			exit((perror("dup2 failed for pipefd[1]"), EXIT_FAILURE));
+			exit((error_msg("outfile_fail"), EXIT_FAILURE));
 		close(pipefd[1]);
 		close(pipefd[0]);
 	}
@@ -103,9 +103,14 @@ void execute_child(t_command *cmd, t_env **env_list,
 	    full_path = resolve_path(cmd->argv[0]);
 	    if (!full_path)
 			exit((error_msg("execve_fail"), 127));
-	    if ((execve(full_path, cmd->argv, envp) == -1) && cmd->argv[0])
+	    if ((execve(full_path, cmd->argv, envp) == -1))
 		    exit((error_msg("execve_fail"), 127));
-		free(full_path);
+		// execve(full_path, cmd->argv, envp);
+
+	// If we got here, execve failed
+	// perror(cmd->argv[0]);  // prints: command: error message
+	free(full_path);
+	// exit(127);
 	}
 	    exit(EXIT_SUCCESS);
 }

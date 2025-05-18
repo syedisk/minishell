@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:28:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 20:31:20 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 12:53:20 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ char *expand_variables(char *line, t_env *env_list, int *exit_value)
 				line++;
 				if (*line == '?') // Handle $?
 				{
-					if (g_sig_received != 0)
+					if (g_sig_received == 131 || g_sig_received == 130)
 					{
 						temp = ft_itoa(g_sig_received);
 						result = ft_strjoin_free(result, temp);

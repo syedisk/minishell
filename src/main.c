@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 21:01:46 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 15:17:30 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,17 @@ char *custom_readline(const char *prompt)
     return line;
 }
 
+static int is_only_whitespace(const char *str)
+{
+    while (*str)
+    {
+        if (!isspace((unsigned char)*str))
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	// Clean up old heredoc temp files
@@ -106,21 +117,22 @@ int	main(int argc, char **argv, char **envp)
             free_env_list(env_list); // Free environment list
             exit(0); // Exit gracefully
         }
-		if (g_sig_received == SIGINT)
+		if (g_sig_received == 130)
 		{
-			g_sig_received = 0;
-			if(is_readline_active)
-       		{
-				is_readline_active = 0;
+			exit_value = 130;
+    		g_sig_received = 0;
+    		if (*input == '\0') // Only skip empty lines
+    		{
 				free(input);
 				continue;
-			}
-    	}
-		if (*input == '\0')
-		{
-			free(input);
-			continue;
+    		}
 		}
+		if (*input == '\0' || is_only_whitespace(input))
+		{
+    		free(input);
+    		continue;
+		}
+
 		if (*input)
 			add_history(input);
 		if (check_syntax_error(input))
@@ -131,7 +143,7 @@ int	main(int argc, char **argv, char **envp)
 		//Step 1: tokenise
 		tokens = tokenise(input);
 
-		//Debug: print tokens
+		// Debug: print tokens
 		// printf("==== TOKENS ====\n");
 		// for (t_token *tmp = tokens; tmp; tmp = tmp->next)
 		// 	printf("Token: [%s], Type: [%d]\n", tmp->value, tmp->type);
@@ -144,8 +156,8 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			continue; // Skip to next iteration if parsing fails
 		}
-		//printf("Command list created successfully. %s\n", commands->argv[0]);
-		//Debug: Heredoc test
+		// printf("Command list created successfully. %s\n", commands->argv[0]);
+		// // Debug: Heredoc test
 		// for (t_command *cmd = commands; cmd; cmd = cmd->next)
 		// {
 		// 	if (cmd->infile)
@@ -170,7 +182,7 @@ int	main(int argc, char **argv, char **envp)
 		// 	}
 		// }
 
-		//Debug: print command info
+		// // Debug: print command info
 		// printf("==== COMMANDS ====\n");
 		// for (t_command *cmd = commands; cmd; cmd = cmd->next)
 		// {

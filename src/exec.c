@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/17 20:43:11 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 15:51:26 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,27 @@ void wait_for_child_processes(int last_pid, int *exit_value)
     pid = 0;
     while ((pid = wait(&status)) > 0)
     {
+        // printf("pid %d\n", pid);
         if (pid == last_pid)
         {
             if (WIFEXITED(status))
                 *exit_value = WEXITSTATUS(status);
-            else
+            else if (WIFSIGNALED(status))
                 *exit_value = 128 + WTERMSIG(status);
         }
+        // else if (last_pid > 0)
+        // {
+        //     waitpid(last_pid, &status, 0);
+
+        //     if (WIFEXITED(status))
+        //     {
+        //         *exit_value = WEXITSTATUS(status);
+        //         if (*exit_value != 0)
+        //             return ;
+        //     }
+        //     else if (WIFSIGNALED(status))
+        //         *exit_value = 128 + WTERMSIG(status);
+        // }
     }
 }
 int fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, int *pipefd, int *exit_value)
