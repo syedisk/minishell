@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/17 20:19:23 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 15:25:21 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,28 @@ static int	is_n_flag(char *str)
 	return (1);
 }
 
+static char	*strip_inner_quotes(const char *str)
+{
+	char	*result;
+	int		i = 0;
+	int		j = 0;
+
+	if (!str)
+		return (NULL);
+	result = malloc(ft_strlen(str) + 1);
+	if (!result)
+		return (NULL);
+	while (str[i])
+	{
+		if (str[i] != '\'' && str[i] != '"')
+			result[j++] = str[i];
+		i++;
+	}
+	result[j] = '\0';
+	return (result);
+}
+
+
 int	handle_echo(t_token *args, t_env *env_list)
 {
 	int		newline;
@@ -44,9 +66,20 @@ int	handle_echo(t_token *args, t_env *env_list)
 	{
 		if (args->quote_type == 1)
 			printf("%s", args->value);
-		else
+		else if (args->quote_type == 2)
 		{
 			expanded = expand_variables(args->value, env_list, g_last_exit_status);
+			if (expanded)
+			{
+				printf("%s", expanded);
+				free(expanded);
+			}
+		}
+		else
+		{
+			char *stripped = strip_inner_quotes(args->value);
+			expanded = expand_variables(stripped, env_list, g_last_exit_status);
+			free(stripped);
 			if (expanded)
 			{
 				printf("%s", expanded);
