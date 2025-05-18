@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 19:17:38 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 19:57:48 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 #include <sys/stat.h> // for stat
 #include <stddef.h>
 #include <signal.h>
+#include <errno.h>
 
 extern volatile sig_atomic_t g_sig_received;
 

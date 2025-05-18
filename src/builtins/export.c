@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:10:24 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 12:58:28 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 19:31:31 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ static void	handle_newenv(t_env **env_list, char *key, char *value)
 		{
 			free(curr->value);
 			curr->value =  ft_strdup(value);
+			error_msg("export_fail");
 			return;
 		}
 		curr = curr->next;

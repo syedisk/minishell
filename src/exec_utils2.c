@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 15:36:44 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 20:02:56 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,15 @@ void handle_infile(t_command *cmd, int fd_in)
 	{
 		fd = open(cmd->infile, O_RDONLY);
 		if (fd == -1)
-			exit((error_msg("infile_fail"), EXIT_FAILURE));
+        {
+            if (errno == ENOENT)
+            	error_msg("No_file");
+            else if (errno == EACCES)
+            	error_msg("infile_fail");
+            else
+                perror("infile");
+            exit(EXIT_FAILURE);
+        }
 		dup2(fd, STDIN_FILENO);
         close(fd);
 	}
@@ -59,11 +67,23 @@ void handle_outfile(t_command *cmd, int *pipefd)
 	if (cmd->outfile)
 	{
 		if (cmd->append_out)
+		{
 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		}
 		else
+		{
 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		}
 		if (fd == -1)
-			exit((error_msg("outfile_fail"), EXIT_FAILURE));
+        {
+            if (errno == ENOENT)
+            	error_msg("No_file");
+            else if (errno == EACCES)
+            	error_msg("outfile_fail");
+            else
+                perror("outfile");
+            exit(EXIT_FAILURE);
+        }
 		dup2(fd, STDOUT_FILENO);
 		close(fd);
 	}

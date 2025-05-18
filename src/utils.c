@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:33:46 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/18 11:40:23 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/18 18:59:11 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,26 +101,19 @@ long long	ft_atoi_long(const char *str)
 			sign = -1;
 		str++;
 	}
-	while (*str)
+	if (*str == '"' || *str == '\'')
+		str++;
+	while (ft_isdigit(*str))
 	{
-		if (!ft_isdigit(*str))
-			return 0;
 
 		digit = *str - '0';
 
-		if (sign == 1)
-		{
-			if (result > (LLONG_MAX - digit) / 10)
+		if (sign == 1 && result > ((LLONG_MAX - digit) / 10))
 				return 0; // Overflow for positive (LLONG_MAX is 9223372036854775807)
-		}
-		else
-		{
-			if (result > (-(LLONG_MIN + digit)) / 10)
+		if (sign == -1 && result > (-(LLONG_MIN + digit)) / 10)
 				return 0; // Overflow for negative (LLONG_MIN is -9223372036854775808)
-		}
 		result = result * 10 + digit;
 		str++;
 	}
-	result *= sign;
-	return (result);
+	return (result * sign);
 }

@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:07:47 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 12:47:45 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 20:04:09 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ void error_msg(char *error)
 {
     if (ft_strcmp(error, "execve_fail") == 0)
         write(2, "command not found\n", 19);
+    else if (ft_strcmp(error, "No_file") == 0)
+        write(2, "No such file or directory\n", 26);
     else if (ft_strcmp(error, "outfile_fail") == 0)
         write(2, "Permission denied\n", 19);
     else if (ft_strcmp(error, "infile_fail") == 0)
@@ -96,10 +98,6 @@ void error_msg(char *error)
         write(2, "Is a directory\n", 16);
     else if (ft_strcmp(error, "export_fail") == 0)
         write(2, "not a valid identifier\n", 24);
-    else if (ft_strcmp(error, "unset_fail") == 0)
-        write(2, "unset: not a valid identifier\n", 31);
-    else if (ft_strcmp(error, "cd_fail") == 0)
-        write(2, "cd: no such file or directory\n", 31);
     else if (ft_strcmp(error, "dup2_failed") == 0)
         write(2, "dup2 failed for fd\n", 20);
     else if (ft_strcmp(error, "pwd_got_arg") == 0)
