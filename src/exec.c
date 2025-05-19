@@ -3,15 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 08:03:53 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 16:14:53 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+void wait_for_child_processes(int last_pid, int *exit_value)
+{
+    int pid;
+    int status;
+
+    while ((pid = wait(&status)) > 0)
+    {
+        if (WIFEXITED(status))
+        {
+            if (pid == last_pid)
+                *exit_value = WEXITSTATUS(status);
+
+            // ✅ NEW: If this is the only process, still set exit_value
+            if (*exit_value == 0) // no other error has been tracked
+                *exit_value = WEXITSTATUS(status);
+        }
+        else if (WIFSIGNALED(status))
+        {
+            if (pid == last_pid)
+                *exit_value = 128 + WTERMSIG(status);
+        }
+    }
+}
+
+/*
 void wait_for_child_processes(int last_pid, int *exit_value)
 {
     int pid;
@@ -43,6 +68,8 @@ void wait_for_child_processes(int last_pid, int *exit_value)
         // }
     }
 }
+    */
+
 int fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, int *pipefd, int *exit_value)
 {
     int pid;

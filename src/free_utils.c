@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 16:22:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/17 16:58:47 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 15:07:19 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,18 @@ void free_tokens(t_token *tokens)
 		tokens = tmp;
 	}
 }
+static void	free_redirs(t_redir *redir)
+{
+	t_redir *tmp;
+
+	while (redir)
+	{
+		tmp = redir;
+		redir = redir->next;
+		free(tmp->filename);
+		free(tmp);
+	}
+}
 
 void	free_commands(t_command *cmds)
 {
@@ -59,8 +71,7 @@ void	free_commands(t_command *cmds)
 			}
 			free(cmds->argv);
 		}
-		if (cmds->infile)
-			free(cmds->infile);
+		free_redirs(cmds->infiles);
 		if (cmds->outfile)
 			free(cmds->outfile);
 		if (cmds->raw_tokens)

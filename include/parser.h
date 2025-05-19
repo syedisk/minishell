@@ -6,17 +6,23 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 13:47:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 14:12:40 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 14:16:02 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSER_H
 # define PARSER_H
 
+typedef struct s_redir
+{
+	char *filename;
+	struct s_redir *next;
+}	t_redir;
+
 typedef struct s_command
 {
 	char				**argv; // command and arguments
-	char				*infile; // <
+	t_redir				*infiles; // <
 	char				*outfile; // > or >>
 	int					append_out; // 1 if '>>', 0 if '>'
 	int					heredoc; // 1 if uses heredoc '<<'
