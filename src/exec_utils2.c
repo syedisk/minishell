@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 20:17:43 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 20:24:31 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,30 +206,6 @@ void	handle_output_redirs(t_command *cmd)
 // 		close(pipefd[0]);
 // 	}
 // }
-
-void execute_child(t_command *cmd, t_env **env_list,
-	char **envp, int *pipefd, int *exit_value)
-{
-	char *full_path;
-
-	handle_input_redirs(cmd);
-	
-	if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd != NULL)
-	{
-		if (dup2(pipefd[0], STDIN_FILENO) == -1)
-			exit((error_msg("dup2_failed"), EXIT_FAILURE));
-		close(pipefd[0]);
-	}
-
-	handle_output_redirs(cmd);
-
-	if (cmd->next && pipefd != NULL)
-	{
-		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-			ft_putstr_fd(" No such file or directory\n", 2);
-		close(pipefd[1]);
-		close(pipefd[0]);
-	}}
 
 void execute_child(t_command *cmd, t_env **env_list,
 	char **envp, int *pipefd, int *exit_value)
