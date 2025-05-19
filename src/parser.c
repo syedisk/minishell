@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 11:55:23 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 13:55:01 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,8 +129,14 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 			else if (curr->type == REDIR_IN)
 			{
 				curr = curr->next;
-				if (curr)
-					current_cmd->infile = ft_strdup(curr->value);
+				if (!curr || curr->type != WORD)
+				{
+					error_msg("syntax error near unexpected token");
+					return (NULL);
+				}
+				if (current_cmd->infile)
+					free(current_cmd->infile);
+				current_cmd->infile = ft_strdup(curr->value);
 			}
 			else if (curr->type == REDIR_OUT)
 			{
