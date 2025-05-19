@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 21:00:18 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 08:03:53 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,11 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp, int *exit_v
             }
             cmd = cmd->next;
             continue;
+        }
+        if (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0')
+        { 
+            error_msg("execve_fail");
+            return;
         }
         if (cmd->next)
         {
