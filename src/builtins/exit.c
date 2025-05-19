@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:30:30 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 19:03:19 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 17:34:37 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 static int	handle_exit_value(char *arg)
 {
-	if (!ft_atoi_long(arg))
+	if (!ft_atoi(arg))
 	{
-		error_msg("exit_arg");
+		ft_putstr_fd("exit: numeric argument required\n", 2);
 		exit(156);
 	}
-	exit(ft_atoi_long(arg));
+	exit(ft_atoi(arg));
 }
 
 int	handle_exit(char **argv)
@@ -34,7 +34,7 @@ int	handle_exit(char **argv)
 	{
 		if (ft_isalpha(argv[1][i]))
 		{
-			error_msg("exit_arg");
+			ft_putstr_fd("exit: numeric argument required\n", 2);
 			exit(2);
 		}
 		i++;
@@ -43,7 +43,7 @@ int	handle_exit(char **argv)
 		handle_exit_value(argv[1]);
 	if (argv[2])
 	{
-		error_msg("exit_too_many_arg");
+		ft_putstr_fd("exit: too many arguments\n", 2);
 		return (1);
 	}
 	return (0);

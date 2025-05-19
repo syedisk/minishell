@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:28:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 12:03:25 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 20:03:08 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,13 @@ char *expand_variables(char *line, t_env *env_list, int *exit_value)
 				var_name = ft_substr(start, 0, line - start);
 				value = get_env_value(env_list, var_name);
 				if (!value)
-    				value = ft_strjoin("$", var_name); 
-				result = ft_strjoin_free(result, value);
+    			{	
+					value = ft_strjoin("$", var_name);
+					result = ft_strjoin_free(result, value);
+					free(value);
+				}
+				else
+					result = ft_strjoin_free(result, value);
 				free(var_name);
 			}
 			else

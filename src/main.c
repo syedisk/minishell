@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 15:31:47 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:48:46 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,12 +164,12 @@ int	main(int argc, char **argv, char **envp)
 		// 	{
 		// 		int fd = open(cmd->infile, O_RDONLY);
 		// 		if (fd < 0)
-		// 			perror("open heredoc temp file");
+		// 			perror("open temp file");
 		// 		else
 		// 		{
 		// 			char buf[1024];
 		// 			int bytes;
-		// 			printf("\nHeredoc contents from %s:\n", cmd->infile);
+		// 			// printf("\nHeredoc contents from %s:\n", cmd->infile);
 		// 			while ((bytes = read(fd, buf, sizeof(buf) - 1)) > 0)
 		// 			{
 		// 				buf[bytes] = '\0';

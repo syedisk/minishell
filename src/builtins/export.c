@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:10:24 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 16:12:18 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 18:24:28 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ static int is_valid_identifier(const char *key)
 
 static void	handle_newenv(t_env **env_list, char *key, char *value)
 {
-	// printf("key is %s\n", key);
 	t_env *curr = *env_list;
 
 	while (curr)
@@ -40,7 +39,7 @@ static void	handle_newenv(t_env **env_list, char *key, char *value)
 		{
 			free(curr->value);
 			curr->value =  ft_strdup(value);
-			error_msg("export_fail");
+			ft_putstr_fd(" not a valid identifier\n", 2);
 			return;
 		}
 		curr = curr->next;
@@ -48,7 +47,7 @@ static void	handle_newenv(t_env **env_list, char *key, char *value)
 	t_env *new = malloc(sizeof(t_env));
 	if (!new)
 	{
-		error_msg("malloc_fail");
+		ft_putstr_fd(" malloc failed\n", 2);
 		return ;
 	}
 	new->key = ft_strdup(key);
@@ -59,20 +58,20 @@ static void	handle_newenv(t_env **env_list, char *key, char *value)
 
 static int check_exportvalue(char **argv)
 {
-	int	i;
-	char **key_value;
-	
+	int		i;
+	char	**key_value;
+
 	i = 1;
 	while (argv[i])
 	{
 		if (ft_strchr(argv[i], '='))
 		{
 			key_value = ft_split(argv[i], '=');
-			if (!key_value || !key_value[0] || !is_valid_identifier(key_value[0]))
+			if (!key_value || !key_value[0] || !key_value[0][0] || !is_valid_identifier(key_value[0]))
 			{
 				if (key_value)
 					free_split(key_value);
-				error_msg("export_fail");
+				ft_putstr_fd(" not a valid identifier\n", 2);
 				return (1);
 			}
 			free_split(key_value);
@@ -81,14 +80,13 @@ static int check_exportvalue(char **argv)
 		{
 			if (!is_valid_identifier(argv[i]))
 			{
-				printf("Debug: Invalid identifier: %s\n", argv[i]);
-				error_msg("export_fail");
+				ft_putstr_fd(" not a valid identifier\n", 2);
 				return (1);
 			}
 		}
 		i++;
 	}
-	return 0;
+	return (0);
 }
 
 
@@ -104,7 +102,7 @@ int	handle_export(char **argv, t_env **env_list)
 		while (curr)
 		{
 			if (curr->value)
-				printf("declare -x %s=\"%s\"\n", curr->key, curr->value); //Check with bash
+				printf("declare -x %s=\"%s\"\n", curr->key, curr->value);
 			else
 				printf("declare -x %s\n", curr->key);
 			curr = curr->next;
@@ -112,22 +110,16 @@ int	handle_export(char **argv, t_env **env_list)
 		return (0);
 	}
 	if (check_exportvalue(argv) != 0)
-	{
-		error_msg("export_fail");
 		return (1);
-	}
 	i = 1;
 	while (argv[i])
 	{
-		// printf("argv[i] is %s\n", argv[i]);
 		if (!ft_strchr(argv[i], '='))
 		{
 			i++;
 			continue ;
 		}
-		// printf("argv[i] is %s\n", argv[i]);
 		key_value = ft_split(argv[i], '=');
-		// printf("key_value[0] is %s\n", key_value[0]);
 		if (!key_value || !key_value[0])
 		{
 			if (key_value)

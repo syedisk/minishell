@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 21:01:46 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:55:24 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@ void handle_infile(t_command *cmd, int fd_in)
 	{
 		fd = open(cmd->infile, O_RDONLY);
 		if (fd == -1)
-			exit((error_msg("heredoc_fail"), EXIT_FAILURE));
+			exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
 		if (dup2(fd, STDIN_FILENO) == -1)
-			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+			ft_putstr_fd(" No such file or directory\n", 2);
 		close(fd);
 		unlink(cmd->infile);
 	}
@@ -44,9 +44,9 @@ void handle_infile(t_command *cmd, int fd_in)
 		if (fd == -1)
         {
             if (errno == ENOENT)
-            	error_msg("No_file");
+            	ft_putstr_fd(" No such file or directory\n", 2);
             else if (errno == EACCES)
-            	error_msg("infile_fail");
+				ft_putstr_fd(" Permission denied\n", 2);
             else
                 perror("infile");
             exit(EXIT_FAILURE);
@@ -57,7 +57,7 @@ void handle_infile(t_command *cmd, int fd_in)
 	else if (fd_in != 0)
 	{
 		if (dup2(fd_in, STDIN_FILENO) == -1)
-			exit((error_msg("dup2_failed"),EXIT_FAILURE));
+			ft_putstr_fd(" No such file or directory\n", 2);
 		close(fd_in);
 	}
 }
@@ -80,9 +80,9 @@ void handle_outfile(t_command *cmd, int *pipefd)
 		if (fd == -1)
         {
             if (errno == ENOENT)
-            	error_msg("No_file");
+				ft_putstr_fd(" No such file or directory\n", 2);
             else if (errno == EACCES)
-            	error_msg("outfile_fail");
+				ft_putstr_fd(" Permission denied\n", 2);
             else
                 perror("outfile");
             exit(EXIT_FAILURE);
@@ -93,7 +93,7 @@ void handle_outfile(t_command *cmd, int *pipefd)
 	else if (cmd->next && pipefd)
 	{
 		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-			exit((error_msg("outfile_fail"), EXIT_FAILURE));
+			ft_putstr_fd(" No such file or directory\n", 2);
 		close(pipefd[1]);
 		close(pipefd[0]);
 	}
@@ -118,16 +118,16 @@ void execute_child(t_command *cmd, t_env **env_list,
 	if (is_builtin(cmd->argv[0]))
 		exit(execute_builtin(cmd, env_list, exit_value));
 	if (is_directory(cmd->argv[0]) != 0)
-		exit((error_msg("is_directory"), 126));
+		exit((ft_putstr_fd(" Is a directory\n", 2), 126));
 	if (cmd->argv[0] && !ft_strcmp(cmd->argv[0], "export="))
 		exit(0);
     else
     {
 	    full_path = resolve_path(cmd->argv[0]);
 	    if (!full_path)
-			exit((error_msg("execve_fail"), 127));
+			exit((ft_putstr_fd(" command not found\n", 2), 127));
 	    if ((execve(full_path, cmd->argv, envp) == -1))
-		    exit((error_msg("execve_fail"), 127));
+		    exit((ft_putstr_fd(" command not found\n", 2), 127));
 		// execve(full_path, cmd->argv, envp);
 
 	// If we got here, execve failed

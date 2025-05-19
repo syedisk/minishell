@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 16:07:08 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:54:21 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,25 +55,21 @@ int fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, i
         if (fd_in != 0) 
         {
            if (dup2(fd_in, STDIN_FILENO) == -1)
-                exit((error_msg("dup2_failed_fd"),EXIT_FAILURE));
+                exit((ft_putstr_fd(" dup_2 failed\n", 2),EXIT_FAILURE));
             close(fd_in);
         }
         if (pipefd) 
         {
             close(pipefd[0]);
             if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-                exit((error_msg("dup2_failed_fd"),EXIT_FAILURE));
+                exit((ft_putstr_fd(" dup_2 failed\n", 2),EXIT_FAILURE));
             close(pipefd[1]);
         }
         
         execute_child(cmd, env_list, envp, NULL, exit_value);
     }
     else if (pid == -1)
-    {
-        perror("fork failed");
-        error_msg("fork_failed");
-        exit(EXIT_FAILURE);
-    }
+        exit((ft_putstr_fd(" fork failed\n", 2),EXIT_FAILURE));
     return pid;
 }
 
@@ -117,7 +113,7 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp, int *exit_v
         }
         if (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0')
         { 
-            error_msg("execve_fail");
+            ft_putstr_fd(" command not found\n", 2);
             return;
         }
         if (cmd->next)
