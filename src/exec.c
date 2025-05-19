@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 20:17:57 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 20:46:21 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp, int *exit_v
         }
         if (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0')
         { 
-            ft_putstr_fd(" command not found\n", 2);
+            //ft_putstr_fd(" command not found\n", 2);
             return;
         }
         if (cmd->next)
