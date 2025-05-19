@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 16:22:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 14:10:04 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 16:45:16 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,18 @@ void free_tokens(t_token *tokens)
 		tokens = tmp;
 	}
 }
+static void	free_redirs(t_redir *redir)
+{
+	t_redir *tmp;
+
+	while (redir)
+	{
+		tmp = redir;
+		redir = redir->next;
+		free(tmp->filename);
+		free(tmp);
+	}
+}
 
 void	free_commands(t_command *cmds)
 {
@@ -59,8 +71,7 @@ void	free_commands(t_command *cmds)
 			}
 			free(cmds->argv);
 		}
-		if (cmds->infile)
-			free(cmds->infile);
+		free_redirs(cmds->infiles);
 		if (cmds->outfile)
 			free(cmds->outfile);
 		if (cmds->raw_tokens)

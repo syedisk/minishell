@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 14:54:52 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 16:48:06 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 				return (NULL); // handle error
 			}
 			new_cmd->argv = NULL;
-			new_cmd->infile = NULL;
+			new_cmd->infiles = NULL;
 			new_cmd->outfile = NULL;
 			new_cmd->append_out = 0;
 			new_cmd->next = NULL;
@@ -130,12 +130,28 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 			else if (curr->type == REDIR_IN)
 			{
 				curr = curr->next;
-				if (curr)
+				if (!curr || curr->type != WORD)
 				{
-					if (current_cmd->infile)
-						free(current_cmd->infile);
-					current_cmd->infile = ft_strdup(curr->value);
+					error_msg("syntax error near unexpected token");
+					return (NULL);
 				}
+				t_redir *new_redir = malloc(sizeof(t_redir));
+				if (!new_redir)
+					return (NULL); //handle malloc fail
+				new_redir->filename = ft_strdup(curr->value);
+				new_redir->next = NULL;
+
+				if (!current_cmd->infiles)
+					current_cmd->infiles = new_redir;
+				else
+				{
+					t_redir *tmp = current_cmd->infiles;
+					while (tmp->next)
+						tmp = tmp->next;
+					tmp->next = new_redir;
+				}
+				curr = curr->next;
+				continue ;
 			}
 			else if (curr->type == REDIR_OUT)
 			{
@@ -147,17 +163,21 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 					current_cmd->outfile = ft_strdup(curr->value);
 					current_cmd->append_out = 0;
 				}
+				curr = curr->next;
+				continue ;
 			}
 			else if (curr->type == APPEND)
 			{
 				curr = curr->next;
 				if (curr)
 				{
-					if (current_cmd->outfile)
+					if(current_cmd->outfile)
 						free(current_cmd->outfile);
 					current_cmd->outfile = ft_strdup(curr->value);
 					current_cmd->append_out = 1;
 				}
+				curr = curr->next;
+				continue;
 			}
 			else if (curr->type == HEREDOC)
 			{
@@ -187,10 +207,31 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 					//printf ("Expand is %d\n", expand);
 					create_heredoc_file(heredoc_path, delim, expand, env_list, exit_value);
 					current_cmd->heredoc = 1;
-					current_cmd->infile = heredoc_path;
-					free(delim);
-					
+					// Add heredoc_path to the infile redir list
+					t_redir *new_redir = malloc(sizeof(t_redir));
+					if (!new_redir)
+					{
+						free(heredoc_path);
+						free_commands(cmd_head);
+						return (NULL);
+					}
+					new_redir->filename = heredoc_path;
+					new_redir->next = NULL;
+
+					// Append heredoc to infile redir list
+					if (!current_cmd->infiles)
+						current_cmd->infiles = new_redir;
+					else
+					{
+						t_redir *tmp = current_cmd->infiles;
+						while (tmp->next)
+							tmp = tmp->next;
+						tmp->next = new_redir;
+					}
+					free(delim);					
 				}
+				curr = curr->next;
+				continue;
 			}
 			curr = curr->next;
 		}

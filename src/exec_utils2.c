@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 21:01:46 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 15:05:17 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,44 +23,59 @@ int is_directory(const char *path)
     return S_ISDIR(path_stat.st_mode);
 }
 
+static int is_heredoc_filename(const char *filename)
+{
+	// Example: heredoc_tmp_0, heredoc_tmp_1...
+	// Use your actual naming scheme
+	return (ft_strncmp(filename, "heredoc_tmp_", 12) == 0);
+}
+
+
 void handle_infile(t_command *cmd, int fd_in)
 {
-	int fd;
+	int fd = -1;
+	t_redir *redir = cmd->infiles;
+	t_redir *last_redir = NULL;
 
-    fd = -1;
-	if (cmd->heredoc)
+	// Try all input redirections
+	while (redir)
 	{
-		fd = open(cmd->infile, O_RDONLY);
+		if (fd != -1)
+			close(fd);
+		fd = open(redir->filename, O_RDONLY);
 		if (fd == -1)
-			exit((error_msg("heredoc_fail"), EXIT_FAILURE));
+		{
+			if (errno == ENOENT)
+				error_msg("No_file");
+			else if (errno == EACCES)
+				error_msg("infile_fail");
+			else
+				perror("infile");
+			exit(EXIT_FAILURE);
+		}
+		last_redir = redir;
+		redir = redir->next;
+	}
+
+	if (fd != -1)
+	{
 		if (dup2(fd, STDIN_FILENO) == -1)
 			exit((error_msg("dup2_failed"), EXIT_FAILURE));
 		close(fd);
-		unlink(cmd->infile);
-	}
-	else if (cmd->infile)
-	{
-		fd = open(cmd->infile, O_RDONLY);
-		if (fd == -1)
-        {
-            if (errno == ENOENT)
-            	error_msg("No_file");
-            else if (errno == EACCES)
-            	error_msg("infile_fail");
-            else
-                perror("infile");
-            exit(EXIT_FAILURE);
-        }
-		dup2(fd, STDIN_FILENO);
-        close(fd);
+
+		// Only unlink heredoc file if it was the final one used
+		if (cmd->heredoc && is_heredoc_filename(last_redir->filename))
+			unlink(last_redir->filename);
 	}
 	else if (fd_in != 0)
 	{
 		if (dup2(fd_in, STDIN_FILENO) == -1)
-			exit((error_msg("dup2_failed"),EXIT_FAILURE));
+			exit((error_msg("dup2_failed"), EXIT_FAILURE));
 		close(fd_in);
 	}
 }
+
+
 
 void handle_outfile(t_command *cmd, int *pipefd)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 15:31:47 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 16:45:28 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ int	main(int argc, char **argv, char **envp)
 		{
             printf("exit\n");
             free_env_list(env_list); // Free environment list
-            exit(0); // Exit gracefully
+            exit(exit_value); // Exit gracefully
         }
 		if (g_sig_received == 130)
 		{
@@ -198,6 +198,7 @@ int	main(int argc, char **argv, char **envp)
 		//Step 3: Execute command
 		env_array =  convert_env_to_array(env_list);
 		execute_commands(commands, &env_list, env_array, &exit_value); // execve in here
+		//printf("[DEBUG] exit_value after execute_commands = %d\n", exit_value);
 
 		//Step 4: Clean up
 		free(input);
@@ -205,6 +206,6 @@ int	main(int argc, char **argv, char **envp)
 		free_commands(commands);
 		free_split(env_array);
 	}
-	return (free_env_list(env_list), 0);
+	return (free_env_list(env_list), exit_value);
 }
 
