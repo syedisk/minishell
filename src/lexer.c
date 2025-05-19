@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 20:17:59 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 11:37:11 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,27 +87,46 @@ t_token_type	get_operator_type(const char *s, int *len)
 	return (WORD);
 }
 
-char	*read_word(const char *s, int *i)
+char	*read_word(const char *s, int *i, int *quote_type)
 {
+	char *result = ft_strdup("");
+	char *chunk;
 	int		start;
 	char	quote;
 
-	start = *i;
+	*quote_type = 0;
 	while (s[*i] && !ft_isspace(s[*i]) && !is_operator_char(s[*i]))
 	{
 		if (s[*i] == '\'' || s[*i] == '"')
 		{
 			quote = s[(*i)++];
+			start = *i;
 			while (s[*i] && s[*i] != quote)
 				(*i)++;
-			if (s[*i])
+			chunk = ft_strndup(s + start, *i - start);
+			if (s[*i] == quote)
 				(*i)++;
+			result = ft_strjoin_free(result, chunk);
+			if (*quote_type == 0)
+			{
+				if (quote == '\'')
+					*quote_type = 1;
+				else if (quote == '"')
+					*quote_type = 2;
+			}
 		}
 		else
-			(*i)++;
+		{
+			start = *i;
+			while (s[*i] && !ft_isspace(s[*i]) && !is_operator_char(s[*i]) && s[*i] != '\'' && s[*i] != '"')
+				(*i)++;
+			chunk = ft_strndup(s + start, *i - start);
+			result = ft_strjoin_free(result, chunk);
+		}
 	}
-	return (ft_strndup(s + start, *i - start));
+	return (result);
 }
+
 
 char	*read_quoted(const char *s, int *i)
 {
@@ -131,9 +150,9 @@ t_token	*tokenise(const char *input)
 	int				op_len;
 	t_token_type	type;
 	char			*op;
-	char			*quoted;
+	// char			*quoted;
 	char			*word;
-	char			quote;
+	// char			quote;
 	int				quote_type;
 
 	tokens = NULL;
@@ -152,21 +171,27 @@ t_token	*tokenise(const char *input)
 			add_token(&tokens, new_token(op, type, 0));
 			i += op_len;
 		}
-		else if (input[i] == '"' || input[i] == '\'')
-		{
-			quote = input[i];
-			quoted = read_quoted(input, &i); // Extract quoted string
-			if (quote == '\'')
-				quote_type = 1;
-			else
-				quote_type = 2;
-            add_token(&tokens, new_token(quoted, WORD, quote_type));
-		}
 		else
 		{
-			word = read_word(input, &i);
-			add_token(&tokens, new_token(word, WORD, 0));
+			word = read_word(input, &i, &quote_type);
+			add_token(&tokens, new_token(word, WORD, quote_type));
 		}
 	}
+	// 	else if (input[i] == '"' || input[i] == '\'')
+	// 	{
+	// 		quote = input[i];
+	// 		quoted = read_quoted(input, &i); // Extract quoted string
+	// 		if (quote == '\'')
+	// 			quote_type = 1;
+	// 		else
+	// 			quote_type = 2;
+    //         add_token(&tokens, new_token(quoted, WORD, quote_type));
+	// 	}
+	// 	else
+	// 	{
+	// 		word = read_word(input, &i);
+	// 		add_token(&tokens, new_token(word, WORD, 0));
+	// 	}
+	// }
 	return (tokens);
 }
