@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 21:01:46 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 19:39:32 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,43 +23,105 @@ int is_directory(const char *path)
     return S_ISDIR(path_stat.st_mode);
 }
 
-void handle_infile(t_command *cmd, int fd_in)
+void handle_input_redirs(t_command *cmd)
 {
-	int fd;
+    int     fd;
+    t_token *tokens = cmd->raw_tokens;
 
-    fd = -1;
-	if (cmd->heredoc)
-	{
-		fd = open(cmd->infile, O_RDONLY);
-		if (fd == -1)
-			exit((error_msg("heredoc_fail"), EXIT_FAILURE));
-		if (dup2(fd, STDIN_FILENO) == -1)
-			exit((error_msg("dup2_failed"), EXIT_FAILURE));
-		close(fd);
-		unlink(cmd->infile);
-	}
-	else if (cmd->infile)
-	{
-		fd = open(cmd->infile, O_RDONLY);
-		if (fd == -1)
-        {
-            if (errno == ENOENT)
-            	error_msg("No_file");
-            else if (errno == EACCES)
-            	error_msg("infile_fail");
-            else
-                perror("infile");
-            exit(EXIT_FAILURE);
-        }
-		dup2(fd, STDIN_FILENO);
+	// fprintf(stderr, "DEBUG: entered handle_input_redirs\n");
+	// fprintf(stderr, "HEREDOC? %d | infile = %s\n", cmd->heredoc, cmd->infile);
+
+    // Handle heredoc first
+    if (cmd->heredoc)
+    {
+        fd = open(cmd->infile, O_RDONLY);
+        if (fd == -1)
+            exit((error_msg("heredoc_fail"), EXIT_FAILURE));
+        if (dup2(fd, STDIN_FILENO) == -1)
+            exit((error_msg("dup2_failed"), EXIT_FAILURE));
         close(fd);
-	}
-	else if (fd_in != 0)
+        unlink(cmd->infile);
+        return ; // heredoc takes precedence
+    }
+
+    // Otherwise, process all < infile redirections in order
+    while (tokens)
+    {
+        if (tokens->type == REDIR_IN)
+        {
+            tokens = tokens->next;
+            if (!tokens || tokens->type != WORD)
+                exit((error_msg("missing infile"), EXIT_FAILURE));
+
+			// fprintf(stderr, "Trying to open: [%s]\n", tokens->value);
+
+            fd = open(tokens->value, O_RDONLY);
+            if (fd == -1)
+            {
+                if (errno == ENOENT)
+                    error_msg("No_file");
+                else if (errno == EACCES)
+                    error_msg("infile_fail");
+                else
+                    perror("infile");
+                exit(EXIT_FAILURE);
+            }
+
+            if (dup2(fd, STDIN_FILENO) == -1)
+                exit((error_msg("dup2_failed"), EXIT_FAILURE));
+            close(fd);
+        }
+        tokens = tokens->next;
+    }
+}
+
+// void handle_infile(t_command *cmd, int fd_in)
+// {
+// 	int fd;
+
+//     fd = -1;
+// 	if (cmd->heredoc)
+// 	{
+// 		fd = open(cmd->infile, O_RDONLY);
+// 		if (fd == -1)
+// 			exit((error_msg("heredoc_fail"), EXIT_FAILURE));
+// 		if (dup2(fd, STDIN_FILENO) == -1)
+// 			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+// 		close(fd);
+// 		unlink(cmd->infile);
+// 	}
+// 	else if (cmd->infile)
+// 	{
+// 		fd = open(cmd->infile, O_RDONLY);
+// 		if (fd == -1)
+//         {
+//             if (errno == ENOENT)
+//             	error_msg("No_file");
+//             else if (errno == EACCES)
+//             	error_msg("infile_fail");
+//             else
+//                 perror("infile");
+//             exit(EXIT_FAILURE);
+//         }
+// 		dup2(fd, STDIN_FILENO);
+//         close(fd);
+// 	}
+// 	else if (fd_in != 0)
+// 	{
+// 		if (dup2(fd_in, STDIN_FILENO) == -1)
+// 			exit((error_msg("dup2_failed"),EXIT_FAILURE));
+// 		close(fd_in);
+// 	}
+// }
+static int has_input_redir(t_token *tokens)
+{
+	while (tokens)
 	{
-		if (dup2(fd_in, STDIN_FILENO) == -1)
-			exit((error_msg("dup2_failed"),EXIT_FAILURE));
-		close(fd_in);
+		if (tokens->type == REDIR_IN)
+			return (1);
+		tokens = tokens->next;
 	}
+	return (0);
 }
 
 void handle_outfile(t_command *cmd, int *pipefd)
@@ -103,12 +165,21 @@ void execute_child(t_command *cmd, t_env **env_list,
 	char **envp, int *pipefd, int *exit_value)
 {
 	char *full_path;
+	// fprintf(stderr, "INSIDE execute_child: about to handle input\n");
+	handle_input_redirs(cmd);
+	//fprintf(stderr, "FINISHED handle_input_redirs\n");
+	if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd != NULL)
+	{
+		if (dup2(pipefd[0], STDIN_FILENO) == -1)
+			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+		close(pipefd[0]);
+	}
 
 	//printf("1. execve failed for %s\n", cmd->argv[0]);
-	if (pipefd != NULL)
-		handle_infile(cmd, pipefd[0]);
-	else
-		handle_infile(cmd, 0);
+	// if (pipefd != NULL)
+	// 	handle_infile(cmd, pipefd[0]);
+	// else
+	// 	handle_infile(cmd, 0);
 	if (pipefd != NULL)
 		handle_outfile(cmd, pipefd);
 	else

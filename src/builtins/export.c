@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:10:24 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 16:12:18 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 17:24:47 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static int check_exportvalue(char **argv)
 		{
 			if (!is_valid_identifier(argv[i]))
 			{
-				printf("Debug: Invalid identifier: %s\n", argv[i]);
+				// printf("Debug: Invalid identifier: %s\n", argv[i]);
 				error_msg("export_fail");
 				return (1);
 			}
