@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 19:54:21 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 20:17:57 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,8 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp, int *exit_v
         }
         if (is_builtin(cmd->argv[0]) && !cmd->next && fd_in == 0)
         {
+            handle_input_redirs(cmd);
+            handle_output_redirs(cmd);
             *exit_value = execute_builtin(cmd, env_list, exit_value);
             if (ft_strcmp(cmd->argv[0], "exit") == 0)
             {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 19:55:24 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 20:17:43 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,96 +23,248 @@ int is_directory(const char *path)
     return S_ISDIR(path_stat.st_mode);
 }
 
-void handle_infile(t_command *cmd, int fd_in)
+void handle_input_redirs(t_command *cmd)
 {
-	int fd;
+    int     fd;
+    t_token *tokens = cmd->raw_tokens;
 
-    fd = -1;
-	if (cmd->heredoc)
-	{
-		fd = open(cmd->infile, O_RDONLY);
-		if (fd == -1)
-			exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
-		if (dup2(fd, STDIN_FILENO) == -1)
-			ft_putstr_fd(" No such file or directory\n", 2);
-		close(fd);
-		unlink(cmd->infile);
-	}
-	else if (cmd->infile)
-	{
-		fd = open(cmd->infile, O_RDONLY);
-		if (fd == -1)
-        {
-            if (errno == ENOENT)
-            	ft_putstr_fd(" No such file or directory\n", 2);
-            else if (errno == EACCES)
-				ft_putstr_fd(" Permission denied\n", 2);
-            else
-                perror("infile");
-            exit(EXIT_FAILURE);
-        }
-		dup2(fd, STDIN_FILENO);
+	// fprintf(stderr, "DEBUG: entered handle_input_redirs\n");
+	// fprintf(stderr, "HEREDOC? %d | infile = %s\n", cmd->heredoc, cmd->infile);
+
+    // Handle heredoc first
+    if (cmd->heredoc)
+    {
+        fd = open(cmd->infile, O_RDONLY);
+        if (fd == -1)
+            exit((error_msg("heredoc_fail"), EXIT_FAILURE));
+        if (dup2(fd, STDIN_FILENO) == -1)
+            exit((error_msg("dup2_failed"), EXIT_FAILURE));
         close(fd);
-	}
-	else if (fd_in != 0)
-	{
-		if (dup2(fd_in, STDIN_FILENO) == -1)
-			ft_putstr_fd(" No such file or directory\n", 2);
-		close(fd_in);
-	}
-}
+        unlink(cmd->infile);
+        return ; // heredoc takes precedence
+    }
 
-void handle_outfile(t_command *cmd, int *pipefd)
-{
-	int fd;
-
-    fd = -1;
-	if (cmd->outfile)
-	{
-		if (cmd->append_out)
-		{
-			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		}
-		else
-		{
-			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		}
-		if (fd == -1)
+    // Otherwise, process all < infile redirections in order
+    while (tokens)
+    {
+        if (tokens->type == REDIR_IN)
         {
-            if (errno == ENOENT)
-				ft_putstr_fd(" No such file or directory\n", 2);
-            else if (errno == EACCES)
-				ft_putstr_fd(" Permission denied\n", 2);
-            else
-                perror("outfile");
-            exit(EXIT_FAILURE);
+            tokens = tokens->next;
+            if (!tokens || tokens->type != WORD)
+                exit((error_msg("missing infile"), EXIT_FAILURE));
+
+			// fprintf(stderr, "Trying to open: [%s]\n", tokens->value);
+
+            fd = open(tokens->value, O_RDONLY);
+            if (fd == -1)
+            {
+                if (errno == ENOENT)
+                    error_msg("No_file");
+                else if (errno == EACCES)
+                    error_msg("infile_fail");
+                else
+                    perror("infile");
+                exit(EXIT_FAILURE);
+            }
+
+            if (dup2(fd, STDIN_FILENO) == -1)
+                exit((error_msg("dup2_failed"), EXIT_FAILURE));
+            close(fd);
         }
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
-	}
-	else if (cmd->next && pipefd)
+        tokens = tokens->next;
+    }
+}
+
+// void handle_infile(t_command *cmd, int fd_in)
+// {
+// 	int fd;
+
+//     fd = -1;
+// 	if (cmd->heredoc)
+// 	{
+// 		fd = open(cmd->infile, O_RDONLY);
+// 		if (fd == -1)
+// 			exit((error_msg("heredoc_fail"), EXIT_FAILURE));
+// 		if (dup2(fd, STDIN_FILENO) == -1)
+// 			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+// 		close(fd);
+// 		unlink(cmd->infile);
+// 	}
+// 	else if (cmd->infile)
+// 	{
+// 		fd = open(cmd->infile, O_RDONLY);
+// 		if (fd == -1)
+//         {
+//             if (errno == ENOENT)
+//             	error_msg("No_file");
+//             else if (errno == EACCES)
+//             	error_msg("infile_fail");
+//             else
+//                 perror("infile");
+//             exit(EXIT_FAILURE);
+//         }
+// 		dup2(fd, STDIN_FILENO);
+//         close(fd);
+// 	}
+// 	else if (fd_in != 0)
+// 	{
+// 		if (dup2(fd_in, STDIN_FILENO) == -1)
+// 			exit((error_msg("dup2_failed"),EXIT_FAILURE));
+// 		close(fd_in);
+// 	}
+// }
+static int has_input_redir(t_token *tokens)
+{
+	while (tokens)
 	{
-		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-			ft_putstr_fd(" No such file or directory\n", 2);
-		close(pipefd[1]);
-		close(pipefd[0]);
+		if (tokens->type == REDIR_IN)
+			return (1);
+		tokens = tokens->next;
+	}
+	return (0);
+}
+void	handle_output_redirs(t_command *cmd)
+{
+	t_token	*tokens = cmd->raw_tokens;
+	int		fd = -1;
+	int		last_fd = -1;
+
+	while (tokens)
+	{
+		if (tokens->type == REDIR_OUT || tokens->type == APPEND)
+		{
+			tokens = tokens->next;
+			if (!tokens || tokens->type != WORD)
+				exit((error_msg("missing outfile"), EXIT_FAILURE));
+
+			// Close previous if opened
+			if (last_fd != -1)
+				close(last_fd);
+
+			if (tokens->type == WORD)
+			{
+				if (cmd->append_out)
+					fd = open(tokens->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
+				else
+					fd = open(tokens->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+				if (fd == -1)
+				{
+					if (errno == ENOENT)
+						error_msg("No_file");
+					else if (errno == EACCES)
+						error_msg("outfile_fail");
+					else
+						perror("outfile");
+					exit(EXIT_FAILURE);
+				}
+				last_fd = fd;
+			}
+		}
+		tokens = tokens->next;
+	}
+	if (last_fd != -1)
+	{
+		if (dup2(last_fd, STDOUT_FILENO) == -1)
+			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+		close(last_fd);
 	}
 }
+
+// void handle_outfile(t_command *cmd, int *pipefd)
+// {
+// 	int fd;
+
+//     fd = -1;
+// 	if (cmd->outfile)
+// 	{
+// 		if (cmd->append_out)
+// 		{
+// 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+// 		}
+// 		else
+// 		{
+// 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+// 		}
+// 		if (fd == -1)
+//         {
+//             if (errno == ENOENT)
+//             	error_msg("No_file");
+//             else if (errno == EACCES)
+//             	error_msg("outfile_fail");
+//             else
+//                 perror("outfile");
+//             exit(EXIT_FAILURE);
+//         }
+// 		dup2(fd, STDOUT_FILENO);
+// 		close(fd);
+// 	}
+// 	else if (cmd->next && pipefd)
+// 	{
+// 		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+// 			exit((error_msg("outfile_fail"), EXIT_FAILURE));
+// 		close(pipefd[1]);
+// 		close(pipefd[0]);
+// 	}
+// }
 
 void execute_child(t_command *cmd, t_env **env_list,
 	char **envp, int *pipefd, int *exit_value)
 {
 	char *full_path;
 
+	handle_input_redirs(cmd);
+	
+	if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd != NULL)
+	{
+		if (dup2(pipefd[0], STDIN_FILENO) == -1)
+			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+		close(pipefd[0]);
+	}
+
+	handle_output_redirs(cmd);
+
+	if (cmd->next && pipefd != NULL)
+	{
+		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+			ft_putstr_fd(" No such file or directory\n", 2);
+		close(pipefd[1]);
+		close(pipefd[0]);
+	}}
+
+void execute_child(t_command *cmd, t_env **env_list,
+	char **envp, int *pipefd, int *exit_value)
+{
+	char *full_path;
+
+	handle_input_redirs(cmd);
+	
+	if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd != NULL)
+	{
+		if (dup2(pipefd[0], STDIN_FILENO) == -1)
+			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+		close(pipefd[0]);
+	}
+
+	handle_output_redirs(cmd);
+
+	if (cmd->next && pipefd != NULL)
+	{
+		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+			ft_putstr_fd(" No such file or directory\n", 2);
+		close(pipefd[1]);
+		close(pipefd[0]);
+	}
+	
+
 	//printf("1. execve failed for %s\n", cmd->argv[0]);
-	if (pipefd != NULL)
-		handle_infile(cmd, pipefd[0]);
-	else
-		handle_infile(cmd, 0);
-	if (pipefd != NULL)
-		handle_outfile(cmd, pipefd);
-	else
-		handle_outfile(cmd, NULL);
+	// if (pipefd != NULL)
+	// 	handle_infile(cmd, pipefd[0]);
+	// else
+	// 	handle_infile(cmd, 0);
+	// if (pipefd != NULL)
+	// 	handle_outfile(cmd, pipefd);
+	// else
+	// 	handle_outfile(cmd, NULL);
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		exit((printf("Error: Null pointer in execute_child\n"), 127));
 	if (is_builtin(cmd->argv[0]))
