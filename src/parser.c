@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 11:55:23 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 14:54:52 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,18 +125,25 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 				}
 				free(expanded);
 				current_cmd->argv[argc++] = cleaned;
+				current_cmd->argv[argc] = NULL;
 			}
 			else if (curr->type == REDIR_IN)
 			{
 				curr = curr->next;
 				if (curr)
+				{
+					if (current_cmd->infile)
+						free(current_cmd->infile);
 					current_cmd->infile = ft_strdup(curr->value);
+				}
 			}
 			else if (curr->type == REDIR_OUT)
 			{
 				curr = curr->next;
 				if (curr)
 				{
+					if (current_cmd->outfile)
+						free(current_cmd->outfile);
 					current_cmd->outfile = ft_strdup(curr->value);
 					current_cmd->append_out = 0;
 				}
@@ -146,6 +153,8 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 				curr = curr->next;
 				if (curr)
 				{
+					if (current_cmd->outfile)
+						free(current_cmd->outfile);
 					current_cmd->outfile = ft_strdup(curr->value);
 					current_cmd->append_out = 1;
 				}
@@ -156,7 +165,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 				if (curr)
 				{
 					int expand = 1;
-					printf("Processing HEREDOC with value: %s\n", curr->value);
+					//printf("Processing HEREDOC with value: %s\n", curr->value);
 					if (curr->value[0] == '\'' || curr->value[0] == '"')
 					// {
 						expand = 0;
@@ -175,7 +184,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 						free_commands(cmd_head);
 						return (NULL);
 					}
-					printf ("Expand is %d\n", expand);
+					//printf ("Expand is %d\n", expand);
 					create_heredoc_file(heredoc_path, delim, expand, env_list, exit_value);
 					current_cmd->heredoc = 1;
 					current_cmd->infile = heredoc_path;

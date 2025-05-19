@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 16:22:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/17 16:58:47 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 14:10:04 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void free_tokens(t_token *tokens)
 	while (tokens)
 	{
 		tmp = tokens->next;
-		if(tokens->value)
+		// if(tokens->value)
 			free(tokens->value); // Free the token value
 		free(tokens);   // Free the token node
 		tokens = tmp;

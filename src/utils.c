@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:33:46 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/18 18:59:11 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:52:27 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,20 +55,6 @@ char	*remove_quotes(const char *str)
 		return (result);
 	}
 	return (ft_strdup(str));
-}
-
-void	free_split(char **split)
-{
-	int	i = 0;
-
-	if (!split)
-		return;
-	while (split[i])
-	{
-		free(split[i]);
-		i++;
-	}
-	free(split);
 }
 
 char	*ft_strjoin_three(char *s1, char *s2, char *s3)

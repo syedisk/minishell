@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 11:37:11 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 14:12:40 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ t_token_type	get_operator_type(const char *s, int *len)
 char	*read_word(const char *s, int *i, int *quote_type)
 {
 	char *result = ft_strdup("");
-	char *chunk;
+	char *chunk = NULL;
 	int		start;
 	char	quote;
 
@@ -107,6 +107,7 @@ char	*read_word(const char *s, int *i, int *quote_type)
 			if (s[*i] == quote)
 				(*i)++;
 			result = ft_strjoin_free(result, chunk);
+			free(chunk);
 			if (*quote_type == 0)
 			{
 				if (quote == '\'')
@@ -122,6 +123,7 @@ char	*read_word(const char *s, int *i, int *quote_type)
 				(*i)++;
 			chunk = ft_strndup(s + start, *i - start);
 			result = ft_strjoin_free(result, chunk);
+			free(chunk);
 		}
 	}
 	return (result);

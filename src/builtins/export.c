@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:10:24 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/18 19:31:31 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 16:12:18 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static void	handle_newenv(t_env **env_list, char *key, char *value)
 	t_env *new = malloc(sizeof(t_env));
 	if (!new)
 	{
-		perror("malloc");
+		error_msg("malloc_fail");
 		return ;
 	}
 	new->key = ft_strdup(key);
@@ -71,16 +71,17 @@ static int check_exportvalue(char **argv)
 			if (!key_value || !key_value[0] || !is_valid_identifier(key_value[0]))
 			{
 				if (key_value)
-					ft_free_split(key_value);
+					free_split(key_value);
 				error_msg("export_fail");
 				return (1);
 			}
-			ft_free_split(key_value);
+			free_split(key_value);
 		}
 		else
 		{
 			if (!is_valid_identifier(argv[i]))
 			{
+				printf("Debug: Invalid identifier: %s\n", argv[i]);
 				error_msg("export_fail");
 				return (1);
 			}
@@ -111,7 +112,10 @@ int	handle_export(char **argv, t_env **env_list)
 		return (0);
 	}
 	if (check_exportvalue(argv) != 0)
+	{
+		error_msg("export_fail");
 		return (1);
+	}
 	i = 1;
 	while (argv[i])
 	{
@@ -127,12 +131,12 @@ int	handle_export(char **argv, t_env **env_list)
 		if (!key_value || !key_value[0])
 		{
 			if (key_value)
-				ft_free_split(key_value);
+				free_split(key_value);
 			i++; 
 			continue ;
 		}
 	handle_newenv(env_list, key_value[0], key_value[1]);
-	ft_free_split(key_value);
+	free_split(key_value);
 	i++;
 	}
 	return (0);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_builtin.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:13:56 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 16:09:43 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 16:03:41 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ int	execute_builtin(t_command *cmd, t_env **env_list, int *exit_value)
 {
 	if (!cmd || !cmd->argv[0])
 		return (0);
-	if (ft_strcmp(cmd->argv[0], "cd") == 0)
+	if (!ft_strcmp(cmd->argv[0], "cd"))
 		return (handle_cd(cmd->argv));
-	else if (ft_strcmp(cmd->argv[0], "pwd") == 0)
+	else if (!ft_strcmp(cmd->argv[0], "pwd"))
 		return (handle_pwd());
 	else if (!ft_strcmp(cmd->argv[0], "echo"))
 		return (handle_echo(cmd->raw_tokens, *env_list, exit_value));

@@ -12,19 +12,18 @@
 
 #include "minishell.h"
 
-void	ft_free_split(char **arr)
+void	free_split(char **split)
 {
-	int	i;
+	int	i = 0;
 
-	if (!arr)
+	if (!split)
 		return;
-	i = 0;
-	while (arr[i])
+	while (split[i])
 	{
-		free(arr[i]);
+		free(split[i]);
 		i++;
 	}
-	free(arr);
+	free(split);
 }
 
 char *try_path(char *dir, char *cmd)
@@ -64,11 +63,11 @@ char *resolve_path(char *cmd)
 		full = try_path(paths[i], cmd);
 		if (full)
 		{
-			ft_free_split(paths);
+			free_split(paths);
 			return (full);
 		}
 		i++;
 	}
-	ft_free_split(paths);
+	free_split(paths);
 	return (NULL);
 }

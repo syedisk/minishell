@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:07:47 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 20:04:09 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 15:52:11 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,10 @@ void error_msg(char *error)
 {
     if (ft_strcmp(error, "execve_fail") == 0)
         write(2, "command not found\n", 19);
+    else if (ft_strcmp(error, "export_fail") == 0)
+        write(2, "not a valid identifier\n", 24);
+    else if (ft_strcmp(error, "malloc_fail") == 0)
+        write(2, "malloc failed\n", 14);
     else if (ft_strcmp(error, "No_file") == 0)
         write(2, "No such file or directory\n", 26);
     else if (ft_strcmp(error, "outfile_fail") == 0)
@@ -96,8 +100,6 @@ void error_msg(char *error)
         write(2, "command not found\n", 19);
     else if (ft_strcmp(error, "is_directory") == 0)
         write(2, "Is a directory\n", 16);
-    else if (ft_strcmp(error, "export_fail") == 0)
-        write(2, "not a valid identifier\n", 24);
     else if (ft_strcmp(error, "dup2_failed") == 0)
         write(2, "dup2 failed for fd\n", 20);
     else if (ft_strcmp(error, "pwd_got_arg") == 0)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:34:32 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/16 23:12:24 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:50:09 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ t_env	*create_env_node(char *env_str, char *sep)
 		return (NULL);
 	node = malloc(sizeof(t_env));
 	if (!node)
-        return (free(split), NULL);
+        return (free_split(split), NULL);
 	if (sep)
 		{
 			*sep = '\0'; // Temporarily split key and value
@@ -37,7 +37,7 @@ t_env	*create_env_node(char *env_str, char *sep)
 		if (!node->key)
 		{
 			free(node);
-			return (free(split), NULL);
+			return (free_split(split), NULL);
 		}
 		if (split[1])
 			node->value = ft_strdup(split[1]);
@@ -48,10 +48,10 @@ t_env	*create_env_node(char *env_str, char *sep)
 	{
 		free(node->key);
 		free(node);
-		return (free(split), NULL);
+		return (free_split(split), NULL);
 	}
 	node->next = NULL;
-	return (free(split), node);
+	return (free_split(split), node);
 }
 
 t_env	*create_env_list(char **envp)

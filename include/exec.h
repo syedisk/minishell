@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 20:42:41 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:48:29 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ int        fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int f
 // exec_utils.c
 void    set_signals(void);
 char    *try_path(char *dir, char *cmd);
-void	ft_free_split(char **arr);
 char    *resolve_path(char *cmd);
 void	handle_infile(t_command *cmd, int fd_in);
 void	handle_outfile(t_command *cmd, int *pipefd);
