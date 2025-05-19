@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 19:39:32 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 20:07:19 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,51 +123,97 @@ static int has_input_redir(t_token *tokens)
 	}
 	return (0);
 }
-
-void handle_outfile(t_command *cmd, int *pipefd)
+void	handle_output_redirs(t_command *cmd)
 {
-	int fd;
+	t_token	*tokens = cmd->raw_tokens;
+	int		fd = -1;
+	int		last_fd = -1;
 
-    fd = -1;
-	if (cmd->outfile)
+	while (tokens)
 	{
-		if (cmd->append_out)
+		if (tokens->type == REDIR_OUT || tokens->type == APPEND)
 		{
-			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			tokens = tokens->next;
+			if (!tokens || tokens->type != WORD)
+				exit((error_msg("missing outfile"), EXIT_FAILURE));
+
+			// Close previous if opened
+			if (last_fd != -1)
+				close(last_fd);
+
+			if (tokens->type == WORD)
+			{
+				if (cmd->append_out)
+					fd = open(tokens->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
+				else
+					fd = open(tokens->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+				if (fd == -1)
+				{
+					if (errno == ENOENT)
+						error_msg("No_file");
+					else if (errno == EACCES)
+						error_msg("outfile_fail");
+					else
+						perror("outfile");
+					exit(EXIT_FAILURE);
+				}
+				last_fd = fd;
+			}
 		}
-		else
-		{
-			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		}
-		if (fd == -1)
-        {
-            if (errno == ENOENT)
-            	error_msg("No_file");
-            else if (errno == EACCES)
-            	error_msg("outfile_fail");
-            else
-                perror("outfile");
-            exit(EXIT_FAILURE);
-        }
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
+		tokens = tokens->next;
 	}
-	else if (cmd->next && pipefd)
+	if (last_fd != -1)
 	{
-		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-			exit((error_msg("outfile_fail"), EXIT_FAILURE));
-		close(pipefd[1]);
-		close(pipefd[0]);
+		if (dup2(last_fd, STDOUT_FILENO) == -1)
+			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+		close(last_fd);
 	}
 }
+
+// void handle_outfile(t_command *cmd, int *pipefd)
+// {
+// 	int fd;
+
+//     fd = -1;
+// 	if (cmd->outfile)
+// 	{
+// 		if (cmd->append_out)
+// 		{
+// 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+// 		}
+// 		else
+// 		{
+// 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+// 		}
+// 		if (fd == -1)
+//         {
+//             if (errno == ENOENT)
+//             	error_msg("No_file");
+//             else if (errno == EACCES)
+//             	error_msg("outfile_fail");
+//             else
+//                 perror("outfile");
+//             exit(EXIT_FAILURE);
+//         }
+// 		dup2(fd, STDOUT_FILENO);
+// 		close(fd);
+// 	}
+// 	else if (cmd->next && pipefd)
+// 	{
+// 		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+// 			exit((error_msg("outfile_fail"), EXIT_FAILURE));
+// 		close(pipefd[1]);
+// 		close(pipefd[0]);
+// 	}
+// }
 
 void execute_child(t_command *cmd, t_env **env_list,
 	char **envp, int *pipefd, int *exit_value)
 {
 	char *full_path;
-	// fprintf(stderr, "INSIDE execute_child: about to handle input\n");
+
 	handle_input_redirs(cmd);
-	//fprintf(stderr, "FINISHED handle_input_redirs\n");
+	
 	if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd != NULL)
 	{
 		if (dup2(pipefd[0], STDIN_FILENO) == -1)
@@ -175,15 +221,26 @@ void execute_child(t_command *cmd, t_env **env_list,
 		close(pipefd[0]);
 	}
 
+	handle_output_redirs(cmd);
+
+	if (cmd->next && pipefd != NULL)
+	{
+		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+			exit((error_msg("outfile_fail"), EXIT_FAILURE));
+		close(pipefd[1]);
+		close(pipefd[0]);
+	}
+	
+
 	//printf("1. execve failed for %s\n", cmd->argv[0]);
 	// if (pipefd != NULL)
 	// 	handle_infile(cmd, pipefd[0]);
 	// else
 	// 	handle_infile(cmd, 0);
-	if (pipefd != NULL)
-		handle_outfile(cmd, pipefd);
-	else
-		handle_outfile(cmd, NULL);
+	// if (pipefd != NULL)
+	// 	handle_outfile(cmd, pipefd);
+	// else
+	// 	handle_outfile(cmd, NULL);
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		exit((printf("Error: Null pointer in execute_child\n"), 127));
 	if (is_builtin(cmd->argv[0]))

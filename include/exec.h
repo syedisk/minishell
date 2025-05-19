@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 19:25:13 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 20:01:24 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,4 +31,5 @@ void	handle_infile(t_command *cmd, int fd_in);
 void	handle_outfile(t_command *cmd, int *pipefd);
 char    *ft_strcat(char *dest, const char *src);
 void	handle_input_redirs(t_command *cmd);
+void	handle_output_redirs(t_command *cmd);
 #endif  
