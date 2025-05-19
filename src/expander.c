@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:28:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 08:02:17 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:03:25 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ char *ft_strjoin_free(char *s1, const char *s2)
 {
 	char *joined;
 
-	if (!s1 || s1 == ft_strdup("")) // if s1 is null
+	if (!s1)
 		return (ft_strdup(s2));
 	joined = ft_strjoin(s1, s2);
 	free(s1);
-	return joined;
+	return (joined);
 }
 char *ft_strjoin_char(char *s, char c)
 {
