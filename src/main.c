@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/18 15:17:30 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/19 07:53:56 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ int	main(int argc, char **argv, char **envp)
 		// 	}
 		// }
 
-		// // Debug: print command info
+		// Debug: print command info
 		// printf("==== COMMANDS ====\n");
 		// for (t_command *cmd = commands; cmd; cmd = cmd->next)
 		// {
