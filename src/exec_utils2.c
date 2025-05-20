@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 20:24:31 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/19 21:02:29 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ void handle_input_redirs(t_command *cmd)
     {
         fd = open(cmd->infile, O_RDONLY);
         if (fd == -1)
-            exit((error_msg("heredoc_fail"), EXIT_FAILURE));
+            exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
         if (dup2(fd, STDIN_FILENO) == -1)
-            exit((error_msg("dup2_failed"), EXIT_FAILURE));
+            exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
         close(fd);
         unlink(cmd->infile);
         return ; // heredoc takes precedence
@@ -51,7 +51,7 @@ void handle_input_redirs(t_command *cmd)
         {
             tokens = tokens->next;
             if (!tokens || tokens->type != WORD)
-                exit((error_msg("missing infile"), EXIT_FAILURE));
+                exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
 
 			// fprintf(stderr, "Trying to open: [%s]\n", tokens->value);
 
@@ -59,16 +59,16 @@ void handle_input_redirs(t_command *cmd)
             if (fd == -1)
             {
                 if (errno == ENOENT)
-                    error_msg("No_file");
+					ft_putstr_fd(" No such file or directory\n", 2);
                 else if (errno == EACCES)
-                    error_msg("infile_fail");
+					ft_putstr_fd(" Permission denied\n", 2);
                 else
                     perror("infile");
                 exit(EXIT_FAILURE);
             }
 
             if (dup2(fd, STDIN_FILENO) == -1)
-                exit((error_msg("dup2_failed"), EXIT_FAILURE));
+                exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
             close(fd);
         }
         tokens = tokens->next;
@@ -135,7 +135,7 @@ void	handle_output_redirs(t_command *cmd)
 		{
 			tokens = tokens->next;
 			if (!tokens || tokens->type != WORD)
-				exit((error_msg("missing outfile"), EXIT_FAILURE));
+				exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
 
 			// Close previous if opened
 			if (last_fd != -1)
@@ -150,11 +150,11 @@ void	handle_output_redirs(t_command *cmd)
 				if (fd == -1)
 				{
 					if (errno == ENOENT)
-						error_msg("No_file");
+						ft_putstr_fd(" No such file or directory\n", 2);
 					else if (errno == EACCES)
-						error_msg("outfile_fail");
+						ft_putstr_fd(" Permission denied\n", 2);
 					else
-						perror("outfile");
+						perror(" ");
 					exit(EXIT_FAILURE);
 				}
 				last_fd = fd;
@@ -165,7 +165,7 @@ void	handle_output_redirs(t_command *cmd)
 	if (last_fd != -1)
 	{
 		if (dup2(last_fd, STDOUT_FILENO) == -1)
-			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+			exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
 		close(last_fd);
 	}
 }
@@ -217,7 +217,7 @@ void execute_child(t_command *cmd, t_env **env_list,
 	if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd != NULL)
 	{
 		if (dup2(pipefd[0], STDIN_FILENO) == -1)
-			exit((error_msg("dup2_failed"), EXIT_FAILURE));
+			exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
 		close(pipefd[0]);
 	}
 
@@ -245,8 +245,8 @@ void execute_child(t_command *cmd, t_env **env_list,
 		exit((printf("Error: Null pointer in execute_child\n"), 127));
 	if (is_builtin(cmd->argv[0]))
 		exit(execute_builtin(cmd, env_list, exit_value));
-	if (is_directory(cmd->argv[0]) != 0)
-		exit((ft_putstr_fd(" Is a directory\n", 2), 126));
+	// if (is_directory(cmd->argv[0]) != 0)
+	// 	exit((ft_putstr_fd(" Is a directory\n", 2), 126));
 	if (cmd->argv[0] && !ft_strcmp(cmd->argv[0], "export="))
 		exit(0);
     else
@@ -254,6 +254,10 @@ void execute_child(t_command *cmd, t_env **env_list,
 	    full_path = resolve_path(cmd->argv[0]);
 	    if (!full_path)
 			exit((ft_putstr_fd(" command not found\n", 2), 127));
+		if (access(full_path, F_OK) == 0 && access(full_path, X_OK) != 0)
+			exit((ft_putstr_fd(" Permission denied\n", 2), 126));
+		if (is_directory(cmd->argv[0]) != 0)
+			exit((ft_putstr_fd(" Is a directory\n", 2), 126));
 	    if ((execve(full_path, cmd->argv, envp) == -1))
 		    exit((ft_putstr_fd(" command not found\n", 2), 127));
 		// execve(full_path, cmd->argv, envp);

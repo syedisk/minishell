@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 19:48:01 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/20 13:58:35 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,81 +28,64 @@ static int	is_n_flag(char *str)
 	return (1);
 }
 
-static char	*strip_inner_quotes(const char *str)
+static void	print_echo_arg(t_token *arg, t_env *env_list, int *exit_value)
 {
-	char	*result;
-	int		i = 0;
-	int		j = 0;
-
-	if (!str)
-		return (NULL);
-	result = malloc(ft_strlen(str) + 1);
-	if (!result)
-		return (NULL);
-	while (str[i])
-	{
-		if (str[i] != '\'' && str[i] != '"')
-			result[j++] = str[i];
-		i++;
-	}
-	result[j] = '\0';
-	return (result);
+	if (arg->quote_type == 1)
+		handle_single_quote(arg);
+	else
+		handle_double_or_no_quote(arg, env_list, exit_value);
 }
 
+static void	process_echo_flags(t_token **curr, int *newline)
+{
+	t_token		*temp;
+
+	temp = *curr;
+	*newline = 0;
+	while (temp && temp->type == WORD && is_n_flag(temp->value))
+	{
+		*newline = 1;
+		temp = temp->next;
+	}
+	*curr = temp;
+}
+
+static void	process_echo_args(t_token *curr, t_env *env_list, int *exit_value)
+{
+	int		need_space;
+	t_token	*temp;
+
+	need_space = 0;
+	temp = curr;
+	while (temp)
+	{
+		if (temp->type == REDIR_IN || temp->type == REDIR_OUT
+			|| temp->type == APPEND || temp->type == HEREDOC)
+		{
+			temp = temp->next;
+			if (temp)
+				temp = temp->next;
+			continue ;
+		}
+		if (temp->type == WORD)
+		{
+			if (need_space)
+				printf(" ");
+			print_echo_arg(temp, env_list, exit_value);
+			need_space = 1;
+		}
+		temp = temp->next;
+	}
+}
 
 int	handle_echo(t_token *args, t_env *env_list, int *exit_value)
 {
 	int		newline;
-	char	*expanded;
-	int		need_space = 0;
+	t_token	*curr;
 
-	newline = 0;
-	args = args->next;
-	while (args && args->type == WORD && is_n_flag(args->value))
-	{
-		newline = 1;
-		args = args->next;
-	}
-	while (args)
-	{
-		if (args->type == REDIR_IN || args->type == REDIR_OUT
-			|| args->type == APPEND || args->type == HEREDOC)
-		{
-			args = args->next;
-			if (args)
-				args = args->next;
-			continue ;
-		}
-		else if (args->type == WORD)
-		{
-			if (need_space)
-				printf(" ");
-			if (args->quote_type == 1)
-				printf("%s", args->value);
-			else if (args->quote_type == 2)
-			{
-				expanded = expand_variables(args->value, env_list, exit_value);
-				if (expanded)
-				{
-					printf("%s", expanded);
-					free(expanded);
-				}
-			}
-			else
-			{
-				char *stripped = strip_inner_quotes(args->value);
-				expanded = expand_variables(stripped, env_list, exit_value);
-				free(stripped);
-				if (expanded)
-				{
-					printf("%s", expanded);
-					free(expanded);
-				}
-			}
-			need_space = 1;
-		}
-		args = args->next;
-	}
+	curr = args->next;
+	process_echo_flags(&curr, &newline);
+	process_echo_args(curr, env_list, exit_value);
 	if (!newline)
 		printf("\n");
 	exit_value = 0;

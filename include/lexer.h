@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 12:43:42 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 20:11:55 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/20 12:09:15 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,6 @@ typedef struct s_token
 t_token	*tokenise(const char *input);
 void	free_tokens(t_token *tokens);
 void	add_token(t_token **head, t_token *new);
+int	ft_isspace(char c);
 
 #endif

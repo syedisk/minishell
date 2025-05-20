@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 20:18:04 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/20 12:08:07 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static int is_only_whitespace(const char *str)
 {
     while (*str)
     {
-        if (!isspace((unsigned char)*str))
+        if (!ft_isspace((unsigned char)*str))
             return 0;
         str++;
     }

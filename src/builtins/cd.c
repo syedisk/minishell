@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:20:23 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/17 16:31:58 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/20 12:05:45 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static int	cd_to_home(char **argv)
 		write(2, "cd: HOME not set\n", 17);
 		return (1);
 	}
-	new_path = malloc(strlen(home) + ft_strlen(argv[1]) + 1);
+	new_path = malloc(ft_strlen(home) + ft_strlen(argv[1]) + 1);
 	if (!new_path)
 		return (1);
 	ft_strcpy(new_path, home);
