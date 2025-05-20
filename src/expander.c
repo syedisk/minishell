@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:28:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 20:03:08 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/20 14:28:08 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,18 @@
 // 	}
 // 	return (ft_strdup("")); // not found, empty string
 // }
+
+
+char	*get_env_value(t_env *env, const char *key)
+{
+	while (env)
+	{
+		if (ft_strcmp(env->key, key) == 0)
+			return (env->value);
+		env = env->next;
+	}
+	return (NULL);
+}
 
 char *ft_strjoin_free(char *s1, const char *s2)
 {

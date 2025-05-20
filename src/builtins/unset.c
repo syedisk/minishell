@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:40:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 16:41:47 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/20 14:43:37 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 
 static void	unset_env_key(t_env **env, const char *key)
 {
-	t_env	*curr = *env;
-	t_env	*prev = NULL;
+	t_env	*curr;
+	t_env	*prev;
 
+	curr = *env;
+	prev = NULL;
 	while (curr)
 	{
 		if (ft_strcmp(curr->key, key) == 0)
@@ -25,7 +27,6 @@ static void	unset_env_key(t_env **env, const char *key)
 				prev->next = curr->next;
 			else
 				*env = curr->next;
-
 			free(curr->key);
 			free(curr->value);
 			free(curr);
@@ -35,17 +36,19 @@ static void	unset_env_key(t_env **env, const char *key)
 		curr = curr->next;
 	}
 }
-static void 	ft_unset(char **args, t_env **env)
-{
-	int	i = 1;
 
+static void	ft_unset(char **args, t_env **env)
+{
+	int	i;
+
+	i = 1;
 	while (args[i])
 	{
-		// Optional: check if the identifier is valid??
 		unset_env_key(env, args[i]);
 		i++;
 	}
 }
+
 int	handle_unset(char **args, t_env **env_list)
 {
 	if (!args[1])
