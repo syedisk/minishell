@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 21:02:29 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 00:20:43 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ int is_directory(const char *path)
     return S_ISDIR(path_stat.st_mode);
 }
 
-void handle_input_redirs(t_command *cmd)
+int handle_input_redirs(t_command *cmd)
 {
-    int     fd;
+    int     fd = -1;
     t_token *tokens = cmd->raw_tokens;
 
 	// fprintf(stderr, "DEBUG: entered handle_input_redirs\n");
@@ -36,12 +36,12 @@ void handle_input_redirs(t_command *cmd)
     {
         fd = open(cmd->infile, O_RDONLY);
         if (fd == -1)
-            exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
+            return (ft_putstr_fd(" No such file or directory\n", 2), 1);
         if (dup2(fd, STDIN_FILENO) == -1)
-            exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
+            return (ft_putstr_fd(" No such file or directory\n", 2), 1);
         close(fd);
         unlink(cmd->infile);
-        return ; // heredoc takes precedence
+        return (0); // heredoc takes precedence
     }
 
     // Otherwise, process all < infile redirections in order
@@ -51,28 +51,34 @@ void handle_input_redirs(t_command *cmd)
         {
             tokens = tokens->next;
             if (!tokens || tokens->type != WORD)
-                exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
+                return (ft_putstr_fd(" No such file or directory\n", 2), 1);
 
 			// fprintf(stderr, "Trying to open: [%s]\n", tokens->value);
-
+			if (fd != -1)
+				close(fd);
             fd = open(tokens->value, O_RDONLY);
+			// printf("DEBUG: file name : %s\n", tokens->value);
             if (fd == -1)
             {
-                if (errno == ENOENT)
+				// printf("DEBUG: errno = %d\n", errno);
+                if (errno == 2)
 					ft_putstr_fd(" No such file or directory\n", 2);
-                else if (errno == EACCES)
+                else if (errno == 13)
 					ft_putstr_fd(" Permission denied\n", 2);
                 else
-                    perror("infile");
-                exit(EXIT_FAILURE);
+                    perror("");
+                return (1);
             }
-
-            if (dup2(fd, STDIN_FILENO) == -1)
-                exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
-            close(fd);
         }
         tokens = tokens->next;
     }
+	if (fd != -1)
+	{
+		if (dup2(fd, STDIN_FILENO) == -1)
+			return (ft_putstr_fd(" No such file or directory\n", 2), 1);
+		close(fd);
+	}
+	return (0);
 }
 
 // void handle_infile(t_command *cmd, int fd_in)
@@ -123,11 +129,10 @@ static int has_input_redir(t_token *tokens)
 	}
 	return (0);
 }
-void	handle_output_redirs(t_command *cmd)
+int	handle_output_redirs(t_command *cmd)
 {
 	t_token	*tokens = cmd->raw_tokens;
 	int		fd = -1;
-	int		last_fd = -1;
 
 	while (tokens)
 	{
@@ -135,11 +140,11 @@ void	handle_output_redirs(t_command *cmd)
 		{
 			tokens = tokens->next;
 			if (!tokens || tokens->type != WORD)
-				exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
+				return(ft_putstr_fd(" No such file or directory\n", 2), 1);
 
 			// Close previous if opened
-			if (last_fd != -1)
-				close(last_fd);
+			if (fd != -1)
+				close(fd);
 
 			if (tokens->type == WORD)
 			{
@@ -149,25 +154,25 @@ void	handle_output_redirs(t_command *cmd)
 					fd = open(tokens->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 				if (fd == -1)
 				{
-					if (errno == ENOENT)
+					if (errno == 2)
 						ft_putstr_fd(" No such file or directory\n", 2);
-					else if (errno == EACCES)
+					else if (errno == 13)
 						ft_putstr_fd(" Permission denied\n", 2);
 					else
 						perror(" ");
-					exit(EXIT_FAILURE);
+					return (1);
 				}
-				last_fd = fd;
 			}
 		}
 		tokens = tokens->next;
 	}
-	if (last_fd != -1)
+	if (fd != -1)
 	{
-		if (dup2(last_fd, STDOUT_FILENO) == -1)
-			exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
-		close(last_fd);
+		if (dup2(fd, STDOUT_FILENO) == -1)
+			return(ft_putstr_fd(" No such file or directory\n", 2), 1);
+		close(fd);
 	}
+	return (0);
 }
 
 // void handle_outfile(t_command *cmd, int *pipefd)
@@ -212,16 +217,17 @@ void execute_child(t_command *cmd, t_env **env_list,
 {
 	char *full_path;
 
-	handle_input_redirs(cmd);
-	
+	if (handle_input_redirs(cmd) != 0)
+		exit (1);
 	if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd != NULL)
 	{
 		if (dup2(pipefd[0], STDIN_FILENO) == -1)
-			exit((ft_putstr_fd(" No such file or directory\n", 2), EXIT_FAILURE));
+			exit ((ft_putstr_fd(" No such file or directory\n", 2), 1));
 		close(pipefd[0]);
 	}
 
-	handle_output_redirs(cmd);
+	if (handle_output_redirs(cmd) != 0)
+		exit (1);
 
 	if (cmd->next && pipefd != NULL)
 	{
@@ -258,16 +264,26 @@ void execute_child(t_command *cmd, t_env **env_list,
 			exit((ft_putstr_fd(" Permission denied\n", 2), 126));
 		if (is_directory(cmd->argv[0]) != 0)
 			exit((ft_putstr_fd(" Is a directory\n", 2), 126));
-	    if ((execve(full_path, cmd->argv, envp) == -1))
-		    exit((ft_putstr_fd(" command not found\n", 2), 127));
+	   if ((execve(full_path, cmd->argv, envp) == -1))
+    	{
+        	if (errno == 2)
+            	exit ((ft_putstr_fd(" No such file or directory\n", 2), 127));
+        	else if (errno == 13)
+            	exit((ft_putstr_fd(" Permission denied\n", 2), 126));
+        	else
+            	exit((perror(""), 127));
+    	}
+		else
+			exit (0);
 		// execve(full_path, cmd->argv, envp);
 
 	// If we got here, execve failed
 	// perror(cmd->argv[0]);  // prints: command: error message
 	free(full_path);
 	// exit(127);
+	exit(0);
 	}
-	    exit(EXIT_SUCCESS);
+	   // exit(0);
 }
 char *ft_strcat(char *dest, const char *src)
 {

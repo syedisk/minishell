@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/18 13:18:39 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/21 19:36:31 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env
 		handle_heredoc_signals();  // Heredoc signal handler
 		fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (fd < 0)
-			exit(EXIT_FAILURE); // exit on failure in child
+			return(EXIT_FAILURE); // exit on failure in child
 		while (1)
 		{
 			line = readline("> ");
@@ -71,7 +71,7 @@ int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env
 			free(line);
 		}
 		close(fd);
-		exit(EXIT_SUCCESS); // exit from child process properly
+		//exit(EXIT_SUCCESS); // exit from child process properly
 	}
 	else if (pid > 0)
 	{

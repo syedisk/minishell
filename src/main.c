@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/20 12:08:07 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/21 22:15:50 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int	main(int argc, char **argv, char **envp)
 	env_list = create_env_list(envp);
 	if (!env_list)
 		return (printf("Error: Failed to create environment list\n"), 1);
-	void ignore_sigquit(void); 
+	void ignore_sigquit(void);
 	while (1)
 	{
 		set_signals();
@@ -194,7 +194,16 @@ int	main(int argc, char **argv, char **envp)
 		// 	if (cmd->outfile)
 		// 		printf("  Outfile: %s (append: %d)\n", cmd->outfile, cmd->append_out);
 		// }
-
+		// After parsing tokens and before executing commands:
+		if (!commands || !commands->argv || !commands->argv[0] || commands->argv[0][0] == '\0')
+		{
+    		// No command to execute, match bash: exit 0, no error
+    		free_tokens(tokens);
+    		free_commands(commands);
+    		free(input);
+    		exit_value = 0;
+    		continue;
+		}
 		//Step 3: Execute command
 		env_array =  convert_env_to_array(env_list);
 		execute_commands(commands, &env_list, env_array, &exit_value); // execve in here

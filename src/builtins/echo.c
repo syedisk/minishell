@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/20 13:58:35 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/21 21:32:25 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,8 @@ static void	process_echo_args(t_token *curr, t_env *env_list, int *exit_value)
 		{
 			if (need_space)
 				printf(" ");
+			if (ft_strcmp(temp->value, "echo") == 0)
+				temp = temp->next;
 			print_echo_arg(temp, env_list, exit_value);
 			need_space = 1;
 		}

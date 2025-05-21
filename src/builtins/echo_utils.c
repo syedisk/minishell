@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 13:46:36 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/20 14:13:12 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:21:25 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,9 @@ char	*strip_inner_quotes(const char *str)
 void	handle_single_quote(t_token *arg)
 {
 	char	*value;
-	int		printed;
 
 	value = arg->value;
-	printed = 0;
 	printf("%s", value);
-	printed = 1;
 }
 
 void	handle_double_or_no_quote(t_token *arg, t_env *env_list,

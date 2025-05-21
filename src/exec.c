@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 20:46:21 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 00:03:12 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,15 +93,23 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp, int *exit_v
     pipefd[0] = -1;
     while (cmd)
     {
-        if (!cmd->argv || !cmd->argv[0])
+        if (!cmd->argv || !cmd->argv[0] || cmd->argv[0][0] == '\0')
         {
             cmd = cmd->next;
             continue;
         }
         if (is_builtin(cmd->argv[0]) && !cmd->next && fd_in == 0)
         {
-            handle_input_redirs(cmd);
-            handle_output_redirs(cmd);
+            if (handle_output_redirs(cmd) != 0) // open/create outfile first
+{
+    *exit_value = 1;
+    return;
+}
+if (handle_input_redirs(cmd) != 0) // open infile after
+{
+    *exit_value = 1;
+    return;
+}
             *exit_value = execute_builtin(cmd, env_list, exit_value);
             if (ft_strcmp(cmd->argv[0], "exit") == 0)
             {
@@ -110,8 +118,7 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp, int *exit_v
                 free_split(envp);         // optional cleanup
                 exit(*exit_value);
             }
-            cmd = cmd->next;
-            continue;
+            return;
         }
         if (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0')
         { 
@@ -122,21 +129,28 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp, int *exit_v
         {
             if (pipe(pipefd) == -1)
             {
-                write(2, "pipe failed\n", 12);
-                exit(EXIT_FAILURE);
+                perror("pipe failed");
+				*exit_value = 1;
+				return;
             }
             pid = fork_and_execute(cmd, env_list, envp, fd_in, pipefd, exit_value);
             if (pid == -1)
             {
-                close(pipefd[0]);
-                close(pipefd[1]);
-                exit((perror("fork failed"), EXIT_FAILURE));
+                perror("fork failed");
+				close(pipefd[0]);
+				close(pipefd[1]);
+				*exit_value = 1;
+				return;
             }
         }
         else
             pid = fork_and_execute(cmd, env_list, envp, fd_in, NULL, exit_value);
         if (pid == -1)
-            exit((perror("fork failed"), EXIT_FAILURE));
+           {
+				perror("fork failed");
+				*exit_value = 1;
+				return;
+			}
         if (cmd->next)
             close_and_update_fds(&fd_in, cmd, pipefd);
         else

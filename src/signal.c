@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 18:02:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/18 12:51:17 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/21 17:52:32 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,12 @@ void handle_heredoc_signals(void)
 {
     signal(SIGINT, heredoc_sigint_handler);
     signal(SIGQUIT, SIG_IGN);
+}
+void sigpipe_handler(int signum)
+{
+    (void)signum;
+    write(2, " Broken pipe\n", 13);
+    exit(1);
 }
 
 // After readline

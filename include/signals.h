@@ -23,5 +23,6 @@ void sig_handler(int sig);
 void ignore_sigquit(void);
 void handle_heredoc_signals(void);
 void heredoc_sigint_handler(int sig);
+void sigpipe_handler(int sig);
 
 #endif

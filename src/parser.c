@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 19:18:16 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/21 23:40:59 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,15 +120,23 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 				if (!expanded || !cleaned)
 				{
 					free(expanded);
+					free(cleaned);
 					free_commands(cmd_head);
 					return (NULL); // handle error
 				}
+				if (cleaned[0] != '\0')
+        			current_cmd->argv[argc++] = cleaned;
+				else
+					free(cleaned);
 				free(expanded);
-				current_cmd->argv[argc++] = cleaned;
-				current_cmd->argv[argc] = NULL;
+				// current_cmd->argv[argc++] = cleaned;
+				// current_cmd->argv[argc] = NULL;
 			}
 			else if (curr->type == REDIR_IN)
 			{
+				// free(current_cmd->infile);
+				// current_cmd->infile = ft_strdup(curr->next->value);
+				// curr = curr->next;
 				curr = curr->next;
 				if (curr)
 				{
@@ -139,6 +147,10 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 			}
 			else if (curr->type == REDIR_OUT)
 			{
+				// free(current_cmd->outfile);
+				// current_cmd->outfile = ft_strdup(curr->next->value);
+				// current_cmd->append_out = 0;
+				// curr = curr->next;
 				curr = curr->next;
 				if (curr)
 				{
@@ -150,6 +162,10 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 			}
 			else if (curr->type == APPEND)
 			{
+				// free(current_cmd->outfile);
+				// current_cmd->outfile = ft_strdup(curr->next->value);
+				// current_cmd->append_out = 1;
+				// curr = curr->next;
 				curr = curr->next;
 				if (curr)
 				{
@@ -189,7 +205,6 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 					current_cmd->heredoc = 1;
 					current_cmd->infile = heredoc_path;
 					free(delim);
-					
 				}
 			}
 			curr = curr->next;
