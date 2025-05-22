@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_utils1.c                                             :+:      :+:    :+:   */
+/*   exec_utils1.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/08 16:08:34 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 15:24:22 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 void	free_split(char **split)
 {
-	int	i = 0;
+	int	i;
 
+	i = 0;
 	if (!split)
-		return;
+		return ;
 	while (split[i])
 	{
 		free(split[i]);
@@ -26,10 +27,10 @@ void	free_split(char **split)
 	free(split);
 }
 
-char *try_path(char *dir, char *cmd)
+char	*try_path(char *dir, char *cmd)
 {
-	size_t len;
-	char *full;
+	size_t	len;
+	char	*full;
 
 	len = ft_strlen(dir) + ft_strlen(cmd) + 2;
 	full = malloc(len);
@@ -44,12 +45,12 @@ char *try_path(char *dir, char *cmd)
 	return (NULL);
 }
 
-char *resolve_path(char *cmd)
+char	*resolve_path(char *cmd)
 {
-	char **paths;
-	char *env_path;
-	char *full;
-	int i;
+	char	**paths;
+	char	*env_path;
+	char	*full;
+	int		i;
 
 	i = 0;
 	env_path = getenv("PATH");

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/21 21:32:25 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 15:03:41 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,11 @@ static void	process_echo_flags(t_token **curr, int *newline)
 	*curr = temp;
 }
 
-static void	process_echo_args(t_token *curr, t_env *env_list, int *exit_value)
+static void	process_echo_args(t_token *curr, t_env *env_list,
+	int *exit_value, int need_space)
 {
-	int		need_space;
 	t_token	*temp;
 
-	need_space = 0;
 	temp = curr;
 	while (temp)
 	{
@@ -83,11 +82,13 @@ static void	process_echo_args(t_token *curr, t_env *env_list, int *exit_value)
 int	handle_echo(t_token *args, t_env *env_list, int *exit_value)
 {
 	int		newline;
+	int		need_space;
 	t_token	*curr;
 
+	need_space = 0;
 	curr = args->next;
 	process_echo_flags(&curr, &newline);
-	process_echo_args(curr, env_list, exit_value);
+	process_echo_args(curr, env_list, exit_value, need_space);
 	if (!newline)
 		printf("\n");
 	exit_value = 0;

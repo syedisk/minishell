@@ -6,114 +6,70 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:07:47 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 17:36:01 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 14:51:58 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int is_quote(char c) 
+int	is_quote(char c)
 {
-    if (c == '\'' || c == '"')
-        return (1);
-    return (0);
+	if (c == '\'' || c == '"')
+		return (1);
+	return (0);
 }
 
-// Checks if quotes are balanced
-int has_unclosed_quotes(const char *input) 
+int	has_unclosed_quotes(const char *input)
 {
-    char quote = 0;
-    while (*input)
-    {
-        if (!quote && is_quote(*input))
-            quote = *input;
-        else if (quote && *input == quote)
-            quote = 0;
-        input++;
-    }
-    if (quote)
-        return (1); // Unclosed quote found
-    return (0);
+	char	quote;
+
+	quote = 0;
+	while (*input)
+	{
+		if (!quote && is_quote(*input))
+			quote = *input;
+		else if (quote && *input == quote)
+			quote = 0;
+		input++;
+	}
+	if (quote)
+		return (1);
+	return (0);
 }
 
-// Checks for invalid syntax at the end (like "|", "||", ">", etc.)
-int has_trailing_operator(const char *input) 
+int	has_trailing_operator(const char *input)
 {
-    const char *trim = input;
-    while (*trim == ' ')
-        trim++;
+	const char	*trim;
+	int			len;
 
-    int len = ft_strlen(trim);
-    if (len == 0)
-        return (1);
-
-    // Skip trailing spaces
-    while (len > 0 && trim[len - 1] == ' ')
-        len--;
-
-    if (len == 0)
-        return (1);
-
-    // Check trailing operator
-    if (trim[len - 1] == '|' || trim[len - 1] == '<' || trim[len - 1] == '>')
-        return (1);
-    return (0);
+	trim = input;
+	while (*trim == ' ')
+		trim++;
+	len = ft_strlen(trim);
+	if (len == 0)
+		return (1);
+	while (len > 0 && trim[len - 1] == ' ')
+		len--;
+	if (len == 0)
+		return (1);
+	if (trim[len - 1] == '|' || trim[len - 1] == '<' || trim[len - 1] == '>')
+		return (1);
+	return (0);
 }
 
-int check_syntax_error(const char *input) 
+int	check_syntax_error(const char *input)
 {
-    if (!input || *input == '\0') 
-    {
-       // printf("minishell: syntax error: empty input\n");
-        return (1);
-    }
-
-    if (has_unclosed_quotes(input)) 
-    {
-        write(2, "minishell: syntax error: unclosed quote\n", 40);
-        return (1);
-    }
-
-    if (has_trailing_operator(input)) 
-    {
-        write(2, "minishell: syntax error near unexpected token `newline`\n", 57);
-        return (1);
-    }
-    return (0);
-}
-
-void error_msg(char *error)
-{
-    if (ft_strcmp(error, "execve_fail") == 0)
-        write(2, "command not found\n", 19);
-    else if (ft_strcmp(error, "export_fail") == 0)
-        write(2, "not a valid identifier\n", 24);
-    else if (ft_strcmp(error, "malloc_fail") == 0)
-        write(2, "malloc failed\n", 14);
-    else if (ft_strcmp(error, "No_file") == 0)
-        write(2, "No such file or directory\n", 26);
-    else if (ft_strcmp(error, "outfile_fail") == 0)
-        write(2, "Permission denied\n", 19);
-    else if (ft_strcmp(error, "infile_fail") == 0)
-        write(2, "Permission denied\n", 19);
-    else if (ft_strcmp(error, "heredoc_fail") == 0)
-        write(2, "command not found\n", 19);
-    else if (ft_strcmp(error, "is_directory") == 0)
-        write(2, "Is a directory\n", 16);
-    else if (ft_strcmp(error, "dup2_failed") == 0)
-        write(2, "dup2 failed for fd\n", 20);
-    else if (ft_strcmp(error, "pwd_got_arg") == 0)
-        write (2, "pwd: too many arguments\n", 24);
-    else if (ft_strcmp(error, "exit_arg") == 0)
-        write(2, "numeric argument required\n", 27);
-    else if (ft_strcmp(error, "exit_too_many_arg") == 0)
-        write(2, "exit: too many arguments\n", 25);
-    else if (ft_strcmp(error, "undef_var") == 0)
-        write(2, "command not found\n", 19);
-    else
-    {
-        write(2, "Error: ", 7);
-        write(2, error, ft_strlen(error));
-        write(2, "\n", 1);
-    }
+	if (!input || *input == '\0')
+		return (1);
+	if (has_unclosed_quotes(input))
+	{
+		ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
+		return (1);
+	}
+	if (has_trailing_operator(input))
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token\n", 2);
+		return (1);
+	}
+	return (0);
 }

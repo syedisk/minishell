@@ -3,28 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/21 19:36:31 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 15:17:26 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "heredoc.h"
-#include "expander.h"
-#include "utils.h"
-#include "libft.h"
-#include <fcntl.h>
-#include <readline/readline.h> 
-#include <unistd.h> 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/wait.h>
+#include "minishell.h"
 
-char *generate_heredoc_filename(int id)
+char	*generate_heredoc_filename(int id)
 {
-	char *num;
-	char *filename;
+	char	*num;
+	char	*filename;
 
 	num = ft_itoa(id);
 	if (!num)

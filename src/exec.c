@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/22 00:03:12 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 14:12:05 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ void wait_for_child_processes(int last_pid, int *exit_value)
         // }
     }
 }
+
 int fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, int *pipefd, int *exit_value)
 {
     int pid;
@@ -98,18 +99,23 @@ void execute_commands(t_command *cmd, t_env **env_list, char **envp, int *exit_v
             cmd = cmd->next;
             continue;
         }
+        // Debug print to check cmd->argv
+        // printf("Executing command: ");
+        // for (int i = 0; cmd->argv[i]; i++)
+        //     printf("%s ", cmd->argv[i]);
+        // printf("\n");
         if (is_builtin(cmd->argv[0]) && !cmd->next && fd_in == 0)
         {
             if (handle_output_redirs(cmd) != 0) // open/create outfile first
-{
-    *exit_value = 1;
-    return;
-}
-if (handle_input_redirs(cmd) != 0) // open infile after
-{
-    *exit_value = 1;
-    return;
-}
+            {
+                *exit_value = 1;
+                return;
+            }
+            if (handle_input_redirs(cmd) != 0) // open infile after
+            {
+                *exit_value = 1;
+                return;
+            }
             *exit_value = execute_builtin(cmd, env_list, exit_value);
             if (ft_strcmp(cmd->argv[0], "exit") == 0)
             {
@@ -159,3 +165,5 @@ if (handle_input_redirs(cmd) != 0) // open infile after
     }
     wait_for_child_processes(pid, exit_value);
 }
+
+

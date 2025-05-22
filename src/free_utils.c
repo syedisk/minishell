@@ -6,37 +6,36 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 16:22:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 14:10:04 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 15:25:09 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Free the args array
-void free_args(char **args)
+void	free_args(char **args)
 {
-    int i = 0;
+	int	i;
 
-    if (!args)
-        return;
-    while (args[i])
-    {
-        free(args[i]); // Free each argument
-        i++;
-    }
-    free(args); // Free the array itself
+	i = 0;
+	if (!args)
+		return ;
+	while (args[i])
+	{
+		free(args[i]);
+		i++;
+	}
+	free(args);
 }
 
-void free_tokens(t_token *tokens)
+void	free_tokens(t_token *tokens)
 {
-	t_token *tmp;
-	
+	t_token	*tmp;
+
 	while (tokens)
 	{
 		tmp = tokens->next;
-		// if(tokens->value)
-			free(tokens->value); // Free the token value
-		free(tokens);   // Free the token node
+		free(tokens->value);
+		free(tokens);
 		tokens = tmp;
 	}
 }
@@ -69,10 +68,11 @@ void	free_commands(t_command *cmds)
 		cmds = tmp;
 	}
 }
+
 void	free_env_list(t_env *env)
 {
 	t_env	*tmp;
-	
+
 	while (env)
 	{
 		tmp = env;

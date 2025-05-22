@@ -6,120 +6,53 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/19 19:17:40 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 16:50:03 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	ft_isspace(char c)
+void	read_quoted_word(const char *s, int *i, char **result, int *quote_type)
 {
-	unsigned char	ch;
+	int		start;
+	char	quote;
+	char	*chunk;
 
-	ch = (unsigned char)c;
-	if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\v' || ch == '\f'
-		|| ch == '\r')
-		return (1);
-	return (0);
-}
-
-t_token	*new_token(char *value, t_token_type type, int quote_type)
-{
-	t_token	*token;
-
-	token = malloc(sizeof(t_token));
-	if (!token)
-		return (NULL);
-	token->value = value;
-	token->type = type;
-	token->quote_type = quote_type;
-	token->next = NULL;
-	return (token);
-}
-
-void	add_token(t_token **head, t_token *new)
-{
-	t_token	*cur;
-
-	cur = *head;
-	if (!*head)
+	quote = s[(*i)++];
+	start = *i;
+	while (s[*i] && s[*i] != quote)
+		(*i)++;
+	chunk = ft_strndup(s + start, *i - start);
+	if (s[*i] == quote)
+		(*i)++;
+	*result = ft_strjoin_free(*result, chunk);
+	free(chunk);
+	if (*quote_type == 0)
 	{
-		*head = new;
-		return ;
+		if (quote == '\'')
+			*quote_type = 1;
+		else if (quote == '"')
+			*quote_type = 2;
 	}
-	while (cur->next)
-		cur = cur->next;
-	cur->next = new;
-}
-
-int	is_operator_char(char c)
-{
-	return (c == '|' || c == '<' || c == '>');
-}
-
-t_token_type	get_operator_type(const char *s, int *len)
-{
-	if (s[0] == '|')
-	{
-		*len = 1;
-		return (PIPE);
-	}
-	if (s[0] == '<' && s[1] == '<')
-	{
-		*len = 2;
-		return (HEREDOC);
-	}
-	if (s[0] == '>' && s[1] == '>')
-	{
-		*len = 2;
-		return (APPEND);
-	}
-	if (s[0] == '<')
-	{
-		*len = 1;
-		return (REDIR_IN);
-	}
-	if (s[0] == '>')
-	{
-		*len = 1;
-		return (REDIR_OUT);
-	}
-	return (WORD);
 }
 
 char	*read_word(const char *s, int *i, int *quote_type)
 {
-	char *result = ft_strdup("");
-	char *chunk = NULL;
+	char	*result;
+	char	*chunk;
 	int		start;
-	char	quote;
 
+	result = ft_strdup("");
 	*quote_type = 0;
 	while (s[*i] && !ft_isspace(s[*i]) && !is_operator_char(s[*i]))
 	{
 		if (s[*i] == '\'' || s[*i] == '"')
-		{
-			quote = s[(*i)++];
-			start = *i;
-			while (s[*i] && s[*i] != quote)
-				(*i)++;
-			chunk = ft_strndup(s + start, *i - start);
-			if (s[*i] == quote)
-				(*i)++;
-			result = ft_strjoin_free(result, chunk);
-			free(chunk);
-			if (*quote_type == 0)
-			{
-				if (quote == '\'')
-					*quote_type = 1;
-				else if (quote == '"')
-					*quote_type = 2;
-			}
-		}
+			read_quoted_word(s, i, &result, quote_type);
 		else
 		{
 			start = *i;
-			while (s[*i] && !ft_isspace(s[*i]) && !is_operator_char(s[*i]) && s[*i] != '\'' && s[*i] != '"')
+			while (s[*i] && !ft_isspace(s[*i]) && !is_operator_char(s[*i])
+				&& s[*i] != '\'' && s[*i] != '"')
 				(*i)++;
 			chunk = ft_strndup(s + start, *i - start);
 			result = ft_strjoin_free(result, chunk);
@@ -129,33 +62,32 @@ char	*read_word(const char *s, int *i, int *quote_type)
 	return (result);
 }
 
-
-char	*read_quoted(const char *s, int *i)
+void	handle_operator(t_token **tokens, const char *input, int *i)
 {
-	char	quote;
-	int		start;
-	char	*val;
+	int				op_len;
+	char			*op;
+	t_token_type	type;
 
-	quote = s[(*i)++];
-	start = *i;
-	while (s[*i] && s[*i] != quote)
-		(*i)++;
-	val = ft_strndup(s + start, *i - start);
-	if (s[*i])
-		(*i)++;
-	return (val);
+	type = get_operator_type(&input[*i], &op_len);
+	op = ft_strndup(&input[*i], op_len);
+	add_token(tokens, new_token(op, type, 0));
+	*i += op_len;
 }
+
+void	handle_word(t_token **tokens, const char *input,
+	int *i, int *quote_type)
+{
+	char	*word;
+
+	word = read_word(input, i, quote_type);
+	add_token(tokens, new_token(word, WORD, *quote_type));
+}
+
 t_token	*tokenise(const char *input)
 {
-	t_token			*tokens;
-	int				i;
-	int				op_len;
-	t_token_type	type;
-	char			*op;
-	// char			*quoted;
-	char			*word;
-	// char			quote;
-	int				quote_type;
+	t_token	*tokens;
+	int		i;
+	int		quote_type;
 
 	tokens = NULL;
 	i = 0;
@@ -167,33 +99,9 @@ t_token	*tokenise(const char *input)
 			continue ;
 		}
 		if (is_operator_char(input[i]))
-		{
-			type = get_operator_type(&input[i], &op_len);
-			op = ft_strndup(&input[i], op_len);
-			add_token(&tokens, new_token(op, type, 0));
-			i += op_len;
-		}
+			handle_operator(&tokens, input, &i);
 		else
-		{
-			word = read_word(input, &i, &quote_type);
-			add_token(&tokens, new_token(word, WORD, quote_type));
-		}
+			handle_word(&tokens, input, &i, &quote_type);
 	}
-	// 	else if (input[i] == '"' || input[i] == '\'')
-	// 	{
-	// 		quote = input[i];
-	// 		quoted = read_quoted(input, &i); // Extract quoted string
-	// 		if (quote == '\'')
-	// 			quote_type = 1;
-	// 		else
-	// 			quote_type = 2;
-    //         add_token(&tokens, new_token(quoted, WORD, quote_type));
-	// 	}
-	// 	else
-	// 	{
-	// 		word = read_word(input, &i);
-	// 		add_token(&tokens, new_token(word, WORD, 0));
-	// 	}
-	// }
 	return (tokens);
 }
