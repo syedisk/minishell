@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/22 15:17:26 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 20:27:38 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env
 			free(line);
 		}
 		close(fd);
-		//exit(EXIT_SUCCESS); // exit from child process properly
+		exit(EXIT_SUCCESS); // exit from child process properly
 	}
 	else if (pid > 0)
 	{

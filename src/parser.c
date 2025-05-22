@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/22 14:11:58 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 21:10:23 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,170 @@
 #include "heredoc.h"
 #include "utils.h"
 
-static t_token *dup_token_list(t_token *start, t_token *end)
+t_command	*start_new_command(t_command **head, t_command *prev, t_token **curr)
+{
+	t_command	*new_cmd;
+
+	new_cmd = malloc(sizeof(t_command));
+	if (!new_cmd)
+		return (NULL);
+	init_command(new_cmd);
+	if (!(*head))
+		*head = new_cmd;
+	else
+		prev->next = new_cmd;
+	if ((*curr)->type == PIPE)
+		*curr = (*curr)->next;
+	return (new_cmd);
+}
+
+void	init_command(t_command *cmd)
+{
+	cmd->argv = NULL;
+	cmd->infile = NULL;
+	cmd->outfile = NULL;
+	cmd->append_out = 0;
+	cmd->next = NULL;
+	cmd->heredoc = 0;
+	cmd->raw_tokens = NULL;
+}
+
+int	set_raw_tokens(t_command *cmd, t_token *start)
+{
+	t_token	*end;
+
+	end = start;
+	while (end && end->type != PIPE)
+		end = end->next;
+	cmd->raw_tokens = dup_token_list(start, end);
+	return (cmd->raw_tokens != NULL);
+}
+
+int	setup_args_and_redirects(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
+{
+	int	argc;
+
+	argc = count_args(*curr);
+	cmd->argv = malloc(sizeof(char *) * (argc + 1));
+	if (!cmd->argv)
+		return (0);
+	argc = 0;
+	while (*curr && (*curr)->type != PIPE)
+	{
+		if ((*curr)->type == WORD)
+		{
+			if (!expand_word((*curr), ctx->env_list, ctx->exit_value, &cmd->argv[argc++]))
+				return (0);
+		}
+		else
+		{
+			if (!handle_redirection(cmd, curr, ctx))
+				return (0);
+		}
+		*curr = (*curr)->next;
+	}
+	cmd->argv[argc] = NULL;
+	return (1);
+}
+
+int	handle_redirection(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
+{
+	if ((*curr)->type == REDIR_IN || (*curr)->type == REDIR_OUT || (*curr)->type == APPEND)
+		return (handle_file_redir(cmd, curr));
+	if ((*curr)->type == HEREDOC)
+		return (handle_heredoc(cmd, curr, ctx));
+	return (1);
+}
+
+int	handle_file_redir(t_command *cmd, t_token **curr)
+{
+	t_token	*next;
+
+	next = (*curr)->next;
+	if (!next)
+		return (1); // gracefully ignore if no filename
+
+	if ((*curr)->type == REDIR_IN)
+	{
+		if (cmd->infile)
+			free(cmd->infile);
+		cmd->infile = ft_strdup(next->value);
+	}
+	else if ((*curr)->type == REDIR_OUT || (*curr)->type == APPEND)
+	{
+		if (cmd->outfile)
+			free(cmd->outfile);
+		cmd->outfile = ft_strdup(next->value);
+		cmd->append_out = ((*curr)->type == APPEND);
+	}
+	return (1);
+}
+
+int	handle_heredoc(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
+{
+	char	*delim;
+	char	*heredoc_path;
+	int		expand;
+
+	*curr = (*curr)->next;
+	if (!(*curr))
+		return (1);
+	expand = 1;
+	if ((*curr)->value[0] == '\'' || (*curr)->value[0] == '"')
+		expand = 0;
+	delim = remove_quotes((*curr)->value);
+	if (!delim)
+		return (0);
+	heredoc_path = generate_heredoc_filename((*ctx->heredoc_id)++);
+	if (!heredoc_path)
+	{
+		free(delim);
+		return (0);
+	}
+	create_heredoc_file(heredoc_path, delim, expand, ctx->env_list, ctx->exit_value);
+	cmd->heredoc = 1;
+	cmd->infile = heredoc_path;
+	free(delim);
+	return (1);
+}
+
+
+
+int	count_args(t_token *token)
+{
+	int	count;
+
+	count = 0;
+	while (token && token->type != PIPE)
+	{
+		if (token->type == WORD)
+			count++;
+		else if (token->type == REDIR_IN || token->type == REDIR_OUT || token->type == APPEND)
+			token = token->next;
+		token = token->next;
+	}
+	return (count);
+}
+
+int	expand_word(t_token *token, t_env *env_list, int *exit_value, char **out)
+{
+	char	*expanded;
+	char	*cleaned;
+
+	if (token->quote_type == 1)
+		expanded = ft_strdup(token->value);
+	else
+		expanded = expand_variables(token->value, env_list, exit_value);
+	cleaned = ft_strdup(expanded);
+	if (!expanded || !cleaned)
+		return (free(expanded), 0);
+	free(expanded);
+	*out = cleaned;
+	return (1);
+}
+
+
+t_token *dup_token_list(t_token *start, t_token *end)
 {
 	t_token *new_head = NULL;
 	t_token *new_tok;
@@ -43,173 +206,28 @@ static t_token *dup_token_list(t_token *start, t_token *end)
 t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 {
 	t_command	*cmd_head;
-	t_command	*current_cmd;
+	t_command	*curr_cmd;
 	t_token		*curr;
-	t_command	*new_cmd;
-	int			argc;
-	t_token		*temp;
-	char		*expanded;
-	char		*cleaned;
-	int	heredoc_id = 0;
+	int			heredoc_id;
+	t_parse_ctx ctx;
 
+	heredoc_id = 0;
 	cmd_head = NULL;
-	current_cmd = NULL;
+	curr_cmd = NULL;
 	curr = tokens;
+	ctx.env_list = env_list;
+	ctx.exit_value = exit_value;
+	ctx.heredoc_id = &heredoc_id;
 	while (curr)
 	{
 		if (!cmd_head || curr->type == PIPE)
-		{
-			new_cmd = malloc(sizeof(t_command));
-			if (!new_cmd)
-			{
-				free_commands(cmd_head); // Free previously allocated commands
-				return (NULL); // handle error
-			}
-			new_cmd->argv = NULL;
-			new_cmd->infile = NULL;
-			new_cmd->outfile = NULL;
-			new_cmd->append_out = 0;
-			new_cmd->next = NULL;
-			new_cmd->heredoc = 0;
-			new_cmd->raw_tokens = NULL;
-			if (!cmd_head)
-				cmd_head = new_cmd;
-			else
-				current_cmd->next = new_cmd;
-			current_cmd = new_cmd;
-			if (curr->type == PIPE)
-				curr = curr->next;
-			t_token *tok_start = curr;
-			t_token *tok_end = curr;
-			while (tok_end && tok_end->type != PIPE)
-				tok_end = tok_end->next;
-			current_cmd->raw_tokens = dup_token_list(tok_start, tok_end);
-		}
-		argc = 0;
-		temp = curr;
-		while (temp && temp->type != PIPE)
-		{
-			if (temp->type == WORD)
-				argc++;
-			else if (temp->type == REDIR_IN || temp->type == REDIR_OUT
-				|| temp->type == APPEND)
-				temp = temp->next;
-			temp = temp->next;
-		}
-		current_cmd->argv = malloc(sizeof(char *) * (argc + 1));
-		if (!current_cmd->argv)
-		{
-			free_commands(cmd_head);
-			return (NULL);
-		}
-		argc = 0;
-		while (curr && curr->type != PIPE)
-		{
-			if (curr->type == WORD)
-			{
-				if (curr->quote_type == 1)
-				{
-					expanded = ft_strdup(curr->value);
-					cleaned = ft_strdup(expanded);
-				}
-				else
-				{
-					expanded = expand_variables(curr->value, env_list, exit_value);
-					cleaned = ft_strdup(expanded);
-				}
-				if (!expanded || !cleaned)
-				{
-					free(expanded);
-					free(cleaned);
-					free_commands(cmd_head);
-					return (NULL); // handle error
-				}
-				if (cleaned[0] != '\0')
-        			current_cmd->argv[argc++] = cleaned;
-				else
-					free(cleaned);
-				free(expanded);
-				// current_cmd->argv[argc++] = cleaned;
-				// current_cmd->argv[argc] = NULL;
-			}
-			else if (curr->type == REDIR_IN)
-			{
-				// free(current_cmd->infile);
-				// current_cmd->infile = ft_strdup(curr->next->value);
-				// curr = curr->next;
-				curr = curr->next;
-				if (curr)
-				{
-					if (current_cmd->infile)
-						free(current_cmd->infile);
-					current_cmd->infile = ft_strdup(curr->value);
-				}
-			}
-			else if (curr->type == REDIR_OUT)
-			{
-				// free(current_cmd->outfile);
-				// current_cmd->outfile = ft_strdup(curr->next->value);
-				// current_cmd->append_out = 0;
-				// curr = curr->next;
-				curr = curr->next;
-				if (curr)
-				{
-					if (current_cmd->outfile)
-						free(current_cmd->outfile);
-					current_cmd->outfile = ft_strdup(curr->value);
-					current_cmd->append_out = 0;
-				}
-			}
-			else if (curr->type == APPEND)
-			{
-				// free(current_cmd->outfile);
-				// current_cmd->outfile = ft_strdup(curr->next->value);
-				// current_cmd->append_out = 1;
-				// curr = curr->next;
-				curr = curr->next;
-				if (curr)
-				{
-					if (current_cmd->outfile)
-						free(current_cmd->outfile);
-					current_cmd->outfile = ft_strdup(curr->value);
-					current_cmd->append_out = 1;
-				}
-			}
-			else if (curr->type == HEREDOC)
-			{
-				curr = curr->next;
-				if (curr)
-				{
-					int expand = 1;
-					//printf("Processing HEREDOC with value: %s\n", curr->value);
-					if (curr->value[0] == '\'' || curr->value[0] == '"')
-					// {
-						expand = 0;
-						// i++;
-					// }
-					char *delim = remove_quotes(curr->value);
-					if (!delim)
-       	 			{
-            			free_commands(cmd_head);
-            			return (NULL);
-       				}
-					char *heredoc_path = generate_heredoc_filename(heredoc_id++);
-					if (!heredoc_path)
-					{
-						free(delim);
-						free_commands(cmd_head);
-						return (NULL);
-					}
-					//printf ("Expand is %d\n", expand);
-					create_heredoc_file(heredoc_path, delim, expand, env_list, exit_value);
-					current_cmd->heredoc = 1;
-					current_cmd->infile = heredoc_path;
-					free(delim);
-				}
-			}
-			curr = curr->next;
-		}
-		current_cmd->argv[argc] = NULL;
+			curr_cmd = start_new_command(&cmd_head, curr_cmd, &curr);
+		if (!curr_cmd)
+			return (free_commands(cmd_head), NULL);
+		if (!set_raw_tokens(curr_cmd, curr))
+			return (free_commands(cmd_head), NULL);
+		if (!setup_args_and_redirects(curr_cmd, &curr, &ctx))
+			return (free_commands(cmd_head), NULL);
 	}
 	return (cmd_head);
 }
