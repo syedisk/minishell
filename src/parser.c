@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/22 21:10:23 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/22 22:21:50 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ int	set_raw_tokens(t_command *cmd, t_token *start)
 
 int	setup_args_and_redirects(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
 {
-	int	argc;
+	int		argc;
+	char 	*arg;
 
 	argc = count_args(*curr);
 	cmd->argv = malloc(sizeof(char *) * (argc + 1));
@@ -67,13 +68,26 @@ int	setup_args_and_redirects(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
 	{
 		if ((*curr)->type == WORD)
 		{
-			if (!expand_word((*curr), ctx->env_list, ctx->exit_value, &cmd->argv[argc++]))
+			if (!expand_word((*curr), ctx->env_list, ctx->exit_value, &arg))
+			{
+				while(argc-- > 0)
+					free(cmd->argv[argc]);
+				free(cmd->argv);
 				return (0);
+			}
+			if (arg != NULL)
+				cmd->argv[argc++] = arg;
 		}
 		else
 		{
 			if (!handle_redirection(cmd, curr, ctx))
+			{
+				while (argc-- > 0)
+					free(cmd->argv[argc]);
+				free(cmd->argv);
 				return (0);
+			}
+			continue;
 		}
 		*curr = (*curr)->next;
 	}
@@ -111,6 +125,7 @@ int	handle_file_redir(t_command *cmd, t_token **curr)
 		cmd->outfile = ft_strdup(next->value);
 		cmd->append_out = ((*curr)->type == APPEND);
 	}
+	*curr = next;
 	return (1);
 }
 
@@ -169,10 +184,18 @@ int	expand_word(t_token *token, t_env *env_list, int *exit_value, char **out)
 		expanded = ft_strdup(token->value);
 	else
 		expanded = expand_variables(token->value, env_list, exit_value);
+	if (!expanded)
+		return (0);
 	cleaned = ft_strdup(expanded);
-	if (!expanded || !cleaned)
-		return (free(expanded), 0);
 	free(expanded);
+	if (!cleaned)
+		return (0);
+	if (cleaned[0] == '\0')
+	{
+		free(cleaned);
+		*out = NULL;
+		return (1);
+	}
 	*out = cleaned;
 	return (1);
 }
