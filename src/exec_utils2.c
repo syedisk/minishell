@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/23 16:11:04 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/23 19:36:35 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int handle_heredoc_input(t_command *cmd)
 	fd = open(cmd->infile, O_RDONLY);
 	if (fd == -1)
 		return (ft_putstr_fd(" No such file or directory\n", 2), 1);
+	// printf("🔁 4. dup2: redirecting %d to %d\n", fd, STDIN_FILENO);
 	dup_result = dup2(fd, STDIN_FILENO);
 	if (dup_result == -1)
 		return (ft_putstr_fd(" No such file or directory\n", 2), 1);
@@ -65,6 +66,7 @@ int handle_input_redirs(t_command *cmd)
 	}
 	if (fd != -1)
 	{
+		// printf("🔁 3. dup2: redirecting %d to %d\n", fd, STDIN_FILENO);
 		dup_result = dup2(fd, STDIN_FILENO);
 		if (dup_result == -1)
 			return (ft_putstr_fd(" No such file or directory\n", 2), 1);
@@ -121,6 +123,7 @@ int	handle_output_redirs(t_command *cmd)
 	}
 	if (fd != -1)
 	{
+		// printf("🔁 5. dup2: redirecting %d to %d\n", fd, STDOUT_FILENO);
 		result = dup2(fd, STDOUT_FILENO);
 		if (result == -1)
 			return (ft_putstr_fd(" No such file or directory\n", 2), 1);
@@ -132,16 +135,18 @@ int	handle_output_redirs(t_command *cmd)
 void	handle_child_redirections(t_command *cmd, int *pipefd)
 {
 	int	result;
+	pipefd = 0;
 
 	result = handle_input_redirs(cmd);
 	if (result != 0)
 		exit(1);
-	if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd[0] != -1)
-	{
-		if (dup2(pipefd[0], STDIN_FILENO) == -1)
-			exit((ft_putstr_fd(" No such file or directory\n", 2), 1));
-		close(pipefd[0]);
-	}
+	// if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd[0] != -1)
+	// {
+	// 	printf("🔁 6. dup2: redirecting %d to %d\n", pipefd[0], STDIN_FILENO);
+	// 	if (dup2(pipefd[0], STDIN_FILENO) == -1)
+	// 		exit((ft_putstr_fd(" No such file or directory\n", 2), 1));
+	// 	close(pipefd[0]);
+	// }
 	result = handle_output_redirs(cmd);
 	if (result != 0)
 		exit(1);
@@ -158,6 +163,7 @@ void	execute_child(t_command *cmd, t_exec_params *param)
 {
 	char		*full_path;
 
+	// printf("2./n");
 	handle_child_redirections(cmd, param->pipefd);
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		exit((printf("Error: Null pointer in execute_child\n"), 127));

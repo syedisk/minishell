@@ -24,6 +24,7 @@ int	fork_and_execute(t_command *cmd, t_exec_params *param)
 		signal(SIGQUIT, SIG_DFL);
 		if (*(param->fd_in) != 0)
 		{
+			// printf("🔁 1. %s dup2: redirecting %d to %d\n", cmd->argv[0], *param->fd_in, STDIN_FILENO);
 		   if (dup2(*param->fd_in, STDIN_FILENO) == -1)
 				exit((ft_putstr_fd(" dup_2 failed\n", 2),EXIT_FAILURE));
 			close(*param->fd_in);
@@ -31,6 +32,7 @@ int	fork_and_execute(t_command *cmd, t_exec_params *param)
 		if (param->pipefd[1] > -1) 
 		{
 			close(param->pipefd[0]);
+			// printf("🔁 2. %s dup2: redirecting %d to %d\n", cmd->argv[0], param->pipefd[1], STDOUT_FILENO);
 			if (dup2(param->pipefd[1], STDOUT_FILENO) == -1)
 				exit((ft_putstr_fd(" dup_2 failed\n", 2),EXIT_FAILURE));
 			close(param->pipefd[1]);
@@ -71,17 +73,17 @@ void	execute_pipeline_segment(t_command *cmd, t_exec_params *param)
 	}
 	else
 		exec_pid = fork_and_execute(cmd, param);
-	if (exec_pid == -1)
-	{
-		perror("fork failed");
-		if (forked)
-		{
-			close(param->pipefd[0]);
-			close(param->pipefd[1]);
-		}
-		*(param->exit_value) = 1;
-		return ;
-	}
+	// if (exec_pid == -1)
+	// {
+	// 	perror("fork failed");
+	// 	if (forked)
+	// 	{
+	// 		close(param->pipefd[0]);
+	// 		close(param->pipefd[1]);
+	// 	}
+	// 	*(param->exit_value) = 1;
+	// 	return ;
+	// }
 	*(param->pid) = exec_pid;
 	if (cmd->next)
 		close_and_update_fds(param->fd_in, cmd, param->pipefd);
@@ -97,8 +99,9 @@ int	check_and_execute_single_builtin(t_command *cmd, t_exec_params *param)
 		return (0);
 	// if (!is_builtin(cmd->argv[0]) || cmd->next || *(param->fd_in) != 0)
 	// 	return (0);
-	if (is_builtin(cmd->argv[0]) && !cmd->next && param->fd_in == 0)
+	if (is_builtin(cmd->argv[0]) && !cmd->next && *param->fd_in == 0)
 	{
+		// printf("1./n");
 			if (handle_output_redirs(cmd) != 0 || handle_input_redirs(cmd) != 0) // open/create outfile first
 			{
 				*param->exit_value = 1;
@@ -137,11 +140,14 @@ void	execute_commands(t_command *cmd, t_env **env_list,
 	param.envp = envp;
 	while (cmd)
 	{
-		if (check_and_execute_single_builtin(cmd, &param))
+		if (!cmd->next && check_and_execute_single_builtin(cmd, &param))
 			return ;
 		if (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0')
 			return ;
-		execute_pipeline_segment(cmd, &param);
+		if (cmd->next)
+			execute_pipeline_segment(cmd, &param);
+		if (!cmd->next && !is_builtin(*cmd->argv))
+			fork_and_execute(cmd, &param);
 		cmd = cmd->next;
 		wait_for_child_processes(*param.pid, exit_value);
 		param.pipefd[1] = -1;
