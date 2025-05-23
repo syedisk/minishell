@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/22 15:49:15 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/23 16:59:03 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,8 +156,14 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			continue; // Skip to next iteration if parsing fails
 		}
-		// printf("Command list created successfully. %s\n", commands->argv[0]);
-		// // Debug: Heredoc test
+		// Debug: Parsing
+		//  printf("Command list created successfully. %s\n", commands->argv[0]);
+		// for (int i = 0; commands->argv[i]; i++)
+		// printf("  argv[%d] = '%s'\n", i, commands->argv[i]);
+		// printf("  infile = '%s'\n", commands->infile ? commands->infile : "(none)");
+
+		
+		 // // Debug: Heredoc test
 		// for (t_command *cmd = commands; cmd; cmd = cmd->next)
 		// {
 		// 	if (cmd->infile)
