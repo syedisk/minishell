@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 12:43:42 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/22 16:02:59 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/23 21:54:41 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,17 @@ typedef struct s_token
 	struct s_token	*next;
 }					t_token;
 
-t_token	*tokenise(const char *input);
-void	free_tokens(t_token *tokens);
-void	add_token(t_token **head, t_token *new);
-int		ft_isspace(char c);
-char	*read_quoted(const char *s, int *i);
-int	    is_operator_char(char c);
 t_token_type	get_operator_type(const char *s, int *len);
-t_token	*new_token(char *value, t_token_type type, int quote_type);
+t_token			*tokenise(const char *input);
+t_token			*new_token(char *value, t_token_type type, int quote_type);
+int				ft_isspace(char c);
+int				is_operator_char(char c);
+char			*read_quoted(const char *s, int *i);
+void			free_tokens(t_token *tokens);
+void			add_token(t_token **head, t_token *new);
+
+
+
 
 
 #endif
