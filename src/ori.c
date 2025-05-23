@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   ori.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/22 14:11:58 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/23 14:38:46 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "heredoc.h"
 #include "utils.h"
 
-static t_token *dup_token_list(t_token *start, t_token *end)
+t_token *dup_token_list(t_token *start, t_token *end)
 {
 	t_token *new_head = NULL;
 	t_token *new_tok;
@@ -57,6 +57,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 	curr = tokens;
 	while (curr)
 	{
+		// ---start_new_command---
 		if (!cmd_head || curr->type == PIPE)
 		{
 			new_cmd = malloc(sizeof(t_command));
@@ -65,6 +66,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 				free_commands(cmd_head); // Free previously allocated commands
 				return (NULL); // handle error
 			}
+			// ---init_command---
 			new_cmd->argv = NULL;
 			new_cmd->infile = NULL;
 			new_cmd->outfile = NULL;
@@ -72,6 +74,8 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 			new_cmd->next = NULL;
 			new_cmd->heredoc = 0;
 			new_cmd->raw_tokens = NULL;
+			// --end of init_command --
+			
 			if (!cmd_head)
 				cmd_head = new_cmd;
 			else
@@ -79,12 +83,17 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 			current_cmd = new_cmd;
 			if (curr->type == PIPE)
 				curr = curr->next;
+			// --end of start_new_command--
+			// ---set_raw_tokens---
 			t_token *tok_start = curr;
 			t_token *tok_end = curr;
 			while (tok_end && tok_end->type != PIPE)
 				tok_end = tok_end->next;
 			current_cmd->raw_tokens = dup_token_list(tok_start, tok_end);
+			// --end of set_raw_tokens
 		}
+		// ---setup_args_and_redirects
+		// ---count_args---
 		argc = 0;
 		temp = curr;
 		while (temp && temp->type != PIPE)
@@ -96,6 +105,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 				temp = temp->next;
 			temp = temp->next;
 		}
+		// --end of count_args--
 		current_cmd->argv = malloc(sizeof(char *) * (argc + 1));
 		if (!current_cmd->argv)
 		{
@@ -107,6 +117,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 		{
 			if (curr->type == WORD)
 			{
+				// ---expand_word---
 				if (curr->quote_type == 1)
 				{
 					expanded = ft_strdup(curr->value);
@@ -132,6 +143,8 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 				// current_cmd->argv[argc++] = cleaned;
 				// current_cmd->argv[argc] = NULL;
 			}
+			// ---handle_redirection---
+			// ---handle_file_redir---
 			else if (curr->type == REDIR_IN)
 			{
 				// free(current_cmd->infile);

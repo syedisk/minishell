@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/22 22:21:50 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/23 16:37:03 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ int	handle_file_redir(t_command *cmd, t_token **curr)
 
 	next = (*curr)->next;
 	if (!next)
-		return (1); // gracefully ignore if no filename
+		return (0);
 
 	if ((*curr)->type == REDIR_IN)
 	{
@@ -125,7 +125,7 @@ int	handle_file_redir(t_command *cmd, t_token **curr)
 		cmd->outfile = ft_strdup(next->value);
 		cmd->append_out = ((*curr)->type == APPEND);
 	}
-	*curr = next;
+	*curr = next->next;
 	return (1);
 }
 
@@ -134,10 +134,14 @@ int	handle_heredoc(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
 	char	*delim;
 	char	*heredoc_path;
 	int		expand;
-
-	*curr = (*curr)->next;
-	if (!(*curr))
-		return (1);
+	t_token	*next;
+	
+	next = (*curr)->next;
+	if (!next)
+		return (0);
+	// *curr = (*curr)->next;
+	// if (!(*curr))
+	// 	return (1);
 	expand = 1;
 	if ((*curr)->value[0] == '\'' || (*curr)->value[0] == '"')
 		expand = 0;
@@ -154,6 +158,7 @@ int	handle_heredoc(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
 	cmd->heredoc = 1;
 	cmd->infile = heredoc_path;
 	free(delim);
+	*curr = next->next;
 	return (1);
 }
 
