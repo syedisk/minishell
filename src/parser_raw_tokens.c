@@ -6,18 +6,20 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:35:01 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/23 17:35:43 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/23 19:15:28 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_token *dup_token_list(t_token *start, t_token *end)
+t_token	*dup_token_list(t_token *start, t_token *end)
 {
-	t_token *new_head = NULL;
-	t_token *new_tok;
-	t_token *last = NULL;
+	t_token	*new_head;
+	t_token	*new_tok;
+	t_token	*last;
 
+	new_head = NULL;
+	last = NULL;
 	while (start && start != end)
 	{
 		new_tok = malloc(sizeof(t_token));

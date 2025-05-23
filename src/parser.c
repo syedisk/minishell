@@ -6,16 +6,17 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/23 17:36:06 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/23 19:20:44 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
 #include "expander.h"
 #include "heredoc.h"
+#include "minishell.h"
 #include "utils.h"
 
-t_command	*start_new_command(t_command **head, t_command *prev, t_token **curr)
+t_command	*start_new_command(t_command **head, t_command *prev,
+		t_token **curr)
 {
 	t_command	*new_cmd;
 
@@ -74,7 +75,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 	t_command	*curr_cmd;
 	t_token		*curr;
 	int			heredoc_id;
-	t_parse_ctx ctx;
+	t_parse_ctx	ctx;
 
 	heredoc_id = 0;
 	cmd_head = NULL;
@@ -96,4 +97,3 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 	}
 	return (cmd_head);
 }
-
