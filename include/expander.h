@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:30:03 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/17 20:31:52 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 18:28:33 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,5 +16,7 @@
 
 char *expand_variables(char *line, t_env *env_list, int *exit_value);
 char *ft_strjoin_free(char *s1, const char *s2);
+char	*get_env_value(t_env *env, const char *key);
+char	*ft_strjoin_char(char *s, char c);
 
 #endif

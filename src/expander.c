@@ -3,132 +3,102 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:28:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/21 21:46:42 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/22 18:29:17 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "expander.h"
-#include "libft.h"
 #include "minishell.h"
 
-// char	*expand_variables(char *str, char **envp)
-// {
-// 	char	*varname;
-// 	int		i;
-
-// 	if (!str || str[0] != '$')
-// 		return (ft_strdup(str));
-// 	varname = str + 1;
-// 	i = 0;
-// 	while (envp[i])
-// 	{
-// 		if (ft_strncmp(envp[i], varname, ft_strlen(varname)) == 0
-// 			&& envp[i][ft_strlen(varname)] == '=') // in case there's USER= and USERNAME=
-// 		{
-// 			return (ft_strdup(envp[i] + ft_strlen(varname) + 1));
-// 		}
-// 		i++;
-// 	}
-// 	return (ft_strdup("")); // not found, empty string
-// }
-
-
-char	*get_env_value(t_env *env, const char *key)
+void	handle_braced_variable(char **line, char **result, t_env *env_list)
 {
-	while (env)
-	{
-		if (ft_strcmp(env->key, key) == 0)
-			return (env->value);
-		env = env->next;
-	}
-	return (NULL);
+	const char		*start;
+	char			*temp;
+	char			*value;
+
+	(*line)++;
+	start = *line;
+	while (**line && **line != '}')
+		(*line)++;
+	temp = ft_substr(start, 0, *line - start);
+	value = get_env_value(env_list, temp);
+	if (value)
+		*result = ft_strjoin_free(*result, value);
+	free(temp);
+	if (**line == '}')
+		(*line)++;
 }
 
-char *ft_strjoin_free(char *s1, const char *s2)
+void	handle_simple_variable(char **line, char **result, t_env *env_list)
 {
-	char *joined;
+	const char		*start;
+	char			*temp;
+	char			*value;
 
-	if (!s1)
-		return (ft_strdup(s2));
-	joined = ft_strjoin(s1, s2);
-	free(s1);
-	return (joined);
-}
-char *ft_strjoin_char(char *s, char c)
-{
-	if (!s)
-		return (ft_strdup(&c)); // if s is null, return c as string
-    if (c == '\0') // if c is null character
-        return s;  // don't add anything, just return s
-    char str[2] = {c, '\0'};
-    return ft_strjoin_free(s, str);
+	start = *line;
+	while (**line && (ft_isalnum(**line) || **line == '_'))
+		(*line)++;
+	temp = ft_substr(start, 0, *line - start);
+	value = get_env_value(env_list, temp);
+	if (value)
+		*result = ft_strjoin_free(*result, value);
+	else
+		*result = ft_strjoin_free(*result, "");
+	free(temp);
 }
 
-char *expand_variables(char *line, t_env *env_list, int *exit_value)
+void	handle_exit_code(char **result, int *exit_value)
 {
-	char	*result = ft_strdup(""); // start with empty string
 	char	*temp;
-	char	*var_name;
-	char	*value;
-	const char *start;
+	int		sig;
+	int		status;
 
+	sig = g_sig_received;
+	status = *exit_value;
+	if (sig == 131 || sig == 130)
+	{
+		temp = ft_itoa(sig);
+		*result = ft_strjoin_free(*result, temp);
+		free(temp);
+	}
+	temp = ft_itoa(status);
+	*result = ft_strjoin_free(*result, temp);
+	free(temp);
+}
+
+void	handle_dollar(char **line, char **result, t_env *env_list,
+	int *exit_value)
+{
+	(*line)++;
+	if (**line == '?')
+	{
+		handle_exit_code(result, exit_value);
+		(*line)++;
+	}
+	else if (**line == '{')
+		handle_braced_variable(line, result, env_list);
+	else if (ft_isalpha(**line) || **line == '_')
+		handle_simple_variable(line, result, env_list);
+	else
+		*result = ft_strjoin_char(*result, '$');
+}
+
+char	*expand_variables(char *line, t_env *env_list, int *exit_value)
+{
+	char			*result;
+
+	result = ft_strdup("");
 	while (*line)
 	{
 		if (*line == '$')
-		{
-			line++;
-			if (*line == '?') // Handle $?
-			{
-				if (g_sig_received == 131 || g_sig_received == 130)
-				{
-					temp = ft_itoa(g_sig_received);
-					result = ft_strjoin_free(result, temp);
-				}
-				temp = ft_itoa(*exit_value);
-				result = ft_strjoin_free(result, temp);
-				free(temp);
-				line++;
-			}
-			else if (*line == '{') // Handle ${VAR}
-			{
-				line++;
-				start = line;
-				while (*line && *line != '}')
-					line++;
-				var_name = ft_substr(start, 0, line - start);
-				value = get_env_value(env_list, var_name);
-				if (value)
-					result = ft_strjoin_free(result, value);
-				free(var_name);
-				if (*line == '}')
-					line++; // Skip closing brace
-			}
-			else if (ft_isalpha(*line) || *line == '_') // Handle $VAR
-			{
-				start = line;
-				while (*line && (ft_isalnum(*line) || *line == '_'))
-					line++;
-				var_name = ft_substr(start, 0, line - start);
-				value = get_env_value(env_list, var_name);
-				if (value)
-				{
-    				result = ft_strjoin_free(result, value);
-				}
-				else
-				    result = ft_strjoin_free(result, ""); // If not found, add empty string
-				free(var_name);
-			}
-			else
-				result = ft_strjoin_char(result, '$'); // Just a lone $, treat literally
-		}
+			handle_dollar(&line, &result, env_list, exit_value);
 		else
 		{
 			result = ft_strjoin_char(result, *line);
 			line++;
 		}
 	}
-	return result;
+	return (result);
 }

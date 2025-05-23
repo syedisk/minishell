@@ -1,3 +1,4 @@
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -6,164 +7,143 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/22 14:12:05 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/23 13:18:45 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void wait_for_child_processes(int last_pid, int *exit_value)
+int	fork_and_execute(t_command *cmd, t_exec_params *param)
 {
-    int pid;
-	int status;
-
-    pid = 0;
-    while ((pid = wait(&status)) > 0)
-    {
-        // printf("pid %d\n", pid);
-        if (pid == last_pid)
-        {
-            if (WIFEXITED(status))
-                *exit_value = WEXITSTATUS(status);
-            else if (WIFSIGNALED(status))
-                *exit_value = 128 + WTERMSIG(status);
-        }
-        // else if (last_pid > 0)
-        // {
-        //     waitpid(last_pid, &status, 0);
-
-        //     if (WIFEXITED(status))
-        //     {
-        //         *exit_value = WEXITSTATUS(status);
-        //         if (*exit_value != 0)
-        //             return ;
-        //     }
-        //     else if (WIFSIGNALED(status))
-        //         *exit_value = 128 + WTERMSIG(status);
-        // }
-    }
+	int pid;
+	
+	pid = fork();
+	if (pid == 0)
+	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		if (*(param->fd_in) != 0)
+		{
+		   if (dup2(*param->fd_in, STDIN_FILENO) == -1)
+				exit((ft_putstr_fd(" dup_2 failed\n", 2),EXIT_FAILURE));
+			close(*param->fd_in);
+		}
+		if (param->pipefd[1] > -1) 
+		{
+			close(param->pipefd[0]);
+			if (dup2(param->pipefd[1], STDOUT_FILENO) == -1)
+				exit((ft_putstr_fd(" dup_2 failed\n", 2),EXIT_FAILURE));
+			close(param->pipefd[1]);
+			param->pipefd[0] = -1;
+		}
+		execute_child(cmd, param);
+	}
+	else if (pid == -1)
+		exit((ft_putstr_fd(" fork failed\n", 2),EXIT_FAILURE));
+	return (pid);
 }
 
-int fork_and_execute(t_command *cmd, t_env **env_list, char **envp, int fd_in, int *pipefd, int *exit_value)
+void	handle_fork_and_pipe(t_command *cmd, t_exec_params *param)
 {
-    int pid;
-    
-    pid = fork();
-    if (pid == 0)
-    {
-        signal(SIGINT, SIG_DFL);
-        signal(SIGQUIT, SIG_DFL);
-        if (fd_in != 0) 
-        {
-           if (dup2(fd_in, STDIN_FILENO) == -1)
-                exit((ft_putstr_fd(" dup_2 failed\n", 2),EXIT_FAILURE));
-            close(fd_in);
-        }
-        if (pipefd) 
-        {
-            close(pipefd[0]);
-            if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-                exit((ft_putstr_fd(" dup_2 failed\n", 2),EXIT_FAILURE));
-            close(pipefd[1]);
-        }
-        
-        execute_child(cmd, env_list, envp, NULL, exit_value);
-    }
-    else if (pid == -1)
-        exit((ft_putstr_fd(" fork failed\n", 2),EXIT_FAILURE));
-    return pid;
+	int	status;
+
+	status = pipe(param->pipefd);
+	if (status == -1)
+	{
+		perror("pipe failed");
+		*(param->exit_value) = 1;
+		return ;
+	}
+	*(param->pid) = fork_and_execute(cmd, param);
 }
 
-void close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd)
+void	execute_pipeline_segment(t_command *cmd, t_exec_params *param)
 {
-    if (*fd_in != 0)
-        close(*fd_in);
-    if (cmd->next && pipefd)
-    {
-        close(pipefd[1]);
-        *fd_in = pipefd[0];
-    }
+	int	forked;
+	int	exec_pid;
+
+	forked = 0;
+	exec_pid = -1;
+	if (cmd->next)
+	{
+		handle_fork_and_pipe(cmd, param);
+		forked = 1;
+	}
+	else
+		exec_pid = fork_and_execute(cmd, param);
+	if (exec_pid == -1)
+	{
+		perror("fork failed");
+		if (forked)
+		{
+			close(param->pipefd[0]);
+			close(param->pipefd[1]);
+		}
+		*(param->exit_value) = 1;
+		return ;
+	}
+	*(param->pid) = exec_pid;
+	if (cmd->next)
+		close_and_update_fds(param->fd_in, cmd, param->pipefd);
+	else
+		close_and_update_fds(param->fd_in, cmd, NULL);
 }
 
-void execute_commands(t_command *cmd, t_env **env_list, char **envp, int *exit_value)
+int	check_and_execute_single_builtin(t_command *cmd, t_exec_params *param)
 {
-    int pipefd[2];
-    int fd_in = 0;
-    int pid = -1;
+	int	result;
 
-    pipefd[0] = -1;
-    while (cmd)
-    {
-        if (!cmd->argv || !cmd->argv[0] || cmd->argv[0][0] == '\0')
-        {
-            cmd = cmd->next;
-            continue;
-        }
-        // Debug print to check cmd->argv
-        // printf("Executing command: ");
-        // for (int i = 0; cmd->argv[i]; i++)
-        //     printf("%s ", cmd->argv[i]);
-        // printf("\n");
-        if (is_builtin(cmd->argv[0]) && !cmd->next && fd_in == 0)
-        {
-            if (handle_output_redirs(cmd) != 0) // open/create outfile first
-            {
-                *exit_value = 1;
-                return;
-            }
-            if (handle_input_redirs(cmd) != 0) // open infile after
-            {
-                *exit_value = 1;
-                return;
-            }
-            *exit_value = execute_builtin(cmd, env_list, exit_value);
-            if (ft_strcmp(cmd->argv[0], "exit") == 0)
-            {
-                free_env_list(*env_list); // optional cleanup
-                free_commands(cmd);       // optional cleanup
-                free_split(envp);         // optional cleanup
-                exit(*exit_value);
-            }
-            return;
-        }
-        if (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0')
-        { 
-            //ft_putstr_fd(" command not found\n", 2);
-            return;
-        }
-        if (cmd->next)
-        {
-            if (pipe(pipefd) == -1)
-            {
-                perror("pipe failed");
-				*exit_value = 1;
-				return;
-            }
-            pid = fork_and_execute(cmd, env_list, envp, fd_in, pipefd, exit_value);
-            if (pid == -1)
-            {
-                perror("fork failed");
-				close(pipefd[0]);
-				close(pipefd[1]);
-				*exit_value = 1;
-				return;
-            }
-        }
-        else
-            pid = fork_and_execute(cmd, env_list, envp, fd_in, NULL, exit_value);
-        if (pid == -1)
-           {
-				perror("fork failed");
-				*exit_value = 1;
-				return;
+	if (!cmd->argv || !cmd->argv[0] || cmd->argv[0][0] == '\0')
+		return (0);
+	// if (!is_builtin(cmd->argv[0]) || cmd->next || *(param->fd_in) != 0)
+	// 	return (0);
+	if (is_builtin(cmd->argv[0]) && !cmd->next && param->fd_in == 0)
+	{
+			if (handle_output_redirs(cmd) != 0 || handle_input_redirs(cmd) != 0) // open/create outfile first
+			{
+				*param->exit_value = 1;
+				return (1);
 			}
-        if (cmd->next)
-            close_and_update_fds(&fd_in, cmd, pipefd);
-        else
-            close_and_update_fds(&fd_in, cmd, NULL);
-        cmd = cmd->next;
-    }
-    wait_for_child_processes(pid, exit_value);
+	result = execute_builtin(cmd, param->env_list, param->exit_value);
+	*(param->exit_value) = result;
+	if (ft_strcmp(cmd->argv[0], "exit") == 0)
+	{
+		free_env_list(*(param->env_list));
+		free_commands(cmd);
+		free_split(param->envp);
+		exit(*(param->exit_value));
+	}
+}
+return (0);
 }
 
+void	execute_commands(t_command *cmd, t_env **env_list,
+	char **envp, int *exit_value)
+{
+	t_exec_params	param;
+	int				fd_in;
+	int				pipefd[2];
+	int				pid;
 
+	fd_in = 0;
+	pipefd[0] = -1;
+	pipefd[1] = -1;
+	pid = -1;
+	param.fd_in = &fd_in;
+	param.pipefd = pipefd;
+	param.pid = &pid;
+	param.exit_value = exit_value;
+	param.env_list = env_list;
+	param.envp = envp;
+	while (cmd)
+	{
+		if (check_and_execute_single_builtin(cmd, &param))
+			return ;
+		if (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0')
+			return ;
+		execute_pipeline_segment(cmd, &param);
+		cmd = cmd->next;
+		wait_for_child_processes(*param.pid, exit_value);
+		param.pipefd[1] = -1;
+	}
+}

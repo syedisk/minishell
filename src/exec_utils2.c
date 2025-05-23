@@ -3,301 +3,185 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/22 00:20:43 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/23 16:11:04 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int is_directory(const char *path)
+int handle_heredoc_input(t_command *cmd)
 {
-    struct stat path_stat;
+	int fd;
+	int dup_result;
+	int unlink_result;
 
-    // Use stat to get information about the file
-    if (stat(path, &path_stat) == -1)
-        return 0; // Return 0 if stat fails
-    // Check if the path is a directory
-    return S_ISDIR(path_stat.st_mode);
+	fd = open(cmd->infile, O_RDONLY);
+	if (fd == -1)
+		return (ft_putstr_fd(" No such file or directory\n", 2), 1);
+	dup_result = dup2(fd, STDIN_FILENO);
+	if (dup_result == -1)
+		return (ft_putstr_fd(" No such file or directory\n", 2), 1);
+	close(fd);
+	unlink_result = unlink(cmd->infile);
+	(void)unlink_result;
+	return (0);
 }
 
 int handle_input_redirs(t_command *cmd)
 {
-    int     fd = -1;
-    t_token *tokens = cmd->raw_tokens;
+	t_token *tokens;
+	int fd;
+	int dup_result;
 
-	// fprintf(stderr, "DEBUG: entered handle_input_redirs\n");
-	// fprintf(stderr, "HEREDOC? %d | infile = %s\n", cmd->heredoc, cmd->infile);
-
-    // Handle heredoc first
-    if (cmd->heredoc)
-    {
-        fd = open(cmd->infile, O_RDONLY);
-        if (fd == -1)
-            return (ft_putstr_fd(" No such file or directory\n", 2), 1);
-        if (dup2(fd, STDIN_FILENO) == -1)
-            return (ft_putstr_fd(" No such file or directory\n", 2), 1);
-        close(fd);
-        unlink(cmd->infile);
-        return (0); // heredoc takes precedence
-    }
-
-    // Otherwise, process all < infile redirections in order
-    while (tokens)
-    {
-        if (tokens->type == REDIR_IN)
-        {
-            tokens = tokens->next;
-            if (!tokens || tokens->type != WORD)
-                return (ft_putstr_fd(" No such file or directory\n", 2), 1);
-
-			// fprintf(stderr, "Trying to open: [%s]\n", tokens->value);
-			if (fd != -1)
-				close(fd);
-            fd = open(tokens->value, O_RDONLY);
-			// printf("DEBUG: file name : %s\n", tokens->value);
-            if (fd == -1)
-            {
-				// printf("DEBUG: errno = %d\n", errno);
-                if (errno == 2)
-					ft_putstr_fd(" No such file or directory\n", 2);
-                else if (errno == 13)
-					ft_putstr_fd(" Permission denied\n", 2);
-                else
-                    perror("");
-                return (1);
-            }
-        }
-        tokens = tokens->next;
-    }
-	if (fd != -1)
-	{
-		if (dup2(fd, STDIN_FILENO) == -1)
-			return (ft_putstr_fd(" No such file or directory\n", 2), 1);
-		close(fd);
-	}
-	return (0);
-}
-
-// void handle_infile(t_command *cmd, int fd_in)
-// {
-// 	int fd;
-
-//     fd = -1;
-// 	if (cmd->heredoc)
-// 	{
-// 		fd = open(cmd->infile, O_RDONLY);
-// 		if (fd == -1)
-// 			exit((error_msg("heredoc_fail"), EXIT_FAILURE));
-// 		if (dup2(fd, STDIN_FILENO) == -1)
-// 			exit((error_msg("dup2_failed"), EXIT_FAILURE));
-// 		close(fd);
-// 		unlink(cmd->infile);
-// 	}
-// 	else if (cmd->infile)
-// 	{
-// 		fd = open(cmd->infile, O_RDONLY);
-// 		if (fd == -1)
-//         {
-//             if (errno == ENOENT)
-//             	error_msg("No_file");
-//             else if (errno == EACCES)
-//             	error_msg("infile_fail");
-//             else
-//                 perror("infile");
-//             exit(EXIT_FAILURE);
-//         }
-// 		dup2(fd, STDIN_FILENO);
-//         close(fd);
-// 	}
-// 	else if (fd_in != 0)
-// 	{
-// 		if (dup2(fd_in, STDIN_FILENO) == -1)
-// 			exit((error_msg("dup2_failed"),EXIT_FAILURE));
-// 		close(fd_in);
-// 	}
-// }
-static int has_input_redir(t_token *tokens)
-{
+	tokens = cmd->raw_tokens;
+	fd = -1;
+	if (cmd->heredoc)
+		return handle_heredoc_input(cmd);
 	while (tokens)
 	{
 		if (tokens->type == REDIR_IN)
-			return (1);
-		tokens = tokens->next;
-	}
-	return (0);
-}
-int	handle_output_redirs(t_command *cmd)
-{
-	t_token	*tokens = cmd->raw_tokens;
-	int		fd = -1;
-
-	while (tokens)
-	{
-		if (tokens->type == REDIR_OUT || tokens->type == APPEND)
 		{
 			tokens = tokens->next;
 			if (!tokens || tokens->type != WORD)
-				return(ft_putstr_fd(" No such file or directory\n", 2), 1);
-
-			// Close previous if opened
+				return (ft_putstr_fd(" No such file or directory\n", 2), 1);
 			if (fd != -1)
 				close(fd);
-
-			if (tokens->type == WORD)
+			fd = open(tokens->value, O_RDONLY);
+			if (fd == -1)
 			{
-				if (cmd->append_out)
-					fd = open(tokens->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
+				if (errno == 2)
+					ft_putstr_fd(" No such file or directory\n", 2);
+				else if (errno == 13)
+					ft_putstr_fd(" Permission denied\n", 2);
 				else
-					fd = open(tokens->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-				if (fd == -1)
-				{
-					if (errno == 2)
-						ft_putstr_fd(" No such file or directory\n", 2);
-					else if (errno == 13)
-						ft_putstr_fd(" Permission denied\n", 2);
-					else
-						perror(" ");
-					return (1);
-				}
+					perror("");
+				return (1);
 			}
 		}
 		tokens = tokens->next;
 	}
 	if (fd != -1)
 	{
-		if (dup2(fd, STDOUT_FILENO) == -1)
-			return(ft_putstr_fd(" No such file or directory\n", 2), 1);
+		dup_result = dup2(fd, STDIN_FILENO);
+		if (dup_result == -1)
+			return (ft_putstr_fd(" No such file or directory\n", 2), 1);
 		close(fd);
 	}
 	return (0);
 }
 
-// void handle_outfile(t_command *cmd, int *pipefd)
-// {
-// 	int fd;
-
-//     fd = -1;
-// 	if (cmd->outfile)
-// 	{
-// 		if (cmd->append_out)
-// 		{
-// 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-// 		}
-// 		else
-// 		{
-// 			fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-// 		}
-// 		if (fd == -1)
-//         {
-//             if (errno == ENOENT)
-//             	error_msg("No_file");
-//             else if (errno == EACCES)
-//             	error_msg("outfile_fail");
-//             else
-//                 perror("outfile");
-//             exit(EXIT_FAILURE);
-//         }
-// 		dup2(fd, STDOUT_FILENO);
-// 		close(fd);
-// 	}
-// 	else if (cmd->next && pipefd)
-// 	{
-// 		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-// 			exit((error_msg("outfile_fail"), EXIT_FAILURE));
-// 		close(pipefd[1]);
-// 		close(pipefd[0]);
-// 	}
-// }
-
-void execute_child(t_command *cmd, t_env **env_list,
-	char **envp, int *pipefd, int *exit_value)
+int	handle_output_file(t_command *cmd, t_token *tokens, int *fd)
 {
-	char *full_path;
+	int		tmp_fd;
 
-	if (handle_input_redirs(cmd) != 0)
-		exit (1);
-	if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd != NULL)
+	tmp_fd = -1;
+	if (cmd->append_out)
+		tmp_fd = open(tokens->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else
+		tmp_fd = open(tokens->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (tmp_fd == -1)
+	{
+		if (errno == 2)
+			ft_putstr_fd(" No such file or directory\n", 2);
+		else if (errno == 13)
+			ft_putstr_fd(" Permission denied\n", 2);
+		else
+			perror(" ");
+		return (1);
+	}
+	*fd = tmp_fd;
+	return (0);
+}
+
+int	handle_output_redirs(t_command *cmd)
+{
+	t_token	*tokens;
+	int		fd;
+	int		result;
+
+	tokens = cmd->raw_tokens;
+	fd = -1;
+	while (tokens)
+	{
+		if (tokens->type == REDIR_OUT || tokens->type == APPEND)
+		{
+			tokens = tokens->next;
+			if (!tokens || tokens->type != WORD)
+				return (ft_putstr_fd(" No such file or directory\n", 2), 1);
+			if (fd != -1)
+				close(fd);
+			result = handle_output_file(cmd, tokens, &fd);
+			if (result != 0)
+				return (1);
+		}
+		tokens = tokens->next;
+	}
+	if (fd != -1)
+	{
+		result = dup2(fd, STDOUT_FILENO);
+		if (result == -1)
+			return (ft_putstr_fd(" No such file or directory\n", 2), 1);
+		close(fd);
+	}
+	return (0);
+}
+
+void	handle_child_redirections(t_command *cmd, int *pipefd)
+{
+	int	result;
+
+	result = handle_input_redirs(cmd);
+	if (result != 0)
+		exit(1);
+	if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd[0] != -1)
 	{
 		if (dup2(pipefd[0], STDIN_FILENO) == -1)
-			exit ((ft_putstr_fd(" No such file or directory\n", 2), 1));
+			exit((ft_putstr_fd(" No such file or directory\n", 2), 1));
 		close(pipefd[0]);
 	}
+	result = handle_output_redirs(cmd);
+	if (result != 0)
+		exit(1);
+	// if (cmd->next && pipefd[1] != -1)
+	// {
+	// 	if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+	// 		ft_putstr_fd(" No such file or directory\n", 2);
+	// 	close(pipefd[1]);
+	// 	close(pipefd[0]);
+	// }
+}
 
-	if (handle_output_redirs(cmd) != 0)
-		exit (1);
+void	execute_child(t_command *cmd, t_exec_params *param)
+{
+	char		*full_path;
 
-	if (cmd->next && pipefd != NULL)
-	{
-		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-			ft_putstr_fd(" No such file or directory\n", 2);
-		close(pipefd[1]);
-		close(pipefd[0]);
-	}
-	
-
-	//printf("1. execve failed for %s\n", cmd->argv[0]);
-	// if (pipefd != NULL)
-	// 	handle_infile(cmd, pipefd[0]);
-	// else
-	// 	handle_infile(cmd, 0);
-	// if (pipefd != NULL)
-	// 	handle_outfile(cmd, pipefd);
-	// else
-	// 	handle_outfile(cmd, NULL);
+	handle_child_redirections(cmd, param->pipefd);
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		exit((printf("Error: Null pointer in execute_child\n"), 127));
 	if (is_builtin(cmd->argv[0]))
-		exit(execute_builtin(cmd, env_list, exit_value));
-	// if (is_directory(cmd->argv[0]) != 0)
-	// 	exit((ft_putstr_fd(" Is a directory\n", 2), 126));
+		exit(execute_builtin(cmd, param->env_list, param->exit_value));
 	if (cmd->argv[0] && !ft_strcmp(cmd->argv[0], "export="))
 		exit(0);
-    else
-    {
-	    full_path = resolve_path(cmd->argv[0]);
-	    if (!full_path)
-			exit((ft_putstr_fd(" command not found\n", 2), 127));
-		if (access(full_path, F_OK) == 0 && access(full_path, X_OK) != 0)
-			exit((ft_putstr_fd(" Permission denied\n", 2), 126));
-		if (is_directory(cmd->argv[0]) != 0)
-			exit((ft_putstr_fd(" Is a directory\n", 2), 126));
-	   if ((execve(full_path, cmd->argv, envp) == -1))
-    	{
-        	if (errno == 2)
-            	exit ((ft_putstr_fd(" No such file or directory\n", 2), 127));
-        	else if (errno == 13)
-            	exit((ft_putstr_fd(" Permission denied\n", 2), 126));
-        	else
-            	exit((perror(""), 127));
-    	}
-		else
-			exit (0);
-		// execve(full_path, cmd->argv, envp);
-
-	// If we got here, execve failed
-	// perror(cmd->argv[0]);  // prints: command: error message
-	free(full_path);
-	// exit(127);
-	exit(0);
-	}
-	   // exit(0);
-}
-char *ft_strcat(char *dest, const char *src)
-{
-	char	*dest_start;
-
-	dest_start = dest;
-	while (*dest != '\0')
-		dest++;
-	while (*src != '\0')
+	full_path = resolve_path(cmd->argv[0]);
+	if (!full_path)
+		exit((ft_putstr_fd(" command not found\n", 2), 127));
+	if (access(full_path, F_OK) == 0 && access(full_path, X_OK) != 0)
+		exit((ft_putstr_fd(" Permission denied\n", 2), 126));
+	if (is_directory(cmd->argv[0]) != 0)
+		exit((ft_putstr_fd(" Is a directory\n", 2), 126));
+	if ((execve(full_path, cmd->argv, param->envp) == -1))
 	{
-		*dest = *src;
-		dest++;
-		src++;
+		if (errno == 2)
+			exit((ft_putstr_fd(" No such file or directory\n", 2), 127));
+		else if (errno == 13)
+			exit((ft_putstr_fd(" Permission denied\n", 2), 126));
+		else
+			exit((perror(""), 127));
 	}
-	*dest = '\0';
-	return (dest_start);
+	else
+		exit(0);
+	exit((free(full_path),0));
 }
