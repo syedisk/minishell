@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:32:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/23 17:56:38 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/23 20:15:15 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,25 +36,39 @@ int	handle_file_redir(t_command *cmd, t_token **curr)
 	return (1);
 }
 
+t_heredoc_info	init_heredoc_info(const char *filepath, char *delimiter,
+		int expand, t_parse_ctx *ctx)
+{
+	t_heredoc_info	info;
+
+	info.filepath = filepath;
+	info.delimiter = delimiter;
+	info.expand = expand;
+	info.env_list = ctx->env_list;
+	info.exit_value = ctx->exit_value;
+	return (info);
+}
+
 int	handle_heredoc(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
 {
-	char	*delim;
-	char	*heredoc_path;
-	int		expand;
-	t_token	*next;
+	char			*delim;
+	char			*heredoc_path;
+	t_token			*next;
+	t_heredoc_info	info;
 
 	next = (*curr)->next;
 	if (!next)
 		return (0);
-	expand = ((*curr)->value[0] == '\'' && (*curr)->value[0] == '"');
 	delim = remove_quotes((*curr)->value);
 	if (!delim)
 		return (0);
 	heredoc_path = generate_heredoc_filename((*ctx->heredoc_id)++);
 	if (!heredoc_path)
 		return (free(delim), 0);
-	create_heredoc_file(heredoc_path, delim, expand, ctx->env_list,
-		ctx->exit_value);
+	info = init_heredoc_info(heredoc_path, delim,
+			!((*curr)->value[0] == '\'' || (*curr)->value[0] == '"'), ctx);
+	if (create_heredoc_file(&info) == -1)
+		return (free(delim), free(heredoc_path), 0);
 	cmd->heredoc = 1;
 	cmd->infile = heredoc_path;
 	free(delim);
