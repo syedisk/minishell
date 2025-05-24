@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/22 22:20:46 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 18:05:31 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,50 @@ void	wait_for_child_processes(t_exec_params *con, int *exit_value)
 		i++;
 		j--;
 	}
+}
+
+char	*try_path(char *dir, char *cmd)
+{
+	size_t	len;
+	char	*full;
+
+	len = ft_strlen(dir) + ft_strlen(cmd) + 2;
+	full = malloc(len);
+	if (!full)
+		return (NULL);
+	ft_strlcpy(full, dir, len);
+	ft_strlcat(full, "/", len);
+	ft_strlcat(full, cmd, len);
+	if (access(full, X_OK) == 0)
+		return (full);
+	free(full);
+	return (NULL);
+}
+
+char	*resolve_path(char *cmd)
+{
+	char	**paths;
+	char	*env_path;
+	char	*full;
+	int		i;
+
+	i = 0;
+	env_path = getenv("PATH");
+	if (!env_path || ft_strchr(cmd, '/'))
+		return (ft_strdup(cmd));
+	paths = ft_split(env_path, ':');
+	if (!paths)
+		return (NULL);
+	while (paths[i])
+	{
+		full = try_path(paths[i], cmd);
+		if (full)
+		{
+			free_split(paths);
+			return (full);
+		}
+		i++;
+	}
+	free_split(paths);
+	return (NULL);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils3.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 20:32:14 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/22 20:33:04 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 18:09:18 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,3 +48,4 @@ int is_directory(const char *path)
         return 0;
     return S_ISDIR(path_stat.st_mode);
 }
+
