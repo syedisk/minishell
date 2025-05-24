@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 20:26:38 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 20:28:56 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,8 @@ int							handle_input_redirs(t_command *cmd);
 char						*ft_strcat(char *dest, const char *src);
 int							has_input_redir(t_token *tokens);
 int							is_directory(const char *path);
-void						init_exec_params(t_exec_params *param, t_param_config *config);
+void						init_exec_params(t_exec_params *param,
+								t_param_config *config);
 int							is_invalid_dollar_cmd(t_command *cmd);
 
 // exec_utils4.c

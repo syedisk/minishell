@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils3.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 20:32:14 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 20:08:31 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 20:24:40 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,4 +66,3 @@ int	is_invalid_dollar_cmd(t_command *cmd)
 {
 	return (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0');
 }
-
