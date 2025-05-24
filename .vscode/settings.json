@@ -9,7 +9,8 @@
     "heredoc.h": "c",
     "limits.h": "c",
     "errno.h": "c",
-    "signal.h": "c"
+    "signal.h": "c",
+    "functional": "c"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "gcc",

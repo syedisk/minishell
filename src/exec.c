@@ -96,7 +96,6 @@ void	execute_pipeline_segment(t_command *cmd, t_exec_params *param)
 int	check_and_execute_single_builtin(t_command *cmd, t_exec_params *param)
 {
 	int	result;
-	int stddup;
 
 	if (!cmd->argv || !cmd->argv[0] || cmd->argv[0][0] == '\0')
 		return (0);
@@ -106,24 +105,38 @@ int	check_and_execute_single_builtin(t_command *cmd, t_exec_params *param)
 	{
 		close(param->pipefd[0]);
 		close(param->pipefd[1]);
-		// printf("1./n");
-		stddup = dup(STDOUT_FILENO);
-			if (handle_output_redirs(cmd) != 0 || handle_input_redirs(cmd) != 0) // open/create outfile first
+		if (handle_output_redirs(cmd) != 0 || handle_input_redirs(cmd) != 0) // open/create outfile first
+		{
+			*param->exit_value = 1;
+			return (1);
+		}
+		if (cmd->redir_fd_out > -1)
+		{
+			*param->pid = fork();
+			if (*param->pid == 0)
 			{
-				*param->exit_value = 1;
-				return (1);
+				// printf("🔁 5. dup2: redirecting %d to %d\n", fd, STDOUT_FILENO);
+				result = dup2(cmd->redir_fd_out, STDOUT_FILENO);
+				if (result == -1)
+					return (ft_putstr_fd(" No such file or directory\n", 2), exit(1), 0);
+				close(cmd->redir_fd_out);
+				result = execute_builtin(cmd, param->env_list, param->exit_value);
+				exit (0);
 			}
-	result = execute_builtin(cmd, param->env_list, param->exit_value);
-	*(param->exit_value) = result;
-	dup2(stddup, STDOUT_FILENO);
-	close(stddup);
-	if (ft_strcmp(cmd->argv[0], "exit") == 0)
-	{
-		free_env_list(*(param->env_list));
-		free_commands(cmd);
-		free_split(param->envp);
-		exit(*(param->exit_value));
-	}
+		}
+		else
+		{
+		// printf("1./n");
+			result = execute_builtin(cmd, param->env_list, param->exit_value);
+			*(param->exit_value) = result;
+		}
+		if (ft_strcmp(cmd->argv[0], "exit") == 0)
+		{
+			free_env_list(*(param->env_list));
+			free_commands(cmd);
+			free_split(param->envp);
+			exit(*(param->exit_value));
+		}
 }
 return (0);
 }
@@ -156,7 +169,9 @@ void	execute_commands(t_command *cmd, t_env **env_list,
 	int				fd_in;
 	int				pipefd[2];
 	int				pid;
+	int				final_exit;
 
+	final_exit = -1;
 	fd_in = 0;
 	pipefd[0] = -1;
 	pipefd[1] = -1;
@@ -173,6 +188,8 @@ void	execute_commands(t_command *cmd, t_env **env_list,
 	{
 		if (!cmd->next && check_and_execute_single_builtin(cmd, &param))
 			return ;
+		if (!cmd->next && is_builtin(*cmd->argv) && cmd->redir_fd_out == -1)
+			final_exit = *param.exit_value;
 		if (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0')
 			return ;
 		if (cmd->next)
@@ -194,6 +211,10 @@ void	execute_commands(t_command *cmd, t_env **env_list,
 	// {
 	// 	free(param.pids)
 	// }
+	if (final_exit != -1){
+		param.exit_value = &final_exit;
+		*exit_value = final_exit;
+	}
 	free(param.pids);
 
 }

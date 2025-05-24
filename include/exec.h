@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 13:39:13 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 16:52:05 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,6 @@ int	handle_input_redirs(t_command *cmd);
 int	handle_output_redirs(t_command *cmd);
 int has_input_redir(t_token *tokens);
 int is_directory(const char *path);
+int	handle_all_redirs(t_command *cmd);
+
 #endif  

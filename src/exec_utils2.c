@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 13:16:04 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:16:53 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ int handle_input_redirs(t_command *cmd)
 {
 	t_token *tokens;
 	int fd;
-	int dup_result;
 
 	tokens = cmd->raw_tokens;
 	fd = -1;
@@ -61,17 +60,10 @@ int handle_input_redirs(t_command *cmd)
 					perror("");
 				return (1);
 			}
+			cmd->redir_fd_in = fd;
 		}
 		tokens = tokens->next;
-	}
-	if (fd != -1 && !is_builtin(*cmd->argv))
-	{
-		// printf("🔁 3. dup2: redirecting %d to %d\n", fd, STDIN_FILENO);
-		dup_result = dup2(fd, STDIN_FILENO);
-		if (dup_result == -1)
-			return (ft_putstr_fd(" No such file or directory\n", 2), 1);
-		close(fd);
-	}
+	}	
 	return (0);
 }
 
@@ -87,7 +79,7 @@ int	handle_output_file(t_command *cmd, t_token *tokens, int *fd)
 	if (tmp_fd == -1)
 	{
 		if (errno == 2)
-			ft_putstr_fd(" No such file or directory\n", 2);
+			ft_putstr_fd(" No such file or directoryrtertr\n", 2);
 		else if (errno == 13)
 			ft_putstr_fd(" Permission denied\n", 2);
 		else
@@ -119,35 +111,26 @@ int	handle_output_redirs(t_command *cmd)
 			if (result != 0)
 				return (1);
 		}
+		cmd->redir_fd_out = fd;
 		tokens = tokens->next;
 	}
-	if (fd != -1)
-	{
-		// printf("🔁 5. dup2: redirecting %d to %d\n", fd, STDOUT_FILENO);
-		result = dup2(fd, STDOUT_FILENO);
-		if (result == -1)
-			return (ft_putstr_fd(" No such file or directory\n", 2), 1);
-		close(fd);
-	}
+	// if (fd != -1)
+	// {
+	// 	// printf("🔁 5. dup2: redirecting %d to %d\n", fd, STDOUT_FILENO);
+	// 	result = dup2(fd, STDOUT_FILENO);
+	// 	if (result == -1)
+	// 		return (ft_putstr_fd(" No such file or directory\n", 2), 1);
+	// 	close(fd);
+	// }
 	return (0);
 }
+
 
 void	handle_child_redirections(t_command *cmd)
 {
 	int	result;
-	// pipefd = 0;
 
-	result = handle_input_redirs(cmd);
-	if (result != 0)
-		exit(1);
-	// if (!cmd->heredoc && !has_input_redir(cmd->raw_tokens) && pipefd[0] != -1)
-	// {
-	// 	printf("🔁 6. dup2: redirecting %d to %d\n", pipefd[0], STDIN_FILENO);
-	// 	if (dup2(pipefd[0], STDIN_FILENO) == -1)
-	// 		exit((ft_putstr_fd(" No such file or directory\n", 2), 1));
-	// 	close(pipefd[0]);
-	// }
-	result = handle_output_redirs(cmd);
+	result = handle_all_redirs(cmd);
 	if (result != 0)
 		exit(1);
 	// if (cmd->next && pipefd[1] != -1)
@@ -159,16 +142,74 @@ void	handle_child_redirections(t_command *cmd)
 	// }
 }
 
+
+int	handle_all_redirs(t_command *cmd)
+{
+	t_token	*tokens;
+	int		result;
+
+	tokens = cmd->raw_tokens;
+	if (cmd->heredoc)
+		return handle_heredoc_input(cmd);
+	while (tokens)
+	{
+		if (tokens->type == REDIR_OUT || tokens->type == APPEND)
+		{
+			tokens = tokens->next;
+			if (!tokens || tokens->type != WORD)
+				return (ft_putstr_fd(" No such file or directory\n", 2), 1);
+			result = handle_output_file(cmd, tokens, &cmd->redir_fd_out);
+			if (result != 0)
+				return (1);
+		}
+		if (tokens->type == REDIR_IN)
+		{
+			tokens = tokens->next;
+			if (!tokens || tokens->type != WORD)
+				return (ft_putstr_fd(" No such file or directory\n", 2), 1);
+			cmd->redir_fd_in  = open(tokens->value, O_RDONLY);
+			if (cmd->redir_fd_in  == -1)
+			{
+				if (errno == 2)
+					ft_putstr_fd(" No such file or directory\n", 2);
+				else if (errno == 13)
+					ft_putstr_fd(" Permission denied\n", 2);
+				else
+					perror("");
+				return (1);
+			}
+		}
+		tokens = tokens->next;
+	}
+	return (0);
+}
+
 void	execute_child(t_command *cmd, t_exec_params *param)
 {
 	char		*full_path;
 
 	// printf("2./n");
 	handle_child_redirections(cmd);
+	if (cmd->redir_fd_out != -1)
+	{
+		// printf("🔁 5. dup2: redirecting %d to %d\n", fd, STDOUT_FILENO);
+		if (dup2(cmd->redir_fd_out, STDOUT_FILENO) == -1)
+			exit ((ft_putstr_fd(" No such file or directory\n", 2), 1));
+		close(cmd->redir_fd_out);
+	}
+	if (cmd->redir_fd_in != -1)
+	{
+		// printf("🔁 3. dup2: redirecting %d to %d\n", fd, STDIN_FILENO);
+		if (dup2(cmd->redir_fd_in, STDIN_FILENO) == -1)
+			exit ((ft_putstr_fd(" No such file or directory\n", 2), 1));
+		close(cmd->redir_fd_in);
+	}
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		exit((printf("Error: Null pointer in execute_child\n"), 127));
 	if (is_builtin(cmd->argv[0]))
+	{
 		exit(execute_builtin(cmd, param->env_list, param->exit_value));
+	}
 	if (cmd->argv[0] && !ft_strcmp(cmd->argv[0], "export="))
 		exit(0);
 	full_path = resolve_path(cmd->argv[0]);

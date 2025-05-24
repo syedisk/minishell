@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 12:00:43 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 16:43:31 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ void	init_command(t_command *cmd)
 	cmd->next = NULL;
 	cmd->heredoc = 0;
 	cmd->raw_tokens = NULL;
+	cmd->redir_fd_out = -1;
+	cmd->redir_fd_in = -1;
 }
 
 int	expand_word(t_token *token, t_env *env_list, int *exit_value, char **out)
