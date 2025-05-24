@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils3.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 20:32:14 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 18:09:18 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 19:44:10 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char *ft_strcat(char *dest, const char *src)
+char	*ft_strcat(char *dest, const char *src)
 {
 	char	*dest_start;
 
@@ -29,7 +29,7 @@ char *ft_strcat(char *dest, const char *src)
 	return (dest_start);
 }
 
-int has_input_redir(t_token *tokens)
+int	has_input_redir(t_token *tokens)
 {
 	while (tokens)
 	{
@@ -40,12 +40,11 @@ int has_input_redir(t_token *tokens)
 	return (0);
 }
 
-int is_directory(const char *path)
+int	is_directory(const char *path)
 {
-    struct stat path_stat;
+	struct stat	path_stat;
 
-    if (stat(path, &path_stat) == -1)
-        return 0;
-    return S_ISDIR(path_stat.st_mode);
+	if (stat(path, &path_stat) == -1)
+		return (0);
+	return (S_ISDIR(path_stat.st_mode));
 }
-

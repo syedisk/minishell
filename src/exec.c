@@ -1,4 +1,3 @@
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -7,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/23 13:18:45 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 19:49:45 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +38,8 @@ static void	exec_nonbuiltin_command(t_command *cmd, t_exec_params *param)
 	addpid(*(param->pid), param);
 }
 
-static void	handle_command(t_command *cmd, t_exec_params *param, int *final_exit)
+static void	handle_command(t_command *cmd, t_exec_params *param,
+	int *final_exit)
 {
 	if (!cmd->next && check_and_execute_single_builtin(cmd, param))
 		return ;
@@ -63,10 +63,13 @@ void	execute_commands(t_command *cmd, t_env **env_list,
 {
 	t_exec_params	param;
 	t_param_config	config;
-	int				fd_in = 0;
-	int				pid = -1;
-	int				final_exit = -1;
+	int				fd_in;
+	int				pid;
+	int				final_exit;
 
+	fd_in = 0;
+	pid = -1;
+	final_exit = -1;
 	config.fd_in = &fd_in;
 	config.pid = &pid;
 	config.pipefd[0] = -1;

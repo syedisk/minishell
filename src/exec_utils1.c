@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils1.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 18:03:37 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 19:41:26 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ int	fork_and_execute(t_command *cmd, t_exec_params *param)
 	return (pid);
 }
 
-
 void	handle_fork_and_pipe(t_command *cmd, t_exec_params *param)
 {
 	int	status;
@@ -72,5 +71,3 @@ void	handle_fork_and_pipe(t_command *cmd, t_exec_params *param)
 	}
 	*(param->pid) = fork_and_execute(cmd, param);
 }
-
-
