@@ -8,9 +8,9 @@ INCLUDE		= -I./include -I$(LIBFT_DIR)
 LIBS		= -lreadline \
 			  -L$(LIBFT_DIR) -lft \
 
-SRC			= src/main.c src/lexer.c src/lexer_utils.c \
-			  src/parser.c src/parser_handle_redir.c src/parser_raw_tokens.c \
-			  src/parser_setup_args.c \
+SRC			= src/main.c src/main_utils.c src/main_signals.c src/main_input.c \
+			  src/lexer.c src/lexer_utils.c \
+			  src/parser.c src/parser_handle_redir.c src/parser_raw_tokens.c src/parser_setup_args.c \
 			  src/signal.c src/free_utils.c \
 			  src/expander.c src/expander_utils.c src/heredoc.c src/utils.c src/error_handler.c \
 			  src/builtins/create_env_list.c src/builtins/env.c \

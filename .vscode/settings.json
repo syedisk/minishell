@@ -6,7 +6,10 @@
     "unistd.h": "c",
     "fcntl.h": "c",
     "libft.h": "c",
-    "heredoc.h": "c"
+    "heredoc.h": "c",
+    "limits.h": "c",
+    "errno.h": "c",
+    "signal.h": "c"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "gcc",
