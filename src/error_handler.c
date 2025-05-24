@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:07:47 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 14:28:14 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 16:21:48 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,6 @@ int	has_trailing_operator(const char *input)
 	if (len == 0)
 		return (1);
 	if (trim[len - 1] == '|' || trim[len - 1] == '<' || trim[len - 1] == '>')
-		return (1);
-	if (len >= 3 && (!ft_strncmp(&trim[len - 3], "<<<", 3) || !ft_strncmp(&trim[len - 3], ">>>", 3)))
 		return (1);
 	return (0);
 }

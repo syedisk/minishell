@@ -3,15 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 12:43:42 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 14:41:39 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:11:52 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LEXER_H
 # define LEXER_H
+
+struct s_parse_ctx;
+typedef struct s_parse_ctx t_parse_ctx;
 
 typedef enum e_token_type
 {
@@ -21,7 +24,7 @@ typedef enum e_token_type
 	REDIR_OUT,
 	APPEND,
 	HEREDOC,
-	SYNTAX_ERR
+	TOKEN_ERROR
 }	t_token_type;
 
 typedef struct s_token
@@ -32,7 +35,7 @@ typedef struct s_token
 	struct s_token	*next;
 }					t_token;
 
-t_token	*tokenise(const char *input);
+t_token	*tokenise(const char *input, t_parse_ctx *ctx);
 void	free_tokens(t_token *tokens);
 void	add_token(t_token **head, t_token *new);
 int		ft_isspace(char c);

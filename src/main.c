@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 15:00:49 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:00:03 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,24 @@ int	process_and_execute(char *input, t_env **env_list, int *exit_value)
 	t_token		*tokens;
 	t_command	*commands;
 	char		**env_array;
+	t_parse_ctx	ctx;
+	int			heredoc_id;
 
-	tokens = tokenise(input);
-	commands = parse_tokens(tokens, *env_list, exit_value);
+	heredoc_id = 0;
+	ctx.env_list = env_list;
+	ctx.exit_value = exit_value;
+	ctx.heredoc_id = &heredoc_id;
+	ctx.syntax_error = 0;
+	
+	tokens = tokenise(input, &ctx);
+	if (ctx.syntax_error)
+	{
+		free_tokens(tokens);
+		*exit_value = 2;
+		free(input);
+		return (0);
+	}
+	commands = parse_tokens(tokens, &ctx);
 	if (!commands || is_command_empty(commands))
 	{
 		free_tokens(tokens);

@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 14:49:06 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 16:46:19 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "parser.h"
 
 void	read_quoted_word(const char *s, int *i, char **result, int *quote_type)
 {
@@ -62,13 +63,24 @@ char	*read_word(const char *s, int *i, int *quote_type)
 	return (result);
 }
 
-void	handle_operator(t_token **tokens, const char *input, int *i)
+void	handle_operator(t_token **tokens, const char *input, int *i, t_parse_ctx *ctx)
 {
 	int				op_len;
 	char			*op;
 	t_token_type	type;
 
 	type = get_operator_type(&input[*i], &op_len);
+	if (type == TOKEN_ERROR)
+	{
+		op = ft_strndup(&input[*i], op_len);
+		ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+		ft_putstr_fd(op, 2);
+		ft_putstr_fd("'\n", 2);
+		free(op);
+		*i += op_len;
+		ctx->syntax_error = 1;
+		return;
+	}
 	op = ft_strndup(&input[*i], op_len);
 	add_token(tokens, new_token(op, type, 0));
 	*i += op_len;
@@ -83,7 +95,7 @@ void	handle_word(t_token **tokens, const char *input,
 	add_token(tokens, new_token(word, WORD, *quote_type));
 }
 
-t_token	*tokenise(const char *input)
+t_token	*tokenise(const char *input, t_parse_ctx *ctx)
 {
 	t_token	*tokens;
 	int		i;
@@ -99,7 +111,7 @@ t_token	*tokenise(const char *input)
 			continue ;
 		}
 		if (is_operator_char(input[i]))
-			handle_operator(&tokens, input, &i);
+			handle_operator(&tokens, input, &i, ctx);
 		else
 			handle_word(&tokens, input, &i, &quote_type);
 	}

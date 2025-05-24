@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 13:47:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 13:36:58 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:08:54 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,10 @@ typedef struct s_command
 
 typedef struct s_parse_ctx
 {
-	t_env				*env_list;
+	t_env				**env_list;
 	int					*exit_value;
 	int					*heredoc_id;
+	int					syntax_error;
 }						t_parse_ctx;
 
 // parser.c
@@ -41,8 +42,7 @@ t_command				*start_new_command(t_command **head, t_command *prev,
 void					init_command(t_command *cmd);
 int						expand_word(t_token *token, t_env *env_list,
 							int *exit_value, char **out);
-t_command				*parse_tokens(t_token *tokens, t_env *env_list,
-							int *exit_value);
+t_command				*parse_tokens(t_token *tokens, t_parse_ctx *ctx);
 
 // parser_setup_args.c
 int						count_args(t_token *token);
