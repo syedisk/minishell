@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 15:43:23 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 14:33:09 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 16:25:04 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,17 @@ int	is_operator_char(char c)
 
 t_token_type	get_operator_type(const char *s, int *len)
 {
+	if ((s[0] == '>' && s[1] == '>' && s[2] == '>') ||  // >>>
+		(s[0] == '<' && s[1] == '<' && s[2] == '<') ||  // <<<
+		(s[0] == '>' && s[1] == '<') ||                // ><
+		(s[0] == '<' && s[1] == '>') ||                // <>
+		(s[0] == '>' && s[1] == '|') ||                // >|
+		(s[0] == '<' && s[1] == '|') ||                // <|
+		(s[0] == '|' && s[1] == '|'))                  // ||
+	{
+		*len = 1;
+		return TOKEN_ERROR;
+	}
 	if (s[0] == '|')
 		return (*len = 1, PIPE);
 	if (s[0] == '<' && s[1] == '<')
@@ -45,10 +56,6 @@ t_token_type	get_operator_type(const char *s, int *len)
 		return (*len = 1, REDIR_IN);
 	if (s[0] == '>')
 		return (*len = 1, REDIR_OUT);
-	if (s[0] == '<' && s[1] == '<' && s[2] == '<')
-		return (*len = 3, SYNTAX_ERR);
-	if (s[0] == '>' && s[1] == '>' && s[2] == '>')
-		return (*len = 3, SYNTAX_ERR);
 	return (WORD);
 }
 

@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:30:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/23 19:19:05 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:17:07 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static int	process_word(t_command *cmd, t_token *token, t_parse_ctx *ctx,
 {
 	char	*arg;
 
-	if (!expand_word(token, ctx->env_list, ctx->exit_value, &arg))
+	if (!expand_word(token, *(ctx->env_list), ctx->exit_value, &arg))
 		return (free_argv_on_fail(cmd->argv, *argc));
 	if (arg)
 		cmd->argv[(*argc)++] = arg;

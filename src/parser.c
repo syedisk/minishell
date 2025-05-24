@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:06:49 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 16:43:31 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:25:02 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,21 +71,15 @@ int	expand_word(t_token *token, t_env *env_list, int *exit_value, char **out)
 	return (1);
 }
 
-t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
+t_command	*parse_tokens(t_token *tokens, t_parse_ctx *ctx)
 {
 	t_command	*cmd_head;
 	t_command	*curr_cmd;
 	t_token		*curr;
-	int			heredoc_id;
-	t_parse_ctx	ctx;
 
-	heredoc_id = 0;
 	cmd_head = NULL;
 	curr_cmd = NULL;
 	curr = tokens;
-	ctx.env_list = env_list;
-	ctx.exit_value = exit_value;
-	ctx.heredoc_id = &heredoc_id;
 	while (curr)
 	{
 		if (!cmd_head || curr->type == PIPE)
@@ -94,7 +88,7 @@ t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value)
 			return (free_commands(cmd_head), NULL);
 		if (!set_raw_tokens(curr_cmd, curr))
 			return (free_commands(cmd_head), NULL);
-		if (!setup_args_and_redirects(curr_cmd, &curr, &ctx))
+		if (!setup_args_and_redirects(curr_cmd, &curr, ctx))
 			return (free_commands(cmd_head), NULL);
 	}
 	return (cmd_head);

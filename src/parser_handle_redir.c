@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:32:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/23 22:12:46 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:15:27 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ t_heredoc_info	init_heredoc_info(const char *filepath, char *delimiter,
 	info.filepath = filepath;
 	info.delimiter = delimiter;
 	info.expand = expand;
-	info.env_list = ctx->env_list;
+	info.env_list = *(ctx->env_list);
 	info.exit_value = ctx->exit_value;
 	return (info);
 }
