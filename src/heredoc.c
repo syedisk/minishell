@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 17:11:17 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/23 18:59:22 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 11:58:17 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,52 +25,58 @@ char	*generate_heredoc_filename(int id)
 	return (filename);
 }
 
-int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env *env_list, int *exit_value)
+static void	write_heredoc_line(t_heredoc_info *info, int fd, char *line)
+{
+	char	*expanded;
+
+	if (info->expand)
+	{
+		expanded = expand_variables(line, info->env_list, info->exit_value);
+		safe_write_line(fd, expanded);
+		free(expanded);
+	}
+	else
+		safe_write_line(fd, line);
+}
+
+static int	heredoc_child_routine(t_heredoc_info *info)
 {
 	char	*line;
-	char	*expanded;
 	int		fd;
+
+	handle_heredoc_signals();
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	fd = open(info->filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd < 0)
+		exit(EXIT_FAILURE);
+	while (1)
+	{
+		line = readline("> ");
+		if (!line || ft_strcmp(line, info->delimiter) == 0)
+			break ;
+		write_heredoc_line(info, fd, line);
+		free(line);
+	}
+	free(line);
+	close(fd);
+	exit(EXIT_SUCCESS);
+}
+
+int	create_heredoc_file(t_heredoc_info *info)
+{
 	pid_t	pid;
 	int		status;
 
 	pid = fork();
 	if (pid == 0)
-	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		// CHILD PROCESS: handle heredoc
-		handle_heredoc_signals();  // Heredoc signal handler
-		fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd < 0)
-			return(EXIT_FAILURE); // exit on failure in child
-		while (1)
-		{
-			line = readline("> ");
-			if (!line || ft_strcmp(line, delimiter) == 0)
-			{
-				free(line);
-				break ;
-			}
-			if (expand)
-			{
-				expanded = expand_variables(line, env_list, exit_value);
-				safe_write_line(fd, expanded);
-				free(expanded);
-			}
-			else
-				safe_write_line(fd, line);
-			free(line);
-		}
-		close(fd);
-		//exit(EXIT_SUCCESS); // exit from child process properly
-	}
+		heredoc_child_routine(info);
 	else if (pid > 0)
 	{
-		// PARENT: wait for child
 		waitpid(pid, &status, 0);
-		if (WIFSIGNALED(status)) //This is a macro that checks if the child was terminated by a signal (like SIGINT from Ctrl+C). Returns true if the process didn’t exit normally (e.g., interrupted).
+		if (WIFSIGNALED(status))
 		{
-			unlink(filepath); //cleanup if interrupted
+			unlink(info->filepath);
 			return (-1);
 		}
 	}
@@ -81,4 +87,3 @@ int create_heredoc_file(const char *filepath, char *delimiter, int expand, t_env
 	}
 	return (0);
 }
-
