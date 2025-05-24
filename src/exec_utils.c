@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 18:05:31 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 19:40:53 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd)
 	}
 }
 
-static void waitforchild(int last_pid, int *exit_value)
+static void	waitforchild(int last_pid, int *exit_value)
 {
 	int	pid;
 	int	status;
@@ -31,14 +31,14 @@ static void waitforchild(int last_pid, int *exit_value)
 	pid = 0;
 	while (1)
 	{
-        pid = waitpid(last_pid, &status, 0);
+		pid = waitpid(last_pid, &status, 0);
 		if (pid == -1 || pid > 0)
 		{
 			if (WIFEXITED(status))
 				*exit_value = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status))
 				*exit_value = 128 + WTERMSIG(status);
-            break ;
+			break ;
 		}
 	}
 }

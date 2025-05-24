@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils5.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 19:22:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 19:23:47 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 19:44:56 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int handle_heredoc_input(t_command *cmd)
+int	handle_heredoc_input(t_command *cmd)
 {
-	int fd;
-	int dup_result;
-	int unlink_result;
+	int	fd;
+	int	dup_result;
+	int	unlink_result;
 
 	fd = open(cmd->infile, O_RDONLY);
 	if (fd == -1)
@@ -102,4 +102,3 @@ char	*resolve_and_validate_path(char *cmd_name)
 	}
 	return (path);
 }
-
