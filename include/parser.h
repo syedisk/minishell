@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 13:47:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/23 22:00:06 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/18 16:22:32 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,7 @@ typedef struct s_command
 	struct s_command	*next;
 }						t_command;
 
-t_command			*parse_tokens(t_token *tokens, t_env *env_list,
-						int *exit_value);
-void				free_commands(t_command *cmds);
+t_command	*parse_tokens(t_token *tokens, t_env *env_list, int *exit_value);
+void					free_commands(t_command *cmds);
 
 #endif

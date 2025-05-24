@@ -23,7 +23,7 @@ void	close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd)
 	}
 }
 
-void	wait_for_child_processes(int last_pid, int *exit_value)
+static void waitforchild(int last_pid, int *exit_value)
 {
 	int	pid;
 	int	status;
@@ -40,5 +40,20 @@ void	wait_for_child_processes(int last_pid, int *exit_value)
 				*exit_value = 128 + WTERMSIG(status);
             break ;
 		}
+	}
+}
+
+void	wait_for_child_processes(t_exec_params *con, int *exit_value)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = (con)->numpid;
+	while (j > 0)
+	{
+		waitforchild((con)->pids[i], exit_value);
+		i++;
+		j--;
 	}
 }

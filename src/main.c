@@ -107,6 +107,7 @@ int	main(int argc, char **argv, char **envp)
 	if (!env_list)
 		return (printf("Error: Failed to create environment list\n"), 1);
 	void ignore_sigquit(void);
+	signal(SIGPIPE, SIG_IGN);
 	while (1)
 	{
 		set_signals();
@@ -207,7 +208,6 @@ int	main(int argc, char **argv, char **envp)
 		//Step 3: Execute command
 		env_array =  convert_env_to_array(env_list);
 		execute_commands(commands, &env_list, env_array, &exit_value); // execve in here
-
 		//Step 4: Clean up
 		free(input);
 		free_tokens(tokens);

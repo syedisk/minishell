@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 18:31:20 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/23 19:36:35 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 08:21:33 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int handle_input_redirs(t_command *cmd)
 		}
 		tokens = tokens->next;
 	}
-	if (fd != -1)
+	if (fd != -1 && !is_builtin(*cmd->argv))
 	{
 		// printf("🔁 3. dup2: redirecting %d to %d\n", fd, STDIN_FILENO);
 		dup_result = dup2(fd, STDIN_FILENO);
@@ -132,10 +132,10 @@ int	handle_output_redirs(t_command *cmd)
 	return (0);
 }
 
-void	handle_child_redirections(t_command *cmd, int *pipefd)
+void	handle_child_redirections(t_command *cmd)
 {
 	int	result;
-	pipefd = 0;
+	// pipefd = 0;
 
 	result = handle_input_redirs(cmd);
 	if (result != 0)
@@ -164,7 +164,7 @@ void	execute_child(t_command *cmd, t_exec_params *param)
 	char		*full_path;
 
 	// printf("2./n");
-	handle_child_redirections(cmd, param->pipefd);
+	handle_child_redirections(cmd);
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		exit((printf("Error: Null pointer in execute_child\n"), 127));
 	if (is_builtin(cmd->argv[0]))
