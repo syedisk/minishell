@@ -13,24 +13,6 @@
 
 #include "minishell.h"
 
-static void	init_exec_params(t_exec_params *param, t_param_config *config)
-{
-	param->numpid = 0;
-	param->pids = NULL;
-	param->fd_in = config->fd_in;
-	param->pipefd[0] = config->pipefd[0];
-	param->pipefd[1] = config->pipefd[1];
-	param->pid = config->pid;
-	param->exit_value = config->exit_value;
-	param->env_list = config->env_list;
-	param->envp = config->envp;
-}
-
-static int	is_invalid_dollar_cmd(t_command *cmd)
-{
-	return (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0');
-}
-
 static void	exec_nonbuiltin_command(t_command *cmd, t_exec_params *param)
 {
 	param->pipefd[1] = -1;
@@ -39,7 +21,8 @@ static void	exec_nonbuiltin_command(t_command *cmd, t_exec_params *param)
 	addpid(*(param->pid), param);
 }
 
-static void	handle_command(t_command *cmd, t_exec_params *param, int *final_exit)
+static void	handle_command(t_command *cmd, t_exec_params *param,
+		int *final_exit)
 {
 	if (!cmd->next && check_and_execute_single_builtin(cmd, param))
 		return ;
@@ -58,30 +41,46 @@ static void	handle_command(t_command *cmd, t_exec_params *param, int *final_exit
 	}
 }
 
-void	execute_commands(t_command *cmd, t_env **env_list,
-	char **envp, int *exit_value)
-{
-	t_exec_params	param;
-	t_param_config	config;
-	int				fd_in = 0;
-	int				pid = -1;
-	int				final_exit = -1;
 
-	config.fd_in = &fd_in;
-	config.pid = &pid;
-	config.pipefd[0] = -1;
-	config.pipefd[1] = -1;
-	config.env_list = env_list;
-	config.envp = envp;
-	config.exit_value = exit_value;
-	init_exec_params(&param, &config);
-	while (cmd)
-	{
-		handle_command(cmd, &param, &final_exit);
-		cmd = cmd->next;
-	}
-	wait_for_child_processes(&param, exit_value);
-	if (final_exit != -1)
-		*exit_value = final_exit;
-	free(param.pids);
+static void	init_param_config(t_param_config *config, int *fd_in, int *pid,
+	t_env **env_list, char **envp, int *exit_value)
+{
+*fd_in = 0;
+*pid = -1;
+config->fd_in = fd_in;
+config->pid = pid;
+config->pipefd[0] = -1;
+config->pipefd[1] = -1;
+config->env_list = env_list;
+config->envp = envp;
+config->exit_value = exit_value;
+}
+
+static void	process_commands(t_command *cmd, t_exec_params *param,
+	int *final_exit)
+{
+while (cmd)
+{
+	handle_command(cmd, param, final_exit);
+	cmd = cmd->next;
+}
+}
+
+void	execute_commands(t_command *cmd, t_env **env_list, char **envp,
+	int *exit_value)
+{
+t_exec_params	param;
+t_param_config	config;
+int				fd_in;
+int				pid;
+int				final_exit;
+
+init_param_config(&config, &fd_in, &pid, env_list, envp, exit_value);
+init_exec_params(&param, &config);
+final_exit = -1;
+process_commands(cmd, &param, &final_exit);
+wait_for_child_processes(&param, exit_value);
+if (final_exit != -1)
+	*exit_value = final_exit;
+free(param.pids);
 }
