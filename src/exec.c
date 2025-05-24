@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 20:09:00 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 20:27:57 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,18 +41,17 @@ static void	handle_command(t_command *cmd, t_exec_params *param,
 }
 
 
-static void	init_param_config(t_param_config *config, int *fd_in, int *pid,
-	t_env **env_list, char **envp, int *exit_value)
+static void	init_param_config(t_param_config *config, t_config_inputs *inputs)
 {
-*fd_in = 0;
-*pid = -1;
-config->fd_in = fd_in;
-config->pid = pid;
-config->pipefd[0] = -1;
-config->pipefd[1] = -1;
-config->env_list = env_list;
-config->envp = envp;
-config->exit_value = exit_value;
+	*(inputs->fd_in) = 0;
+	*(inputs->pid) = -1;
+	config->fd_in = inputs->fd_in;
+	config->pid = inputs->pid;
+	config->pipefd[0] = -1;
+	config->pipefd[1] = -1;
+	config->env_list = inputs->env_list;
+	config->envp = inputs->envp;
+	config->exit_value = inputs->exit_value;
 }
 
 static void	process_commands(t_command *cmd, t_exec_params *param,
@@ -68,18 +67,25 @@ while (cmd)
 void	execute_commands(t_command *cmd, t_env **env_list, char **envp,
 	int *exit_value)
 {
-t_exec_params	param;
-t_param_config	config;
-int				fd_in;
-int				pid;
-int				final_exit;
+	t_exec_params		param;
+	t_param_config		config;
+	t_config_inputs		inputs;
+	int					fd_in;
+	int					pid;
+	int					final_exit;
 
-init_param_config(&config, &fd_in, &pid, env_list, envp, exit_value);
-init_exec_params(&param, &config);
-final_exit = -1;
-process_commands(cmd, &param, &final_exit);
-wait_for_child_processes(&param, exit_value);
-if (final_exit != -1)
-	*exit_value = final_exit;
-free(param.pids);
+	inputs.fd_in = &fd_in;
+	inputs.pid = &pid;
+	inputs.env_list = env_list;
+	inputs.envp = envp;
+	inputs.exit_value = exit_value;
+
+	init_param_config(&config, &inputs);
+	init_exec_params(&param, &config);
+	final_exit = -1;
+	process_commands(cmd, &param, &final_exit);
+	wait_for_child_processes(&param, exit_value);
+	if (final_exit != -1)
+		*exit_value = final_exit;
+	free(param.pids);
 }

@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 20:05:04 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 20:26:38 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,16 @@ typedef struct s_param_config
 	char					**envp;
 	int						*exit_value;
 }							t_param_config;
+
+typedef struct s_config_inputs
+{
+	int		*fd_in;
+	int		*pid;
+	t_env	**env_list;
+	char	**envp;
+	int		*exit_value;
+}	t_config_inputs;
+
 
 // exec_utils.c
 void						close_and_update_fds(int *fd_in, t_command *cmd,
