@@ -6,13 +6,11 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 21:49:24 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 22:11:43 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-
 
 static void	reset_fd_and_pid(int *fd_in, int *pid)
 {
@@ -65,35 +63,3 @@ void	execute_commands(t_command *cmd, t_env **env_list,
 		*exit_value = final_exit;
 	free(param.pids);
 }
-
-
-// void	execute_commands(t_command *cmd, t_env **env_list,
-// 	char **envp, int *exit_value)
-// {
-// 	t_exec_params	param;
-// 	t_param_config	config;
-// 	int				fd_in;
-// 	int				pid;
-// 	int				final_exit;
-
-// 	fd_in = 0;
-// 	pid = -1;
-// 	final_exit = -1;
-// 	config.fd_in = &fd_in;
-// 	config.pid = &pid;
-// 	config.pipefd[0] = -1;
-// 	config.pipefd[1] = -1;
-// 	config.env_list = env_list;
-// 	config.envp = envp;
-// 	config.exit_value = exit_value;
-// 	init_exec_params(&param, &config);
-// 	while (cmd)
-// 	{
-// 		handle_command(cmd, &param, &final_exit);
-// 		cmd = cmd->next;
-// 	}
-// 	wait_for_child_processes(&param, exit_value);
-// 	if (final_exit != -1)
-// 		*exit_value = final_exit;
-// 	free(param.pids);
-// }

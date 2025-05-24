@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 16:46:19 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 21:59:04 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ char	*read_word(const char *s, int *i, int *quote_type)
 	return (result);
 }
 
-void	handle_operator(t_token **tokens, const char *input, int *i, t_parse_ctx *ctx)
+void	handle_operator(t_token **tokens, const char *input,
+	int *i, t_parse_ctx *ctx)
 {
 	int				op_len;
 	char			*op;
@@ -79,7 +80,7 @@ void	handle_operator(t_token **tokens, const char *input, int *i, t_parse_ctx *c
 		free(op);
 		*i += op_len;
 		ctx->syntax_error = 1;
-		return;
+		return ;
 	}
 	op = ft_strndup(&input[*i], op_len);
 	add_token(tokens, new_token(op, type, 0));
