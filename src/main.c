@@ -6,23 +6,21 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 12:46:17 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 13:30:31 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <signal.h>
 
-
-
-
-
-char **tokens_to_args(t_token *tokens)
+char	**tokens_to_args(t_token *tokens)
 {
-	int	count = 0;
-	t_token *tmp = tokens;
-	char **args;
+	int		count;
+	t_token	*tmp;
+	char	**args;
 
+	count = 0;
+	tmp = tokens;
 	while (tmp)
 	{
 		if (tmp->type == WORD)
@@ -44,14 +42,6 @@ char **tokens_to_args(t_token *tokens)
 	return (args);
 }
 
-
-
-
-
-
-
-
-
 int	handle_exit_if_null(char *input, t_env *env_list)
 {
 	if (!input)
@@ -63,11 +53,30 @@ int	handle_exit_if_null(char *input, t_env *env_list)
 	return (1);
 }
 
+int	process_and_execute(char *input, t_env **env_list, int *exit_value)
+{
+	t_token		*tokens;
+	t_command	*commands;
+	char		**env_array;
 
-
-
-
-
+	tokens = tokenise(input);
+	commands = parse_tokens(tokens, *env_list, exit_value);
+	if (!commands || is_command_empty(commands))
+	{
+		free_tokens(tokens);
+		free_commands(commands);
+		free(input);
+		*exit_value = 0;
+		return (0);
+	}
+	env_array = convert_env_to_array(*env_list);
+	execute_commands(commands, env_list, env_array, exit_value);
+	free(input);
+	free_tokens(tokens);
+	free_commands(commands);
+	free_split(env_array);
+	return (1);
+}
 
 void	run_shell_loop(t_env **env_list, int *exit_value)
 {
@@ -78,19 +87,19 @@ void	run_shell_loop(t_env **env_list, int *exit_value)
 		set_signals();
 		input = custom_readline("$minishell ");
 		if (!handle_exit_if_null(input, *env_list))
-			continue;
+			continue ;
 		if (!handle_interrupt_signal(&input, exit_value))
-			continue;
+			continue ;
 		if (is_skippable_input(input))
-			continue;
+			continue ;
 		add_history(input);
 		if (check_syntax_error(input))
 		{
 			free(input);
-			continue;
+			continue ;
 		}
 		if (!process_and_execute(input, env_list, exit_value))
-			continue;
+			continue ;
 	}
 }
 
@@ -102,7 +111,6 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	exit_value = 0;
-
 	env_list = create_env_list(envp);
 	if (!env_list)
 		return (printf("Error: Failed to create environment list\n"), 1);
