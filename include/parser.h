@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 13:47:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/23 17:45:20 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 10:54:02 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,16 @@
 
 typedef struct s_command
 {
-	char **argv;     // command and arguments
-	char *infile;    // <
-	char *outfile;   // > or >>
-	int append_out;  // 1 if '>>', 0 if '>'
-	int heredoc;     // 1 if uses heredoc '<<'
-	char *delimiter; // delimiter for heredoc
-	int pipe_after;  // 1 if pipe to next command, 0 if not
-	int is_builtin;  // 1 if command is builtin
+	char				**argv;
+	char				*infile;
+	char				*outfile;
+	int					append_out;
+	int					heredoc;
+	char				*delimiter;
+	int					pipe_after;
+	int					is_builtin;
 	t_token				*raw_tokens;
-	int exit_value; // exit value of the command
+	int					exit_value;
 	struct s_command	*next;
 }						t_command;
 
