@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 19:30:06 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 21:50:28 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ char	*resolve_and_validate_path(char *cmd_name);
 void	execute_external_cmd(char *path, char **argv, char **envp);
 void	execute_child(t_command *cmd, t_exec_params *param);
 int	handle_input_redirection(t_command *cmd, t_token **curr);
+int	is_invalid_dollar_cmd(t_command *cmd);
 
 // exec.c
 void	execute_commands(t_command *cmd, t_env **env_list,

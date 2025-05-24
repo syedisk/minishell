@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 19:49:45 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 21:58:17 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,6 @@ static void	init_exec_params(t_exec_params *param, t_param_config *config)
 	param->exit_value = config->exit_value;
 	param->env_list = config->env_list;
 	param->envp = config->envp;
-}
-
-static int	is_invalid_dollar_cmd(t_command *cmd)
-{
-	return (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0');
 }
 
 static void	exec_nonbuiltin_command(t_command *cmd, t_exec_params *param)
@@ -58,6 +53,14 @@ static void	handle_command(t_command *cmd, t_exec_params *param,
 	}
 }
 
+void	init_config(t_param_config *config, t_env **env_list,
+	char **envp, int *exit_value)
+{
+	config->env_list = env_list;
+	config->envp = envp;
+	config->exit_value = exit_value;
+}
+
 void	execute_commands(t_command *cmd, t_env **env_list,
 	char **envp, int *exit_value)
 {
@@ -74,9 +77,7 @@ void	execute_commands(t_command *cmd, t_env **env_list,
 	config.pid = &pid;
 	config.pipefd[0] = -1;
 	config.pipefd[1] = -1;
-	config.env_list = env_list;
-	config.envp = envp;
-	config.exit_value = exit_value;
+	init_config(&config, env_list, envp, exit_value);
 	init_exec_params(&param, &config);
 	while (cmd)
 	{
