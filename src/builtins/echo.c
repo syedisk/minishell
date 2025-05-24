@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/23 19:35:53 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 13:51:40 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,5 @@ int	handle_echo(t_token *args, t_env *env_list, int *exit_value)
 	process_echo_args(curr, env_list, exit_value, need_space);
 	if (!newline)
 		printf("\n");
-	exit_value = 0;
 	return (0);
 }
