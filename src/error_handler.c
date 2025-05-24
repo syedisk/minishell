@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:07:47 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/22 14:51:58 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 14:28:14 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ int	has_trailing_operator(const char *input)
 	if (len == 0)
 		return (1);
 	if (trim[len - 1] == '|' || trim[len - 1] == '<' || trim[len - 1] == '>')
+		return (1);
+	if (len >= 3 && (!ft_strncmp(&trim[len - 3], "<<<", 3) || !ft_strncmp(&trim[len - 3], ">>>", 3)))
 		return (1);
 	return (0);
 }
