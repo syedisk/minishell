@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 20:27:57 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 20:37:45 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ static void	handle_command(t_command *cmd, t_exec_params *param,
 		addpid(*(param->pid), param);
 	}
 }
-
 
 static void	init_param_config(t_param_config *config, t_config_inputs *inputs)
 {
