@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 17:47:16 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/17 17:03:38 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,46 +53,6 @@ int	handle_exit_if_null(char *input, t_env *env_list)
 	return (1);
 }
 
-int	process_and_execute(char *input, t_env **env_list, int *exit_value)
-{
-	t_token		*tokens;
-	t_command	*commands;
-	char		**env_array;
-	t_parse_ctx	ctx;
-	int			heredoc_id;
-
-	heredoc_id = 0;
-	ctx.env_list = env_list;
-	ctx.exit_value = exit_value;
-	ctx.heredoc_id = &heredoc_id;
-	ctx.syntax_error = 0;
-	
-	tokens = tokenise(input, &ctx);
-	if (ctx.syntax_error)
-	{
-		free_tokens(tokens);
-		*exit_value = 2;
-		free(input);
-		return (0);
-	}
-	commands = parse_tokens(tokens, &ctx);
-	if (!commands || is_command_empty(commands))
-	{
-		free_tokens(tokens);
-		free_commands(commands);
-		free(input);
-		*exit_value = 0;
-		return (0);
-	}
-	env_array = convert_env_to_array(*env_list);
-	execute_commands(commands, env_list, env_array, exit_value);
-	free(input);
-	free_tokens(tokens);
-	free_commands(commands);
-	free_split(env_array);
-	return (1);
-}
-
 void	run_shell_loop(t_env **env_list, int *exit_value)
 {
 	char	*input;
@@ -100,7 +60,7 @@ void	run_shell_loop(t_env **env_list, int *exit_value)
 	while (1)
 	{
 		set_signals();
-		input = custom_readline("$minishell ");
+		input = readline("$minishell ");
 		if (!handle_exit_if_null(input, *env_list))
 			continue ;
 		if (!handle_interrupt_signal(&input, exit_value))

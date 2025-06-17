@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 19:23:58 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 21:57:47 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/05/24 19:39:53 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,4 @@ int	handle_input_redirection(t_command *cmd, t_token **curr)
 	}
 	*curr = (*curr)->next;
 	return (0);
-}
-
-int	is_invalid_dollar_cmd(t_command *cmd)
-{
-	return (cmd->argv[0][0] == '$' && cmd->argv[0][1] != '\0');
 }

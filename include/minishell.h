@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 13:33:28 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/05/24 19:50:25 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,6 @@
 char							**tokens_to_args(t_token *tokens);
 int								handle_exit_if_null(char *input,
 									t_env *env_list);
-int								process_and_execute(char *input,
-									t_env **env_list, int *exit_value);
 void							run_shell_loop(t_env **env_list,
 									int *exit_value);
 
@@ -49,6 +47,10 @@ void							run_shell_loop(t_env **env_list,
 int								is_only_whitespace(const char *str);
 int								is_skippable_input(char *input);
 int								is_command_empty(t_command *cmd);
+
+// main_utils2.c
+int								process_and_execute(char *input,
+									t_env **env_list, int *exit_value);
 
 // main_signals.c
 extern volatile sig_atomic_t	g_sig_received;

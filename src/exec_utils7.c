@@ -1,24 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.h                                          :+:      :+:    :+:   */
+/*   exec_utils7.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/24 19:42:52 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 19:43:05 by sbin-ham         ###   ########.fr       */
+/*   Created: 2025/05/24 21:05:47 by thkumara          #+#    #+#             */
+/*   Updated: 2025/06/17 17:04:02 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SIGNALS_H
-# define SIGNALS_H
+#include "minishell.h"
 
-# include <signal.h>
-
-void	set_signals(void);
-void	sig_handler(int sig);
-void	ignore_sigquit(void);
-void	handle_heredoc_signals(void);
-void	heredoc_sigint_handler(int sig);
-
-#endif
+void	exec_nonbuiltin_command(t_command *cmd, t_exec_params *param)
+{
+	param->pipefd[1] = -1;
+	fork_and_execute(cmd, param);
+	param->numpid++;
+	addpid(*(param->pid), param);
+}
