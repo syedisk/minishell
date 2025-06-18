@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 15:00:38 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/20 15:06:32 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/18 23:37:32 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,8 @@ static int	check_exportvalue(char **argv)
 static void	print_exported_variables(t_env *env_list)
 {
 	t_env	*curr;
-	int		i;
 
 	curr = env_list;
-	i = 0;
 	while (curr)
 	{
 		if (curr->value)
@@ -55,7 +53,6 @@ static void	print_exported_variables(t_env *env_list)
 		else
 			printf("declare -x %s\n", curr->key);
 		curr = curr->next;
-		i++;
 	}
 }
 

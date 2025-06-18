@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 19:50:25 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/18 23:34:02 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@
 # include <errno.h>
 # include <fcntl.h> // open
 # include <limits.h>
+# include <stdio.h>    // for printf
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
 # include <stddef.h>
-# include <stdio.h>    // for printf
 # include <stdlib.h>   // for malloc, free, exit, NULL
 # include <sys/stat.h> // for stat
 # include <sys/wait.h> // for wait
