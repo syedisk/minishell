@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 19:40:53 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/18 12:40:28 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd)
 {
-	if (*fd_in != 0)
+	if (*fd_in > 0 && *fd_in != STDIN_FILENO)
 		close(*fd_in);
 	if (cmd->next && pipefd)
 	{
@@ -32,7 +32,12 @@ static void	waitforchild(int last_pid, int *exit_value)
 	while (1)
 	{
 		pid = waitpid(last_pid, &status, 0);
-		if (pid == -1 || pid > 0)
+		if (pid == -1)
+		{
+			perror("waitpid");
+			break ;
+		}
+		if (pid > 0)
 		{
 			if (WIFEXITED(status))
 				*exit_value = WEXITSTATUS(status);
