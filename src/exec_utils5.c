@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils5.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 19:22:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 19:44:56 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/18 11:49:34 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	handle_output_file(t_command *cmd, t_token *tokens, int *fd)
 	if (tmp_fd == -1)
 	{
 		if (errno == 2)
-			ft_putstr_fd(" No such file or directoryrtertr\n", 2);
+			ft_putstr_fd(" No such file or directory\n", 2);
 		else if (errno == 13)
 			ft_putstr_fd(" Permission denied\n", 2);
 		else
