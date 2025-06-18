@@ -1,11 +1,12 @@
 {
-    "files.associations": {
-        "minishell.h": "c",
-        "readline.h": "c",
-        "history.h": "c",
-        "unistd.h": "c",
-        "fcntl.h": "c",
-        "libft.h": "c",
-        "heredoc.h": "c"
-    }
+  "files.associations": {
+    "minishell.h": "c",
+    "readline.h": "c",
+    "history.h": "c",
+    "unistd.h": "c",
+    "fcntl.h": "c",
+    "libft.h": "c",
+    "heredoc.h": "c"
+  },
+  "C_Cpp_Runner.msvcBatchPath": ""
 }
