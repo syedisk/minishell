@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/18 12:40:28 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/19 13:07:27 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void	waitforchild(int last_pid, int *exit_value)
 		pid = waitpid(last_pid, &status, 0);
 		if (pid == -1)
 		{
-			perror("waitpid");
+			// perror("waitpid");
 			break ;
 		}
 		if (pid > 0)

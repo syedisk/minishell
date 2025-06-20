@@ -29,6 +29,17 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "(lldb) Launch for Home",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/minishell",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "env": {},
+            "terminal": "integrated"
         }
     ]
 }
