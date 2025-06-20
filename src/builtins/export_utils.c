@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 17:10:24 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/20 15:05:51 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/20 18:36:38 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ void	handle_newenv(t_env **env_list, char *key, char *value)
 		{
 			free (curr->value);
 			curr->value = ft_strdup(value);
-			ft_putstr_fd(" not a valid identifier\n", 2);
 			return ;
 		}
 		curr = curr->next;
