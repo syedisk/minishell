@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:30:30 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/19 17:34:37 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:33:32 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,13 @@ int	handle_exit(char **argv)
 	i = 0;
 	printf("exit\n");
 	if (!argv[1])
-		exit(0);
+		return(0);
 	while (argv[1][i])
 	{
 		if (ft_isalpha(argv[1][i]))
 		{
 			ft_putstr_fd("exit: numeric argument required\n", 2);
-			exit(2);
+			return(2);
 		}
 		i++;
 	}

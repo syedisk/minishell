@@ -1,0 +1,26 @@
+# Ignore only reachable leaks from readline
+{
+	leak readline
+	Memcheck:Leak
+ 	match-leak-kinds: reachable
+ 	...
+ 	obj:*/libreadline.so.*
+}
+# Suppress known definite leaks in readline
+{
+	readline_teardown_leak
+	Memcheck:Leak
+	match-leak-kinds: definite
+	fun: malloc
+	fun: xmalloc
+	fun: readline_internal_teardown
+	fun: readline
+	...
+}
+# # Ignore all memory issues in readline
+# {
+# 	ignore_libreadline_leaks
+#  	Memcheck:Leak
+# 	...
+# 	obj:*/libreadline.so.*
+# }

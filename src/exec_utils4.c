@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 18:01:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/17 16:25:32 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:32:32 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ void	execute_pipeline_segment(t_command *cmd, t_exec_params *param)
 		exec_pid = fork_and_execute(cmd, param);
 		*(param->pid) = exec_pid;
 	}
+	if (*(param->pid) == -1)
+		return ;
 	if (cmd->next)
 		close_and_update_fds(param->fd_in, cmd, param->pipefd);
 	else
@@ -67,8 +69,10 @@ int	check_and_execute_single_builtin(t_command *cmd, t_exec_params *param)
 		return (0);
 	if (is_builtin(cmd->argv[0]) && !cmd->next)
 	{
-		close(param->pipefd[0]);
-		close(param->pipefd[1]);
+		if (param->pipefd[0] != -1)
+			close(param->pipefd[0]);
+		if (param->pipefd[1] != -1)
+			close(param->pipefd[1]);
 		if (handle_output_redirs(cmd) != 0 || handle_input_redirs(cmd) != 0)
 			return (*param->exit_value = 1, 1);
 		if (cmd->redir_fd_out > -1)
@@ -87,16 +91,18 @@ void	addpid(int pid, t_exec_params *con)
 	int	i;
 
 	i = 0;
-	temp = (int *)malloc(sizeof(int) * ((*con).numpid));
-	if ((*con).pids != NULL)
+	if (!con->numpid || con->pids)
+		return ;
+	temp = malloc(sizeof(int) * (con->numpid + 1));
+	if (!temp)
+		exit((ft_putstr_fd("malloc failed\n", 2), EXIT_FAILURE)); 
+	while (i < con->numpid)
 	{
-		while (i < (*con).numpid - 1)
-		{
-			temp[i] = ((*con).pids)[i];
-			i++;
-		}
-		free((*con).pids);
+		temp[i] = con->pids[i];
+		i++;
 	}
-	temp[i] = (pid);
-	(*con).pids = temp;
+	temp[i] = pid;
+	free(con->pids);
+	con->pids = temp;
+	con->numpid++;
 }

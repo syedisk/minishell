@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 19:40:53 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:31:10 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,24 +23,24 @@ void	close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd)
 	}
 }
 
-static void	waitforchild(int last_pid, int *exit_value)
+static void waitforchild(int last_pid, int *exit_value)
 {
 	int	pid;
 	int	status;
 
 	pid = 0;
-	while (1)
+	status = 0;
+	pid = waitpid(last_pid, &status, 0);
+	if (pid == -1)
 	{
-		pid = waitpid(last_pid, &status, 0);
-		if (pid == -1 || pid > 0)
-		{
-			if (WIFEXITED(status))
-				*exit_value = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-				*exit_value = 128 + WTERMSIG(status);
-			break ;
-		}
+		perror("waitpid failed");
+		*exit_value = 1;
+		return;
 	}
+	if (WIFEXITED(status))
+		*exit_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		*exit_value = 128 + WTERMSIG(status);
 }
 
 void	wait_for_child_processes(t_exec_params *con, int *exit_value)
@@ -48,10 +48,17 @@ void	wait_for_child_processes(t_exec_params *con, int *exit_value)
 	int	i;
 	int	j;
 
+	// if (!con || !con->pids || !con->numpid)
+	// {
+	// 	ft_putstr_fd("Error: null pointer in wait_for_child_processes\n", 2);
+	// 	return ;
+	// }
 	i = 0;
-	j = (con)->numpid;
+	j = con->numpid;
 	while (j > 0)
 	{
+		// if ((con)->pids[i] <= 0)
+		// 	return ;
 		waitforchild((con)->pids[i], exit_value);
 		i++;
 		j--;
