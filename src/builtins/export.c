@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 15:00:38 by thkumara          #+#    #+#             */
-/*   Updated: 2025/06/18 23:37:32 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/20 18:55:42 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static int	check_exportvalue(char **argv)
 		if (ft_strchr(argv[i], '='))
 		{
 			key_value = ft_split(argv[i], '=');
-			if (!key_value || !key_value[0] || !key_value[0][0]
+			if (!key_value || !key_value[0]
 				|| !is_valid_identifier(key_value[0]))
 			{
 				free_split(key_value);
