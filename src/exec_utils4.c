@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 18:01:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/18 23:43:18 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/20 14:37:55 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int	redirect_and_exec_builtin(t_command *cmd, t_exec_params *param)
 			return (ft_putstr_fd("No such file or directory\n", 2), exit(1), 0);
 		close(cmd->redir_fd_out);
 		result = execute_builtin(cmd, param->env_list, param->exit_value);
-		exit(result);
+		exit(result); // exit (0) or result?
 	}
 	return (1);
 }

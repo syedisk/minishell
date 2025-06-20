@@ -1,16 +1,11 @@
-# Readline-specific flags
-READLINE_INCLUDE = -I/opt/homebrew/opt/readline/include
-READLINE_LIB     = -L/opt/homebrew/opt/readline/lib
-
-
 NAME		= minishell
 CFLAGS		= -Wall -Wextra -Werror -g
 
 LIBFT_DIR	= ./lib/libft
 
-INCLUDE		= -I./include -I$(LIBFT_DIR) $(READLINE_INCLUDE)
+INCLUDE		= -I./include -I$(LIBFT_DIR)
 
-LIBS		= -lreadline $(READLINE_LIB) \
+LIBS		= -lreadline \
 			  -L$(LIBFT_DIR) -lft \
 
 SRC			= src/main.c src/main_utils.c src/main_utils2.c src/main_signals.c \
