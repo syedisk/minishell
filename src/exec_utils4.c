@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils4.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 18:01:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/20 20:32:32 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/21 20:56:24 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,13 @@ void	execute_pipeline_segment(t_command *cmd, t_exec_params *param)
 
 static int	redirect_and_exec_builtin(t_command *cmd, t_exec_params *param)
 {
-	int	result;
-
 	*param->pid = fork();
 	if (*param->pid == 0)
 	{
 		if (dup2(cmd->redir_fd_out, STDOUT_FILENO) == -1)
 			return (ft_putstr_fd("No such file or directory\n", 2), exit(1), 0);
 		close(cmd->redir_fd_out);
-		result = execute_builtin(cmd, param->env_list, param->exit_value);
+		execute_builtin(cmd, param->env_list, param->exit_value);
 		exit(0);
 	}
 	return (1);
@@ -81,28 +79,56 @@ int	check_and_execute_single_builtin(t_command *cmd, t_exec_params *param)
 			result = execute_builtin(cmd, param->env_list, param->exit_value);
 		*(param->exit_value) = result;
 		handle_exit_if_needed(cmd, param);
+		return (1);
 	}
 	return (0);
 }
 
+// void	addpid(int pid, t_exec_params *con)
+// {
+// 	int	*temp;
+// 	int	i;
+
+// 	i = 0;
+// 	if (!con || !con->pids)
+// 		return ;
+// 	temp = malloc(sizeof(int) * (con->numpid + 1));
+// 	if (!temp)
+// 		exit((ft_putstr_fd("malloc failed\n", 2), EXIT_FAILURE)); 
+// 	while (i < con->numpid)
+// 	{
+// 		if (con->pids[i] == -1)
+// 			break ;
+// 		temp[i] = con->pids[i];
+// 		i++;
+// 	}
+// 	temp[i] = pid;
+// 	free(con->pids);
+// 	con->pids = temp;
+// 	con->numpid++;
+// }
+
 void	addpid(int pid, t_exec_params *con)
 {
-	int	*temp;
 	int	i;
 
+	if (!con || !con->pids)
+		return; // Ensure pids is allocated externally
+
 	i = 0;
-	if (!con->numpid || con->pids)
-		return ;
-	temp = malloc(sizeof(int) * (con->numpid + 1));
-	if (!temp)
-		exit((ft_putstr_fd("malloc failed\n", 2), EXIT_FAILURE)); 
 	while (i < con->numpid)
 	{
-		temp[i] = con->pids[i];
+		// Find the first empty slot
+		if (con->pids[i] == -1)
+		{
+			con->pids[i] = pid;
+			return; // Exit after adding the pid
+		}
 		i++;
 	}
-	temp[i] = pid;
-	free(con->pids);
-	con->pids = temp;
-	con->numpid++;
+	// If all slots were filled, do nothing or handle error
+	if (i == con->numpid)
+		return;
+
+	// con->pids[i] = pid;
 }

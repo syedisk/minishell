@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/20 20:31:10 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/21 20:22:37 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,46 +23,52 @@ void	close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd)
 	}
 }
 
-static void waitforchild(int last_pid, int *exit_value)
+void  wait_for_child(t_exec_params *con, int *exit_value, int last_pid)
 {
-	int	pid;
+	int	i;
 	int	status;
+	int	pid;
 
-	pid = 0;
-	status = 0;
-	pid = waitpid(last_pid, &status, 0);
-	if (pid == -1)
-	{
-		perror("waitpid failed");
-		*exit_value = 1;
+	if (!con || !con->pids || con->numpid <= 0)
 		return;
+	i = 0;
+	while (i < con->numpid)
+	{
+		if (con->pids[i] > 0)
+		{
+			pid = waitpid(con->pids[i], &status, 0);
+			if (pid == -1)
+			{
+				perror("waitpid failed");
+				//*exit_value = 1;
+			}
+			else if (pid == last_pid)
+			{
+				if (WIFEXITED(status))
+					*exit_value = WEXITSTATUS(status);
+				else if (WIFSIGNALED(status))
+					*exit_value = 128 + WTERMSIG(status);
+			}
+		}
+		i++;
 	}
-	if (WIFEXITED(status))
-		*exit_value = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		*exit_value = 128 + WTERMSIG(status);
 }
-
 void	wait_for_child_processes(t_exec_params *con, int *exit_value)
 {
 	int	i;
-	int	j;
+	int	last_pid;
 
-	// if (!con || !con->pids || !con->numpid)
-	// {
-	// 	ft_putstr_fd("Error: null pointer in wait_for_child_processes\n", 2);
-	// 	return ;
-	// }
+	if (!con || !con->pids || con->numpid <= 0)
+		return;
 	i = 0;
-	j = con->numpid;
-	while (j > 0)
+	last_pid = -1;
+	while (i < con->numpid)
 	{
-		// if ((con)->pids[i] <= 0)
-		// 	return ;
-		waitforchild((con)->pids[i], exit_value);
+		if (con->pids[i] > 0)
+			last_pid = con->pids[i];
 		i++;
-		j--;
 	}
+	wait_for_child(con, exit_value, last_pid);
 }
 
 char	*try_path(char *dir, char *cmd)

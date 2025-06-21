@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/20 20:31:25 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/21 20:33:18 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,9 @@ void	run_shell_loop(t_env **env_list, int *exit_value)
 	while (1)
 	{
 		set_signals();
+		write(1, "before readline\n", 16);
 		input = readline("$minishell ");
+		write(1, "after readline\n", 15);
 		if (!handle_exit_if_null(input, *env_list))
 			continue ;
 		if (!handle_interrupt_signal(&input, exit_value))
