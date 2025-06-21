@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/21 20:22:37 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/21 22:02:33 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,31 +27,15 @@ void  wait_for_child(t_exec_params *con, int *exit_value, int last_pid)
 {
 	int	i;
 	int	status;
-	int	pid;
 
-	if (!con || !con->pids || con->numpid <= 0)
-		return;
-	i = 0;
-	while (i < con->numpid)
-	{
-		if (con->pids[i] > 0)
-		{
-			pid = waitpid(con->pids[i], &status, 0);
-			if (pid == -1)
-			{
-				perror("waitpid failed");
-				//*exit_value = 1;
-			}
-			else if (pid == last_pid)
-			{
-				if (WIFEXITED(status))
-					*exit_value = WEXITSTATUS(status);
-				else if (WIFSIGNALED(status))
-					*exit_value = 128 + WTERMSIG(status);
-			}
-		}
-		i++;
-	}
+	status = 0;
+	pid = waitpid(last_pid, &status, 0);
+	if (pid == -1)
+		return ;
+	if (WIFEXITED(status))
+		*exit_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		*exit_value = 128 + WTERMSIG(status);
 }
 void	wait_for_child_processes(t_exec_params *con, int *exit_value)
 {

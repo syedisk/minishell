@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 18:01:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/21 20:56:24 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/21 22:14:17 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,6 @@ void	execute_pipeline_segment(t_command *cmd, t_exec_params *param)
 		exec_pid = fork_and_execute(cmd, param);
 		*(param->pid) = exec_pid;
 	}
-	if (*(param->pid) == -1)
-		return ;
 	if (cmd->next)
 		close_and_update_fds(param->fd_in, cmd, param->pipefd);
 	else
@@ -67,9 +65,9 @@ int	check_and_execute_single_builtin(t_command *cmd, t_exec_params *param)
 		return (0);
 	if (is_builtin(cmd->argv[0]) && !cmd->next)
 	{
-		if (param->pipefd[0] != -1)
+		if (param->pipefd[0] >= 0)
 			close(param->pipefd[0]);
-		if (param->pipefd[1] != -1)
+		if (param->pipefd[1] >= 0)
 			close(param->pipefd[1]);
 		if (handle_output_redirs(cmd) != 0 || handle_input_redirs(cmd) != 0)
 			return (*param->exit_value = 1, 1);
@@ -79,56 +77,26 @@ int	check_and_execute_single_builtin(t_command *cmd, t_exec_params *param)
 			result = execute_builtin(cmd, param->env_list, param->exit_value);
 		*(param->exit_value) = result;
 		handle_exit_if_needed(cmd, param);
-		return (1);
 	}
 	return (0);
 }
 
-// void	addpid(int pid, t_exec_params *con)
-// {
-// 	int	*temp;
-// 	int	i;
-
-// 	i = 0;
-// 	if (!con || !con->pids)
-// 		return ;
-// 	temp = malloc(sizeof(int) * (con->numpid + 1));
-// 	if (!temp)
-// 		exit((ft_putstr_fd("malloc failed\n", 2), EXIT_FAILURE)); 
-// 	while (i < con->numpid)
-// 	{
-// 		if (con->pids[i] == -1)
-// 			break ;
-// 		temp[i] = con->pids[i];
-// 		i++;
-// 	}
-// 	temp[i] = pid;
-// 	free(con->pids);
-// 	con->pids = temp;
-// 	con->numpid++;
-// }
-
 void	addpid(int pid, t_exec_params *con)
 {
+	int	*temp;
 	int	i;
 
-	if (!con || !con->pids)
-		return; // Ensure pids is allocated externally
-
 	i = 0;
-	while (i < con->numpid)
+	temp = (int *)malloc(sizeof(int) * ((*con).numpid));
+	if ((*con).pids != NULL)
 	{
-		// Find the first empty slot
-		if (con->pids[i] == -1)
+		while (i < (*con).numpid - 1)
 		{
-			con->pids[i] = pid;
-			return; // Exit after adding the pid
+			temp[i] = ((*con).pids)[i];
+			i++;
 		}
-		i++;
+		free((*con).pids);
 	}
-	// If all slots were filled, do nothing or handle error
-	if (i == con->numpid)
-		return;
-
-	// con->pids[i] = pid;
+	temp[i] = (pid);
+	(*con).pids = temp;
 }
