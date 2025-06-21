@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils4.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 18:01:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/17 16:25:32 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/21 21:05:50 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,13 @@ void	execute_pipeline_segment(t_command *cmd, t_exec_params *param)
 
 static int	redirect_and_exec_builtin(t_command *cmd, t_exec_params *param)
 {
-	int	result;
-
 	*param->pid = fork();
 	if (*param->pid == 0)
 	{
 		if (dup2(cmd->redir_fd_out, STDOUT_FILENO) == -1)
 			return (ft_putstr_fd("No such file or directory\n", 2), exit(1), 0);
 		close(cmd->redir_fd_out);
-		result = execute_builtin(cmd, param->env_list, param->exit_value);
+		execute_builtin(cmd, param->env_list, param->exit_value);
 		exit(0);
 	}
 	return (1);
@@ -67,8 +65,10 @@ int	check_and_execute_single_builtin(t_command *cmd, t_exec_params *param)
 		return (0);
 	if (is_builtin(cmd->argv[0]) && !cmd->next)
 	{
-		close(param->pipefd[0]);
-		close(param->pipefd[1]);
+		if (param->pipefd[0] > 0)
+			close(param->pipefd[0]);
+		if (param->pipefd[1] > 0)
+			close(param->pipefd[1]);
 		if (handle_output_redirs(cmd) != 0 || handle_input_redirs(cmd) != 0)
 			return (*param->exit_value = 1, 1);
 		if (cmd->redir_fd_out > -1)
