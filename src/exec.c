@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 16:46:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/06/17 17:04:55 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/21 19:58:59 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ void	execute_commands(t_command *cmd, t_env **env_list,
 		handle_command(cmd, &param, &final_exit);
 		cmd = cmd->next;
 	}
-	wait_for_child_processes(&param, exit_value);
+	//if (param.pids && param.numpid)
+		wait_for_child_processes(&param, exit_value);
 	if (final_exit != -1)
 		*exit_value = final_exit;
 	free(param.pids);

@@ -6,7 +6,11 @@
 /*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:30:30 by thkumara          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/06/21 23:21:40 by thkumara         ###   ########.fr       */
+=======
+/*   Updated: 2025/06/21 22:09:22 by thkumara         ###   ########.fr       */
+>>>>>>> 5b9f1f655f599a548d38380c8e7938bde31e71c5
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +33,21 @@ int	handle_exit(char **argv)
 	i = 0;
 	printf("exit\n");
 	if (!argv[1])
+<<<<<<< HEAD
 		return (0);
+=======
+		return(0);
+>>>>>>> 5b9f1f655f599a548d38380c8e7938bde31e71c5
 	while (argv[1][i])
 	{
 		if (ft_isalpha(argv[1][i]))
 		{
 			ft_putstr_fd("exit: numeric argument required\n", 2);
+<<<<<<< HEAD
 			return (2);
+=======
+			return(2);
+>>>>>>> 5b9f1f655f599a548d38380c8e7938bde31e71c5
 		}
 		i++;
 	}

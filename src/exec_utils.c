@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/21 21:42:31 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/21 22:02:33 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ void	close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd)
 	}
 }
 
-static void	waitforchild(int last_pid, int *exit_value)
+void  wait_for_child(t_exec_params *con, int *exit_value, int last_pid)
 {
-	int	pid;
+	int	i;
 	int	status;
 
 	status = 0;
@@ -37,20 +37,22 @@ static void	waitforchild(int last_pid, int *exit_value)
 	else if (WIFSIGNALED(status))
 		*exit_value = 128 + WTERMSIG(status);
 }
-
 void	wait_for_child_processes(t_exec_params *con, int *exit_value)
 {
 	int	i;
-	int	j;
+	int	last_pid;
 
+	if (!con || !con->pids || con->numpid <= 0)
+		return;
 	i = 0;
-	j = (con)->numpid;
-	while (j > 0)
+	last_pid = -1;
+	while (i < con->numpid)
 	{
-		waitforchild((con)->pids[i], exit_value);
+		if (con->pids[i] > 0)
+			last_pid = con->pids[i];
 		i++;
-		j--;
 	}
+	wait_for_child(con, exit_value, last_pid);
 }
 
 char	*try_path(char *dir, char *cmd)

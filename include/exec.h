@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/17 16:24:55 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/21 19:51:49 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ typedef struct s_exec_data
 	int	final_exit;
 }	t_exec_data;
 
+#define MAX_PIDS 1024
 // exec_utils.c
 void						close_and_update_fds(int *fd_in, t_command *cmd,
 								int *pipefd);
