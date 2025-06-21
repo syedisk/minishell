@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 18:01:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/21 21:05:50 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/21 22:29:07 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,9 @@ int	check_and_execute_single_builtin(t_command *cmd, t_exec_params *param)
 		return (0);
 	if (is_builtin(cmd->argv[0]) && !cmd->next)
 	{
-		if (param->pipefd[0] > 0)
+		if (param->pipefd[0] >= 0)
 			close(param->pipefd[0]);
-		if (param->pipefd[1] > 0)
+		if (param->pipefd[1] >= 0)
 			close(param->pipefd[1]);
 		if (handle_output_redirs(cmd) != 0 || handle_input_redirs(cmd) != 0)
 			return (*param->exit_value = 1, 1);

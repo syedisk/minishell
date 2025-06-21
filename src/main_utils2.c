@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 19:47:56 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 19:52:43 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/21 23:22:00 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,11 +67,15 @@ int	process_and_execute(char *input, t_env **env_list, int *exit_value)
 		return (0);
 	commands = parse_tokens(tokens, &ctx);
 	if (!commands || is_command_empty(commands))
-	{
-		handle_empty_command(tokens, commands, input, exit_value);
-		return (0);
-	}
+		return (handle_empty_command(tokens, commands, input, exit_value), 0);
 	env_array = convert_env_to_array(*env_list);
+	if (ft_strcmp(commands->argv[0], "exit") == 0)
+	{
+		*exit_value = handle_exit(commands->argv);
+		cleanup_execution(input, tokens, commands, env_array);
+		free_env_list(*env_list);
+		exit (*exit_value);
+	}
 	execute_commands(commands, env_list, env_array, exit_value);
 	cleanup_execution(input, tokens, commands, env_array);
 	return (1);
