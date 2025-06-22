@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/06/17 16:26:00 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/22 17:45:48 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ static void	restore_signals(void)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
+	signal(SIGPIPE, SIG_IGN);
 }
 
 static void	setup_input_redirection(int fd_in)
@@ -54,7 +55,7 @@ int	fork_and_execute(t_command *cmd, t_exec_params *param)
 	}
 	else if (pid == -1)
 		exit((ft_putstr_fd("fork failed\n", 2), EXIT_FAILURE));
-	*(param->pid) = pid;
+	*param->pid = pid;
 	return (pid);
 }
 
@@ -70,4 +71,17 @@ void	handle_fork_and_pipe(t_command *cmd, t_exec_params *param)
 		return ;
 	}
 	*(param->pid) = fork_and_execute(cmd, param);
+	if (*(param->pid) > 0)
+	{
+		if (param->pipefd[1] > -1)
+		{
+			close(param->pipefd[1]);
+			param->pipefd[1] = -1;
+		}
+		if (*(param->fd_in) != STDIN_FILENO)
+		{
+			close(*(param->fd_in));
+			*(param->fd_in) = -1;
+		}
+	}
 }

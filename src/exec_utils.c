@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/21 21:42:31 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/22 17:43:52 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,17 @@
 
 void	close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd)
 {
-	if (*fd_in != 0)
+	if (*fd_in > 2)
+	{
 		close(*fd_in);
+		*fd_in = -1;
+	}
 	if (cmd->next && pipefd)
 	{
-		close(pipefd[1]);
+		if (pipefd[1] > 2)
+			close(pipefd[1]);
 		*fd_in = pipefd[0];
+		pipefd[1] = -1;
 	}
 }
 
