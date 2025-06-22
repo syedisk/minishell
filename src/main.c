@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/17 17:03:38 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/22 20:50:22 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,14 @@ int	handle_exit_if_null(char *input, t_env *env_list)
 
 void	run_shell_loop(t_env **env_list, int *exit_value)
 {
-	char	*input;
+	char			*input;
+	t_shell_context	context;
 
+	context.is_readline_active = 0;
 	while (1)
 	{
 		set_signals();
-		input = readline("$minishell ");
+		input = custom_readline("$minishell ", &context);
 		if (!handle_exit_if_null(input, *env_list))
 			continue ;
 		if (!handle_interrupt_signal(&input, exit_value))

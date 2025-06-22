@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/18 23:34:02 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/22 20:55:10 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,11 @@
 # include <sys/wait.h> // for wait
 # include <unistd.h>   // for fork, execve, pipe
 
+typedef struct s_shell_context 
+{
+	int	is_readline_active;
+}	t_shell_context;
+
 // main.c
 char							**tokens_to_args(t_token *tokens);
 int								handle_exit_if_null(char *input,
@@ -58,8 +63,8 @@ int								handle_interrupt_signal(char **input,
 									int *exit_value);
 
 // main_input.c
-char							*custom_readline(const char *prompt);
-int								readline_active_state(void);
-void							set_readline_active_state(int state);
+char							*custom_readline(const char *prompt,
+									t_shell_context *context);
+int								is_readline_active(t_shell_context *context);
 
 #endif
