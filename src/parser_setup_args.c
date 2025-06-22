@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:30:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/22 00:16:25 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/22 15:10:38 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static int	process_word(t_command *cmd, t_token *token, t_parse_ctx *ctx,
 		return (free_argv_on_fail(cmd->argv, *argc));
 	if (!arg)
 		return (1);
-	if (token->quote_type == 0 && ft_strchr(arg, ' ') && *argc == 0)
+	if (token->quote_type == 0 && ft_strchr(arg, ' ')) // && *argc == 0)
 	{
 		split = ft_split(arg, ' ');
 		free(arg);
@@ -81,7 +81,7 @@ int	setup_args_and_redirects(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
 
 	argc = 0;
 	arg_count = count_args(*curr);
-	cmd->argv = malloc(sizeof(char *) * (arg_count + 1));
+	cmd->argv = malloc(sizeof(char *) * (arg_count + 10)); // to allocate dynamically
 	if (!cmd->argv)
 		return (0);
 	while (*curr && (*curr)->type != PIPE)

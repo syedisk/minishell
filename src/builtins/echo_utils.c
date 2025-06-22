@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 13:46:36 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/23 19:36:25 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/22 14:39:41 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ void	handle_double_or_no_quote(t_token *arg, t_env *env_list,
 {
 	char	*expanded;
 	char	*stripped;
+	char	**words;
+	int		i;
 
 	if (arg->quote_type == 2)
 	{
@@ -63,10 +65,20 @@ void	handle_double_or_no_quote(t_token *arg, t_env *env_list,
 		stripped = strip_inner_quotes(arg->value);
 		expanded = expand_variables(stripped, env_list, exit_value);
 		free(stripped);
-		if (expanded)
+		if (!expanded)
+			return ;
+		words = ft_split(expanded, ' ');
+		free(expanded);
+		if (!words)
+			return ;
+		i = 0;
+		while (words[i])
 		{
-			printf("%s", expanded);
-			free(expanded);
+			if (i > 0)
+				printf(" ");
+			printf("%s", words[i]);
+			i++;
 		}
+		free_split(words);
 	}
 }
