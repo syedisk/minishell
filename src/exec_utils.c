@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/20 14:38:45 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/22 18:23:32 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,17 @@
 
 void	close_and_update_fds(int *fd_in, t_command *cmd, int *pipefd)
 {
-	if (*fd_in > 0 && *fd_in != STDIN_FILENO)
+	if (*fd_in > 2)
+	{
 		close(*fd_in);
+		*fd_in = -1;
+	}
 	if (cmd->next && pipefd)
 	{
-		close(pipefd[1]);
+		if (pipefd[1] > 2)
+			close(pipefd[1]);
 		*fd_in = pipefd[0];
+		pipefd[1] = -1;
 	}
 }
 
@@ -28,24 +33,14 @@ static void	waitforchild(int last_pid, int *exit_value)
 	int	pid;
 	int	status;
 
-	pid = 0;
-	while (1)
-	{
-		pid = waitpid(last_pid, &status, 0);
-		if (pid == -1)
-		{
-			// perror("waitpid"); // to fix?
-			break ;
-		}
-		if (pid > 0)
-		{
-			if (WIFEXITED(status))
-				*exit_value = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-				*exit_value = 128 + WTERMSIG(status);
-			break ;
-		}
-	}
+	status = 0;
+	pid = waitpid(last_pid, &status, 0);
+	if (pid == -1)
+		return ;
+	if (WIFEXITED(status))
+		*exit_value = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		*exit_value = 128 + WTERMSIG(status);
 }
 
 void	wait_for_child_processes(t_exec_params *con, int *exit_value)
