@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/22 20:55:10 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/22 21:57:59 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,22 +24,17 @@
 # include "signals.h"
 # include "utils.h"
 # include <errno.h>
-# include <fcntl.h> // open
+# include <fcntl.h>
 # include <limits.h>
-# include <stdio.h>    // for printf
+# include <stdio.h>
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
 # include <stddef.h>
-# include <stdlib.h>   // for malloc, free, exit, NULL
-# include <sys/stat.h> // for stat
-# include <sys/wait.h> // for wait
-# include <unistd.h>   // for fork, execve, pipe
-
-typedef struct s_shell_context 
-{
-	int	is_readline_active;
-}	t_shell_context;
+# include <stdlib.h>
+# include <sys/stat.h>
+# include <sys/wait.h>
+# include <unistd.h>
 
 // main.c
 char							**tokens_to_args(t_token *tokens);
@@ -61,10 +56,5 @@ int								process_and_execute(char *input,
 extern volatile sig_atomic_t	g_sig_received;
 int								handle_interrupt_signal(char **input,
 									int *exit_value);
-
-// main_input.c
-char							*custom_readline(const char *prompt,
-									t_shell_context *context);
-int								is_readline_active(t_shell_context *context);
 
 #endif

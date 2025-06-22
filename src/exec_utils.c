@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 12:28:53 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/22 18:23:32 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/22 21:40:08 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ static void	waitforchild(int last_pid, int *exit_value)
 {
 	int	pid;
 	int	status;
+	int sig;
 
 	status = 0;
 	pid = waitpid(last_pid, &status, 0);
@@ -40,7 +41,12 @@ static void	waitforchild(int last_pid, int *exit_value)
 	if (WIFEXITED(status))
 		*exit_value = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
-		*exit_value = 128 + WTERMSIG(status);
+	{
+		sig = WTERMSIG(status);
+		if (sig == SIGQUIT || sig == SIGINT)
+			write(STDOUT_FILENO, "\n", 1);
+		*exit_value = 128 + sig;
+	}
 }
 
 void	wait_for_child_processes(t_exec_params *con, int *exit_value)

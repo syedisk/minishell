@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils1.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42singapor>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 16:16:16 by thkumara          #+#    #+#             */
-/*   Updated: 2025/06/22 17:45:48 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/22 21:51:26 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static void	restore_signals(void)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	signal(SIGPIPE, SIG_IGN);
+	signal(SIGPIPE, SIG_DFL);
 }
 
 static void	setup_input_redirection(int fd_in)
