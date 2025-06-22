@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 13:51:40 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/22 18:03:28 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static void	process_echo_flags(t_token **curr, int *newline)
 }
 
 static void	process_echo_args(t_token *curr, t_env *env_list,
-	int *exit_value, int need_space)
+	int *exit_value, int *need_space)
 {
 	t_token	*temp;
 
@@ -68,27 +68,42 @@ static void	process_echo_args(t_token *curr, t_env *env_list,
 		}
 		if (temp->type == WORD)
 		{
-			if (need_space)
+			if (*need_space)
 				printf(" ");
-			if (ft_strcmp(temp->value, "echo") == 0)
-				temp = temp->next;
 			print_echo_arg(temp, env_list, exit_value);
-			need_space = 1;
+			*need_space = 1;
 		}
 		temp = temp->next;
 	}
 }
 
-int	handle_echo(t_token *args, t_env *env_list, int *exit_value)
+int	handle_echo(t_command *cmd, t_env *env_list, int *exit_value)
 {
 	int		newline;
 	int		need_space;
 	t_token	*curr;
 
 	need_space = 0;
-	curr = args->next;
+	curr = cmd->raw_tokens;
+	while (curr)
+	{
+		if (curr->type == REDIR_IN || curr->type == REDIR_OUT
+			|| curr->type == APPEND || curr->type == HEREDOC)
+		{
+			curr = curr->next;
+			if (curr)
+				curr = curr->next;
+			continue;
+		}
+		if (curr && curr->type == WORD && ft_strcmp(curr->value, "echo") == 0)
+		{
+			curr = curr->next;
+			break ;
+		}
+		curr = curr->next;
+	}
 	process_echo_flags(&curr, &newline);
-	process_echo_args(curr, env_list, exit_value, need_space);
+	process_echo_args(curr, env_list, exit_value, &need_space);
 	if (!newline)
 		printf("\n");
 	return (0);
