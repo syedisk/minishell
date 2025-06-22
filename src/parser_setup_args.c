@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:30:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/22 15:10:38 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/22 15:29:43 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,12 @@ int	count_args(t_token *token)
 	while (token && token->type != PIPE)
 	{
 		if (token->type == WORD)
-			count++;
+		{
+			if (token->quote_type == 0 && ft_strchr(token->value, '$'))
+				count += 4;
+			else
+				count++;
+		}
 		else if (token->type == REDIR_IN || token->type == REDIR_OUT
 			|| token->type == APPEND)
 			token = token->next;
@@ -81,7 +86,7 @@ int	setup_args_and_redirects(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
 
 	argc = 0;
 	arg_count = count_args(*curr);
-	cmd->argv = malloc(sizeof(char *) * (arg_count + 10)); // to allocate dynamically
+	cmd->argv = malloc(sizeof(char *) * (arg_count + 1));
 	if (!cmd->argv)
 		return (0);
 	while (*curr && (*curr)->type != PIPE)
