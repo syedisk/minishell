@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils6.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 19:23:58 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/22 16:52:27 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/23 13:30:48 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,46 @@ void	execute_external_cmd(char *path, char **argv, char **envp)
 void	execute_child(t_command *cmd, t_exec_params *param)
 {
 	char	*full_path;
+	int		status;
 
 	if (!cmd || !cmd->argv || !cmd->argv[0])
+	{
+		free_commands(cmd);
+		free_env_list(*(param->env_list));
+		free_env_array(param->envp);
 		exit((printf("Error: Null pointer in execute_child\n"), 127));
+	}
 	handle_child_redirections(cmd);
 	handle_redir_fds(cmd);
 	if (is_builtin(cmd->argv[0]))
-		exit(execute_builtin(cmd, param->env_list, param->exit_value));
+	{
+		status = execute_builtin(cmd, param->env_list, param->exit_value);
+		free_commands(cmd);
+		free_env_list(*(param->env_list));
+		free_env_array(param->envp);
+		exit(status);
+	}
 	if (!ft_strcmp(cmd->argv[0], "export="))
+	{
+		free_commands(cmd);
+		free_env_list(*(param->env_list));
+		free_env_array(param->envp);
 		exit(0);
+	}
 	full_path = resolve_and_validate_path(cmd->argv[0]);
 	if (!full_path)
+	{
+		free_commands(cmd);
+		free_env_list(*(param->env_list));
+		free_env_array(param->envp);
 		exit(127);
+	}
 	execute_external_cmd(full_path, cmd->argv, param->envp);
+	free(full_path);
+	free_commands(cmd);
+	free_env_list(*(param->env_list));
+	free_env_array(param->envp);
+	exit(127);
 }
 
 int	handle_input_redirection(t_command *cmd, t_token **curr)

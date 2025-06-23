@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 13:47:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/21 23:58:24 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 13:56:10 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,5 @@ int						handle_file_redir(t_command *cmd, t_token **curr);
 // parser_raw_tokens.c
 t_token					*dup_token_list(t_token *start, t_token *end);
 int						set_raw_tokens(t_command *cmd, t_token *start);
-
-// free_utils.c
-void					free_commands(t_command *cmds);
 
 #endif
