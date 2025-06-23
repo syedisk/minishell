@@ -9,7 +9,7 @@ LIBS		= -lreadline \
 			  -L$(LIBFT_DIR) -lft \
 
 SRC			= src/main.c src/main_utils.c src/main_utils2.c src/main_signals.c \
-			  src/lexer.c src/lexer_utils.c \
+			  src/lexer.c src/lexer_utils.c src/lexer_utils1.c \
 			  src/parser.c src/parser_handle_redir.c src/parser_raw_tokens.c src/parser_setup_args.c \
 			  src/signal.c src/free_utils.c \
 			  src/expander.c src/expander_utils.c src/heredoc.c src/utils.c src/error_handler.c \

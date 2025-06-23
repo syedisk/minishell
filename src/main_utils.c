@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 12:44:48 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 13:29:16 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 19:55:30 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,15 @@ int	is_skippable_input(char *input)
 int	is_command_empty(t_command *cmd)
 {
 	return (!cmd || !cmd->argv || !cmd->argv[0] || cmd->argv[0][0] == '\0');
+}
+
+void	init_parse_context(t_parse_ctx *ctx, t_env **env_list,
+	int *exit_value)
+{
+	static int	heredoc_id = 0;
+
+	ctx->env_list = env_list;
+	ctx->exit_value = exit_value;
+	ctx->heredoc_id = &heredoc_id;
+	ctx->syntax_error = 0;
 }
