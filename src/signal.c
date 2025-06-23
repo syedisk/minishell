@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 18:02:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/06/23 20:52:05 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/23 21:19:43 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ void	set_signals(void)
 	if (sigaction(SIGINT, &sa_sig, NULL) == -1)
 		perror("sigaction SIGINT");
 	signal(SIGQUIT, SIG_IGN);
-	signal(SIGPIPE, SIG_IGN);
 }
 
 void	ignore_sigquit(void)
@@ -59,5 +58,4 @@ void	handle_heredoc_signals(void)
 {
 	signal(SIGINT, heredoc_sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
-	signal(SIGPIPE, SIG_IGN);
 }
