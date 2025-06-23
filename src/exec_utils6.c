@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils6.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 19:23:58 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/23 13:30:48 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 20:33:19 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	execute_child(t_command *cmd, t_exec_params *param)
 	char	*full_path;
 	int		status;
 
+	//restore_signals();
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 	{
 		free_commands(cmd);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
+/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 11:34:41 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/23 11:57:42 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 20:11:36 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ int							fork_and_execute(t_command *cmd,
 								t_exec_params *param);
 void						handle_fork_and_pipe(t_command *cmd,
 								t_exec_params *param);
+void						restore_signals(void);
 
 // exec_utils2.c
 int							handle_output_redirection(t_command *cmd,
