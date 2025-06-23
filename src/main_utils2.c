@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 19:47:56 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/23 15:06:08 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 19:15:12 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,10 @@ static void	handle_empty_command(t_token *tokens, t_command *commands,
 	*exit_value = 0;
 }
 
-static void	cleanup_execution(char *input, t_token *tokens, t_command *commands,
+static void	cleanup_execution(char *input, t_command *commands,
 		char **env_array)
 {
 	free(input);
-	free_tokens(tokens);
 	free_commands(commands);
 	free_split(env_array);
 }
@@ -77,11 +76,13 @@ int	process_and_execute(char *input, t_env **env_list, int *exit_value)
 	if (ft_strcmp(cmd->argv[0], "exit") == 0)
 	{
 		*exit_value = handle_exit(cmd->argv);
-		cleanup_execution(input, tokens, cmd, env_array);
+		free_tokens(tokens);
+		cleanup_execution(input, cmd, env_array);
 		free_env_list(*env_list);
 		exit (*exit_value);
 	}
+	free_tokens(tokens);
 	execute_commands(cmd, env_list, env_array, exit_value);
-	cleanup_execution(input, tokens, cmd, env_array);
+	cleanup_execution(input, cmd, env_array);
 	return (1);
 }
