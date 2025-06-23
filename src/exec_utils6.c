@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 19:23:58 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/23 20:56:07 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/23 20:57:53 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ void	execute_child(t_command *cmd, t_exec_params *param)
 	char	*full_path;
 	int		status;
 
-	//restore_signals();
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		cleanup_and_exit(cmd, param,
 			(printf("Error: Null pointer in execute_child\n"), 127));

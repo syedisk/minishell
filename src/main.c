@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/05 17:38:43 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/23 20:19:55 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/23 21:00:35 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,6 @@ void	run_shell_loop(t_env **env_list, int *exit_value)
 	{
 		set_signals();
 		input = readline("$minishell ");
-		if (!input)
-			break ;
-		if (input[0] == '\0')
-		{
-			free (input);
-			continue ;
-		}
 		if (!handle_exit_if_null(input, *env_list))
 			continue ;
 		if (!handle_interrupt_signal(&input, exit_value))
