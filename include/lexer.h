@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 12:43:42 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 19:41:43 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 13:10:44 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ typedef struct s_token
 }							t_token;
 
 t_token						*tokenise(const char *input, t_parse_ctx *ctx);
-void						free_tokens(t_token *tokens);
 void						add_token(t_token **head, t_token *new);
 char						*read_quoted(const char *s, int *i);
 int							is_operator_char(char c);

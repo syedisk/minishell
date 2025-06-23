@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 20:24:15 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/23 14:08:45 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ void	handle_operator(t_token **tokens, const char *input,
 	int				op_len;
 	char			*op;
 	t_token_type	type;
+	t_token			*new;
 
 	type = get_operator_type(&input[*i], &op_len);
 	if (type == TOKEN_ERROR)
@@ -83,7 +84,15 @@ void	handle_operator(t_token **tokens, const char *input,
 		return ;
 	}
 	op = ft_strndup(&input[*i], op_len);
-	add_token(tokens, new_token(op, type, 0));
+	if (!op)
+		return ;
+	new = new_token(op, type, 0);
+	if (!new)
+	{
+		free(op);
+		return ;
+	}
+	add_token(tokens, new);
 	*i += op_len;
 }
 
@@ -91,9 +100,18 @@ void	handle_word(t_token **tokens, const char *input,
 	int *i, int *quote_type)
 {
 	char	*word;
+	t_token	*new;
 
 	word = read_word(input, i, quote_type);
-	add_token(tokens, new_token(word, WORD, *quote_type));
+	if (!word)
+		return ;
+	new = new_token(word, WORD, *quote_type);
+	if (!new)
+	{
+		free(word);
+		return ;
+	}
+	add_token(tokens, new);
 }
 
 t_token	*tokenise(const char *input, t_parse_ctx *ctx)

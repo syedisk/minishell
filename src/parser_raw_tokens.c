@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:35:01 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/23 19:15:28 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 14:33:30 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,12 @@ t_token	*dup_token_list(t_token *start, t_token *end)
 		if (!new_tok)
 			return (free_tokens(new_head), NULL);
 		new_tok->value = ft_strdup(start->value);
+		if (!new_tok->value)
+		{
+			free(new_tok);
+			free_tokens(new_head);
+			return (NULL);
+		}
 		new_tok->type = start->type;
 		new_tok->quote_type = start->quote_type;
 		new_tok->next = NULL;

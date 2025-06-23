@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:30:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/22 15:29:43 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 15:31:54 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,18 +50,33 @@ static int	process_word(t_command *cmd, t_token *token, t_parse_ctx *ctx,
 	int		i;
 
 	if (!expand_word(token, *(ctx->env_list), ctx->exit_value, &arg))
+	{
+		free(arg);
 		return (free_argv_on_fail(cmd->argv, *argc));
+	}
 	if (!arg)
 		return (1);
-	if (token->quote_type == 0 && ft_strchr(arg, ' ')) // && *argc == 0)
+	if (token->quote_type == 0 && ft_strchr(arg, ' '))
 	{
 		split = ft_split(arg, ' ');
-		free(arg);
-		if (!split)
+		if(!split)
+		{
+			free(arg);
 			return (free_argv_on_fail(cmd->argv, *argc));
+		}
+		free(arg);
 		i = 0;
 		while (split[i])
+		{
 			cmd->argv[(*argc)++] = ft_strdup(split[i++]);
+			if (!cmd->argv[*argc])
+			{
+				free_split(split);
+				return (free_argv_on_fail(cmd->argv, *argc));
+			}
+			(*argc)++;
+			i++;
+		}
 		free_split(split);
 	}
 	else

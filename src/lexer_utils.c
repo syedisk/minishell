@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 15:43:23 by thkumara          #+#    #+#             */
-/*   Updated: 2025/05/24 19:44:43 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 15:30:29 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,12 +74,14 @@ void	add_token(t_token **head, t_token *new)
 {
 	t_token	*cur;
 
-	cur = *head;
+	if (!new)
+		return ;
 	if (!*head)
 	{
 		*head = new;
 		return ;
 	}
+	cur = *head;
 	while (cur->next)
 		cur = cur->next;
 	cur->next = new;
