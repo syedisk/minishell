@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 13:47:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/23 13:56:10 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 20:24:16 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,6 @@ t_command				*parse_tokens(t_token *tokens, t_parse_ctx *ctx);
 
 // parser_setup_args.c
 int						count_args(t_token *token);
-int						handle_redirection(t_command *cmd, t_token **curr,
-							t_parse_ctx *ctx);
 int						setup_args_and_redirects(t_command *cmd, t_token **curr,
 							t_parse_ctx *ctx);
 
@@ -57,6 +55,8 @@ int						setup_args_and_redirects(t_command *cmd, t_token **curr,
 int						handle_heredoc(t_command *cmd, t_token **curr,
 							t_parse_ctx *ctx);
 int						handle_file_redir(t_command *cmd, t_token **curr);
+int						handle_redirection(t_command *cmd, t_token **curr,
+							t_parse_ctx *ctx);
 
 // parser_raw_tokens.c
 t_token					*dup_token_list(t_token *start, t_token *end);

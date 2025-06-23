@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:32:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/05/24 17:15:27 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 20:21:41 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	handle_file_redir(t_command *cmd, t_token **curr)
 	return (1);
 }
 
-t_heredoc_info	init_heredoc_info(const char *filepath, char *delimiter,
+static t_heredoc_info	init_heredoc_info(const char *filepath, char *delimiter,
 		int expand, t_parse_ctx *ctx)
 {
 	t_heredoc_info	info;
@@ -73,5 +73,15 @@ int	handle_heredoc(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
 	cmd->infile = heredoc_path;
 	free(delim);
 	*curr = next->next;
+	return (1);
+}
+
+int	handle_redirection(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
+{
+	if ((*curr)->type == REDIR_IN || (*curr)->type == REDIR_OUT
+		|| (*curr)->type == APPEND)
+		return (handle_file_redir(cmd, curr));
+	if ((*curr)->type == HEREDOC)
+		return (handle_heredoc(cmd, curr, ctx));
 	return (1);
 }

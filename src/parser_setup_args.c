@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 17:30:22 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/23 15:31:54 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 20:22:09 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,55 +42,46 @@ static int	free_argv_on_fail(char **argv, int count)
 	return (0);
 }
 
+static int	add_split_words(t_command *cmd, char **split, int *argc)
+{
+	int	i;
+
+	i = 0;
+	while (split[i])
+	{
+		cmd->argv[*argc] = ft_strdup(split[i]);
+		if (!cmd->argv[*argc])
+		{
+			free_split(split);
+			return (free_argv_on_fail(cmd->argv, *argc));
+		}
+		(*argc)++;
+		i++;
+	}
+	free_split(split);
+	return (1);
+}
+
 static int	process_word(t_command *cmd, t_token *token, t_parse_ctx *ctx,
 		int *argc)
 {
 	char	*arg;
 	char	**split;
-	int		i;
 
 	if (!expand_word(token, *(ctx->env_list), ctx->exit_value, &arg))
-	{
-		free(arg);
-		return (free_argv_on_fail(cmd->argv, *argc));
-	}
+		return (free(arg), free_argv_on_fail(cmd->argv, *argc));
 	if (!arg)
 		return (1);
 	if (token->quote_type == 0 && ft_strchr(arg, ' '))
 	{
 		split = ft_split(arg, ' ');
-		if(!split)
-		{
-			free(arg);
-			return (free_argv_on_fail(cmd->argv, *argc));
-		}
 		free(arg);
-		i = 0;
-		while (split[i])
-		{
-			cmd->argv[(*argc)++] = ft_strdup(split[i++]);
-			if (!cmd->argv[*argc])
-			{
-				free_split(split);
-				return (free_argv_on_fail(cmd->argv, *argc));
-			}
-			(*argc)++;
-			i++;
-		}
-		free_split(split);
+		if (!split)
+			return (free_argv_on_fail(cmd->argv, *argc));
+		return (add_split_words(cmd, split, argc));
 	}
-	else
-		cmd->argv[(*argc)++] = arg;
-	return (1);
-}
-
-int	handle_redirection(t_command *cmd, t_token **curr, t_parse_ctx *ctx)
-{
-	if ((*curr)->type == REDIR_IN || (*curr)->type == REDIR_OUT
-		|| (*curr)->type == APPEND)
-		return (handle_file_redir(cmd, curr));
-	if ((*curr)->type == HEREDOC)
-		return (handle_heredoc(cmd, curr, ctx));
+	cmd->argv[*argc] = arg;
+	(*argc)++;
 	return (1);
 }
 

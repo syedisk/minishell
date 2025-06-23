@@ -6,22 +6,11 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 19:47:56 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/23 19:15:12 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 19:54:06 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static void	init_parse_context(t_parse_ctx *ctx, t_env **env_list,
-		int *exit_value)
-{
-	static int	heredoc_id = 0;
-
-	ctx->env_list = env_list;
-	ctx->exit_value = exit_value;
-	ctx->heredoc_id = &heredoc_id;
-	ctx->syntax_error = 0;
-}
 
 static int	check_and_handle_syntax_error(t_token *tokens, t_parse_ctx *ctx,
 		char *input, int *exit_value)
@@ -53,6 +42,17 @@ static void	cleanup_execution(char *input, t_command *commands,
 	free_split(env_array);
 }
 
+static int	handle_exit_command(t_command *cmd, t_env **env_list,
+	char *input, char **env_array)
+{
+	int	exit_code;
+
+	exit_code = handle_exit(cmd->argv);
+	cleanup_execution(input, cmd, env_array);
+	free_env_list(*env_list);
+	exit(exit_code);
+}
+
 int	process_and_execute(char *input, t_env **env_list, int *exit_value)
 {
 	t_token		*tokens;
@@ -74,13 +74,7 @@ int	process_and_execute(char *input, t_env **env_list, int *exit_value)
 		return (handle_empty_command(tokens, cmd, input, exit_value), 0);
 	env_array = convert_env_to_array(*env_list);
 	if (ft_strcmp(cmd->argv[0], "exit") == 0)
-	{
-		*exit_value = handle_exit(cmd->argv);
-		free_tokens(tokens);
-		cleanup_execution(input, cmd, env_array);
-		free_env_list(*env_list);
-		exit (*exit_value);
-	}
+		handle_exit_command(cmd, env_list, input, env_array);
 	free_tokens(tokens);
 	execute_commands(cmd, env_list, env_array, exit_value);
 	cleanup_execution(input, cmd, env_array);

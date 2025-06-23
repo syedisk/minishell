@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 16:22:32 by thkumara          #+#    #+#             */
-/*   Updated: 2025/06/23 15:28:24 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 19:34:56 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	free_env_list(t_env *env)
 	}
 }
 
-void free_env_array(char **envp)
+void	free_env_array(char **envp)
 {
 	int	i;
 
@@ -92,4 +92,4 @@ void free_env_array(char **envp)
 	while (envp && envp[i])
 		free(envp[i++]);
 	free(envp);
-} 
+}

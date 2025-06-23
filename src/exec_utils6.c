@@ -6,7 +6,7 @@
 /*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 19:23:58 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/23 20:33:19 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/23 20:56:07 by thkumara         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,15 @@ void	execute_external_cmd(char *path, char **argv, char **envp)
 	exit(0);
 }
 
+static void	cleanup_and_exit(t_command *cmd, t_exec_params *param,
+		int exit_code)
+{
+	free_commands(cmd);
+	free_env_list(*(param->env_list));
+	free_env_array(param->envp);
+	exit(exit_code);
+}
+
 void	execute_child(t_command *cmd, t_exec_params *param)
 {
 	char	*full_path;
@@ -38,43 +47,23 @@ void	execute_child(t_command *cmd, t_exec_params *param)
 
 	//restore_signals();
 	if (!cmd || !cmd->argv || !cmd->argv[0])
-	{
-		free_commands(cmd);
-		free_env_list(*(param->env_list));
-		free_env_array(param->envp);
-		exit((printf("Error: Null pointer in execute_child\n"), 127));
-	}
+		cleanup_and_exit(cmd, param,
+			(printf("Error: Null pointer in execute_child\n"), 127));
 	handle_child_redirections(cmd);
 	handle_redir_fds(cmd);
 	if (is_builtin(cmd->argv[0]))
 	{
 		status = execute_builtin(cmd, param->env_list, param->exit_value);
-		free_commands(cmd);
-		free_env_list(*(param->env_list));
-		free_env_array(param->envp);
-		exit(status);
+		cleanup_and_exit(cmd, param, status);
 	}
 	if (!ft_strcmp(cmd->argv[0], "export="))
-	{
-		free_commands(cmd);
-		free_env_list(*(param->env_list));
-		free_env_array(param->envp);
-		exit(0);
-	}
+		cleanup_and_exit(cmd, param, 0);
 	full_path = resolve_and_validate_path(cmd->argv[0]);
 	if (!full_path)
-	{
-		free_commands(cmd);
-		free_env_list(*(param->env_list));
-		free_env_array(param->envp);
-		exit(127);
-	}
+		cleanup_and_exit(cmd, param, 127);
 	execute_external_cmd(full_path, cmd->argv, param->envp);
 	free(full_path);
-	free_commands(cmd);
-	free_env_list(*(param->env_list));
-	free_env_array(param->envp);
-	exit(127);
+	cleanup_and_exit(cmd, param, 127);
 }
 
 int	handle_input_redirection(t_command *cmd, t_token **curr)

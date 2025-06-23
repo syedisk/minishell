@@ -6,27 +6,11 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 17:25:35 by thkumara          #+#    #+#             */
-/*   Updated: 2025/06/22 18:03:28 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 20:35:07 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static int	is_n_flag(char *str)
-{
-	int	i;
-
-	if (!str || str[0] != '-')
-		return (0);
-	i = 1;
-	while (str[i])
-	{
-		if (str[i] != 'n')
-			return (0);
-		i++;
-	}
-	return (1);
-}
 
 static void	print_echo_arg(t_token *arg, t_env *env_list, int *exit_value)
 {
@@ -77,14 +61,8 @@ static void	process_echo_args(t_token *curr, t_env *env_list,
 	}
 }
 
-int	handle_echo(t_command *cmd, t_env *env_list, int *exit_value)
+static t_token	*skip_to_echo_args(t_token *curr)
 {
-	int		newline;
-	int		need_space;
-	t_token	*curr;
-
-	need_space = 0;
-	curr = cmd->raw_tokens;
 	while (curr)
 	{
 		if (curr->type == REDIR_IN || curr->type == REDIR_OUT
@@ -93,15 +71,25 @@ int	handle_echo(t_command *cmd, t_env *env_list, int *exit_value)
 			curr = curr->next;
 			if (curr)
 				curr = curr->next;
-			continue;
+			continue ;
 		}
-		if (curr && curr->type == WORD && ft_strcmp(curr->value, "echo") == 0)
+		if (curr->type == WORD && ft_strcmp(curr->value, "echo") == 0)
 		{
-			curr = curr->next;
-			break ;
+			return (curr->next);
 		}
 		curr = curr->next;
 	}
+	return (NULL);
+}
+
+int	handle_echo(t_command *cmd, t_env *env_list, int *exit_value)
+{
+	int		newline;
+	int		need_space;
+	t_token	*curr;
+
+	need_space = 0;
+	curr = skip_to_echo_args(cmd->raw_tokens);
 	process_echo_flags(&curr, &newline);
 	process_echo_args(curr, env_list, exit_value, &need_space);
 	if (!newline)

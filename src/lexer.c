@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:13:19 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/23 14:08:45 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 20:12:50 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,53 +37,38 @@ void	read_quoted_word(const char *s, int *i, char **result, int *quote_type)
 	}
 }
 
-char	*read_word(const char *s, int *i, int *quote_type)
+static int	handle_invalid_operator(const char *input, int *i,
+	int len, t_parse_ctx *ctx)
 {
-	char	*result;
-	char	*chunk;
-	int		start;
+	char	*op;
 
-	result = ft_strdup("");
-	*quote_type = 0;
-	while (s[*i] && !ft_isspace(s[*i]) && !is_operator_char(s[*i]))
-	{
-		if (s[*i] == '\'' || s[*i] == '"')
-			read_quoted_word(s, i, &result, quote_type);
-		else
-		{
-			start = *i;
-			while (s[*i] && !ft_isspace(s[*i]) && !is_operator_char(s[*i])
-				&& s[*i] != '\'' && s[*i] != '"')
-				(*i)++;
-			chunk = ft_strndup(s + start, *i - start);
-			result = ft_strjoin_free(result, chunk);
-			free(chunk);
-		}
-	}
-	return (result);
+	op = ft_strndup(&input[*i], len);
+	if (!op)
+		return (0);
+	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+	ft_putstr_fd(op, 2);
+	ft_putstr_fd("'\n", 2);
+	free(op);
+	*i += len;
+	ctx->syntax_error = 1;
+	return (0);
 }
 
 void	handle_operator(t_token **tokens, const char *input,
 	int *i, t_parse_ctx *ctx)
 {
-	int				op_len;
+	int				len;
 	char			*op;
 	t_token_type	type;
 	t_token			*new;
 
-	type = get_operator_type(&input[*i], &op_len);
+	type = get_operator_type(&input[*i], &len);
 	if (type == TOKEN_ERROR)
 	{
-		op = ft_strndup(&input[*i], op_len);
-		ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
-		ft_putstr_fd(op, 2);
-		ft_putstr_fd("'\n", 2);
-		free(op);
-		*i += op_len;
-		ctx->syntax_error = 1;
-		return ;
+		if (!handle_invalid_operator(input, i, len, ctx))
+			return ;
 	}
-	op = ft_strndup(&input[*i], op_len);
+	op = ft_strndup(&input[*i], len);
 	if (!op)
 		return ;
 	new = new_token(op, type, 0);
@@ -93,7 +78,7 @@ void	handle_operator(t_token **tokens, const char *input,
 		return ;
 	}
 	add_token(tokens, new);
-	*i += op_len;
+	*i += len;
 }
 
 void	handle_word(t_token **tokens, const char *input,

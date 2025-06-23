@@ -6,7 +6,7 @@
 /*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 14:58:54 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/18 23:34:02 by sbin-ham         ###   ########.fr       */
+/*   Updated: 2025/06/23 19:45:44 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ void							run_shell_loop(t_env **env_list,
 int								is_only_whitespace(const char *str);
 int								is_skippable_input(char *input);
 int								is_command_empty(t_command *cmd);
-
+void							init_parse_context(t_parse_ctx *ctx,
+									t_env **env_list, int *exit_value);
 // main_utils2.c
 int								process_and_execute(char *input,
 									t_env **env_list, int *exit_value);
