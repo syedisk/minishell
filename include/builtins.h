@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thkumara <thkumara@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbin-ham <sbin-ham@student.42singapore.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 16:13:05 by sbin-ham          #+#    #+#             */
-/*   Updated: 2025/06/22 18:22:02 by thkumara         ###   ########.fr       */
+/*   Updated: 2025/06/23 13:20:54 by sbin-ham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ char						*get_env_value(t_env *env, const char *key);
 void						set_env_value(t_env **env, const char *key,
 								const char *value);
 char						**convert_env_to_array(t_env *env);
-void						free_env_list(t_env *env);
 
 // Builtins
 int							handle_cd(char **argv);
